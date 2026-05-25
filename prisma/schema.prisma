@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// A clinic can have multiple physiotherapists
+model Clinic {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users     User[]
+  patients  Patient[]
+}
+
+// Users: admin (clinic) or physio
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  role      Role     @default(PHYSIO)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  clinicId  String
+  clinic    Clinic   @relation(fields: [clinicId], references: [id])
+
+  patients  Patient[]
+  evaluations Evaluation[]
+}
+
+enum Role {
+  ADMIN
+  PHYSIO
+}
+
+// Patients belong to a clinic and are managed by a physio
+model Patient {
+  id          String   @id @default(cuid())
+  firstName   String
+  lastName    String
+  birthDate   DateTime
+  occupation  String?
+  sport       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  clinicId    String
+  clinic      Clinic   @relation(fields: [clinicId], references: [id])
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+
+  evaluations Evaluation[]
+}
+
+// One evaluation per clinical session
+model Evaluation {
+  id          String   @id @default(cuid())
+  date        DateTime @default(now())
+  bodyArea    String   // e.g. "shoulder", "spine"
+  data        Json     // stores all clinical test results
+  diagnosis   String?  // generated diagnosis
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id])
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}
