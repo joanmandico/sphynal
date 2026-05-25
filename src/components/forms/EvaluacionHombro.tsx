@@ -101,7 +101,7 @@ export default function EvaluacionHombro({ patientId, userId }: Props) {
         patientId,
         userId,
         bodyArea: 'Hombro',
-        data,
+        data: { shoulder: data },
         diagnosis: diagnosis.primary,
       }),
     })
@@ -116,7 +116,6 @@ export default function EvaluacionHombro({ patientId, userId }: Props) {
 
   return (
     <div className="max-w-3xl space-y-6">
-      {/* Steps indicator */}
       <div className="flex gap-2 mb-6">
         {(['motivo', 'pruebas', 'resultado'] as Step[]).map((s, i) => (
           <div key={s} className="flex items-center gap-2">
@@ -133,23 +132,14 @@ export default function EvaluacionHombro({ patientId, userId }: Props) {
         ))}
       </div>
 
-      {/* Step 1: Chief complaint */}
       {step === 'motivo' && (
         <Card>
           <CardHeader>
             <CardTitle>Motivo de consulta</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <TestButton
-              label="El paciente no puede levantar el brazo"
-              value={data.cannotRaiseArm}
-              onChange={toggle('cannotRaiseArm')}
-            />
-            <TestButton
-              label="Dolor a punta de dedo (localizado)"
-              value={data.pointPain}
-              onChange={toggle('pointPain')}
-            />
+            <TestButton label="El paciente no puede levantar el brazo" value={data.cannotRaiseArm} onChange={toggle('cannotRaiseArm')} />
+            <TestButton label="Dolor a punta de dedo (localizado)" value={data.pointPain} onChange={toggle('pointPain')} />
             <div className="pt-4">
               <Button onClick={() => setStep('pruebas')} className="w-full">
                 Continuar a pruebas clínicas →
@@ -159,7 +149,6 @@ export default function EvaluacionHombro({ patientId, userId }: Props) {
         </Card>
       )}
 
-      {/* Step 2: Clinical tests */}
       {step === 'pruebas' && (
         <div className="space-y-4">
           {data.cannotRaiseArm && (
@@ -222,17 +211,12 @@ export default function EvaluacionHombro({ patientId, userId }: Props) {
           </Card>
 
           <div className="flex gap-3">
-            <Button variant="outline" onClick={() => setStep('motivo')}>
-              ← Atrás
-            </Button>
-            <Button onClick={() => setStep('resultado')} className="flex-1">
-              Ver resultado →
-            </Button>
+            <Button variant="outline" onClick={() => setStep('motivo')}>← Atrás</Button>
+            <Button onClick={() => setStep('resultado')} className="flex-1">Ver resultado →</Button>
           </div>
         </div>
       )}
 
-      {/* Step 3: Diagnosis result */}
       {step === 'resultado' && (
         <div className="space-y-4">
           <Card className="border-slate-900">
@@ -243,11 +227,9 @@ export default function EvaluacionHombro({ patientId, userId }: Props) {
               <div className="flex items-start justify-between mb-4">
                 <h3 className="text-lg font-bold text-slate-900">{diagnosis.primary}</h3>
                 <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                  diagnosis.confidence === 'alta'
-                    ? 'bg-green-100 text-green-700'
-                    : diagnosis.confidence === 'moderada'
-                    ? 'bg-yellow-100 text-yellow-700'
-                    : 'bg-slate-100 text-slate-500'
+                  diagnosis.confidence === 'alta' ? 'bg-green-100 text-green-700'
+                  : diagnosis.confidence === 'moderada' ? 'bg-yellow-100 text-yellow-700'
+                  : 'bg-slate-100 text-slate-500'
                 }`}>
                   Confianza {diagnosis.confidence}
                 </span>
@@ -284,14 +266,8 @@ export default function EvaluacionHombro({ patientId, userId }: Props) {
           </Card>
 
           <div className="flex gap-3">
-            <Button variant="outline" onClick={() => setStep('pruebas')}>
-              ← Revisar pruebas
-            </Button>
-            <Button
-              onClick={handleSave}
-              disabled={loading}
-              className="flex-1"
-            >
+            <Button variant="outline" onClick={() => setStep('pruebas')}>← Revisar pruebas</Button>
+            <Button onClick={handleSave} disabled={loading} className="flex-1">
               {loading ? 'Guardando...' : 'Guardar evaluación'}
             </Button>
           </div>

@@ -1,6 +1,3 @@
-// Patient detail page - Server Component
-// Shows patient info and their evaluations
-
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { PrismaClient } from '@prisma/client'
@@ -35,14 +32,10 @@ export default async function PacienteDetailPage({ params }: Props) {
 
   return (
     <div className="p-8">
-      {/* Header */}
       <div className="flex justify-between items-start mb-8">
         <div>
-          <Link
-            href="/dashboard/pacientes"
-            className="text-sm text-slate-400 hover:text-slate-600 mb-2 inline-block"
-          >
-            ← Volver a pacientes
+          <Link href="/dashboard/pacientes" className="text-sm text-slate-400 hover:text-slate-600 mb-2 inline-block">
+            Volver a pacientes
           </Link>
           <h1 className="text-2xl font-bold text-slate-900">
             {patient.firstName} {patient.lastName}
@@ -57,7 +50,6 @@ export default async function PacienteDetailPage({ params }: Props) {
         </Link>
       </div>
 
-      {/* Patient info */}
       <div className="grid grid-cols-3 gap-6 mb-8">
         <div className="bg-white rounded-xl border border-slate-200 p-6">
           <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Fecha de nacimiento</p>
@@ -75,7 +67,6 @@ export default async function PacienteDetailPage({ params }: Props) {
         </div>
       </div>
 
-      {/* Evaluations */}
       <div className="bg-white rounded-xl border border-slate-200">
         <div className="px-6 py-4 border-b border-slate-100">
           <h2 className="font-semibold text-slate-900">Evaluaciones</h2>
@@ -83,9 +74,7 @@ export default async function PacienteDetailPage({ params }: Props) {
         {patient.evaluations.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <p className="text-slate-400 text-sm">No hay evaluaciones todavía</p>
-            <p className="text-slate-400 text-xs mt-1">
-              Inicia una nueva evaluación clínica
-            </p>
+            <p className="text-slate-400 text-xs mt-1">Inicia una nueva evaluación clínica</p>
           </div>
         ) : (
           <table className="w-full">
@@ -109,13 +98,21 @@ export default async function PacienteDetailPage({ params }: Props) {
                   <td className="px-6 py-4 text-sm text-slate-500">
                     {evaluation.diagnosis || 'Pendiente'}
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    <Link
-                      href={`/dashboard/pacientes/${patient.id}/evaluacion/${evaluation.id}`}
-                      className="text-sm font-medium text-slate-900 hover:underline"
-                    >
-                      Ver
-                    </Link>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center justify-end gap-4">
+                      <Link
+                        href={`/dashboard/pacientes/${patient.id}/evaluacion/${evaluation.id}`}
+                        className="text-sm font-medium text-slate-900 hover:underline"
+                      >
+                        Ver
+                      </Link>
+                      <Link
+                        href={`/api/evaluaciones/${evaluation.id}/pdf`}
+                        className="text-sm font-medium text-blue-600 hover:underline"
+                      >
+                        PDF
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               ))}
