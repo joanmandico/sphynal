@@ -3,7 +3,7 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { PrismaClient } from '@prisma/client'
-import EvaluacionHombro from '@/components/forms/EvaluacionHombro'
+import EvaluacionCompleta from '@/components/forms/EvaluacionCompleta'
 
 const prisma = new PrismaClient()
 
@@ -38,7 +38,7 @@ export default async function NuevaEvaluacionPage({ params }: Props) {
         <h1 className="text-2xl font-bold text-slate-900">Nueva evaluación</h1>
         <p className="text-slate-500 mt-1">Hombro — Protocolo completo</p>
       </div>
-      <EvaluacionHombro patientId={patient.id} userId={user.id} />
+      <EvaluacionCompleta patientId={patient.id} userId={user.id} />
     </div>
   )
 }
