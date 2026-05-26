@@ -1,6 +1,9 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { PrismaClient } from '@prisma/client'
 import Link from 'next/link'
+
+const prisma = new PrismaClient()
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -9,6 +12,17 @@ export default async function DashboardPage() {
   if (!user) {
     redirect('/login')
   }
+
+  // Real counts from database
+  const [totalPatients, totalEvaluations, recentPatients] = await Promise.all([
+    prisma.patient.count({ where: { userId: user.id } }),
+    prisma.evaluation.count({ where: { userId: user.id } }),
+    prisma.patient.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+    }),
+  ])
 
   return (
     <div className="p-8">
@@ -31,7 +45,7 @@ export default async function DashboardPage() {
           <p className="text-on-surface-variant text-xs font-bold uppercase tracking-wider mb-1">
             Pacientes
           </p>
-          <p className="text-3xl font-headline font-extrabold text-on-surface">0</p>
+          <p className="text-3xl font-headline font-extrabold text-on-surface">{totalPatients}</p>
           <p className="text-xs text-on-surface-variant mt-1">Total registrados</p>
         </div>
 
@@ -42,8 +56,8 @@ export default async function DashboardPage() {
           <p className="text-on-surface-variant text-xs font-bold uppercase tracking-wider mb-1">
             Evaluaciones
           </p>
-          <p className="text-3xl font-headline font-extrabold text-on-surface">0</p>
-          <p className="text-xs text-on-surface-variant mt-1">Este mes</p>
+          <p className="text-3xl font-headline font-extrabold text-on-surface">{totalEvaluations}</p>
+          <p className="text-xs text-on-surface-variant mt-1">Total realizadas</p>
         </div>
 
         <div className="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/10">
@@ -53,7 +67,7 @@ export default async function DashboardPage() {
           <p className="text-on-surface-variant text-xs font-bold uppercase tracking-wider mb-1">
             Informes
           </p>
-          <p className="text-3xl font-headline font-extrabold text-on-surface">0</p>
+          <p className="text-3xl font-headline font-extrabold text-on-surface">{totalEvaluations}</p>
           <p className="text-xs text-on-surface-variant mt-1">Generados</p>
         </div>
       </div>
@@ -69,12 +83,55 @@ export default async function DashboardPage() {
             + Nuevo paciente
           </Link>
         </div>
-        <div className="px-6 py-12 text-center">
-          <p className="text-on-surface-variant text-sm">No hay pacientes todavía</p>
-          <p className="text-on-surface-variant text-xs mt-1">
-            Crea tu primer paciente para empezar
-          </p>
-        </div>
+        {recentPatients.length === 0 ? (
+          <div className="px-6 py-12 text-center">
+            <p className="text-on-surface-variant text-sm">No hay pacientes todavía</p>
+            <p className="text-on-surface-variant text-xs mt-1">
+              Crea tu primer paciente para empezar
+            </p>
+          </div>
+        ) : (
+          <table className="w-full">
+            <thead>
+              <tr className="bg-surface-container-low text-on-surface-variant text-xs uppercase tracking-widest font-bold">
+                <th className="text-left px-6 py-4">Paciente</th>
+                <th className="text-left px-6 py-4">Fecha nacimiento</th>
+                <th className="text-left px-6 py-4">Actividad</th>
+                <th className="px-6 py-4"></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-outline-variant/5">
+              {recentPatients.map((patient) => (
+                <tr key={patient.id} className="hover:bg-surface-container-low transition-colors group">
+                  <td className="px-6 py-5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-primary-container text-primary flex items-center justify-center font-bold text-sm">
+                        {patient.firstName[0]}{patient.lastName[0]}
+                      </div>
+                      <p className="font-bold text-on-surface text-sm">
+                        {patient.firstName} {patient.lastName}
+                      </p>
+                    </div>
+                  </td>
+                  <td className="px-6 py-5 text-sm text-on-surface-variant">
+                    {new Date(patient.birthDate).toLocaleDateString('es-ES')}
+                  </td>
+                  <td className="px-6 py-5 text-sm text-on-surface-variant">
+                    {patient.occupation || '—'}
+                  </td>
+                  <td className="px-6 py-5 text-right">
+                    <Link
+                      href={`/dashboard/pacientes/${patient.id}`}
+                      className="text-sm font-bold text-primary hover:underline opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      Ver ficha →
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   )
