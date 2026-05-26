@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { PrismaClient } from '@prisma/client'
 import Link from 'next/link'
+import BuscadorPacientes from '@/components/forms/BuscadorPacientes'
 
 const prisma = new PrismaClient()
 
@@ -38,7 +39,7 @@ export default async function PacientesPage() {
         </Link>
       </div>
 
-      {/* Patient list */}
+      {/* Patient list with search */}
       <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/10 overflow-hidden">
         {patients.length === 0 ? (
           <div className="px-6 py-16 text-center">
@@ -55,52 +56,7 @@ export default async function PacientesPage() {
             </Link>
           </div>
         ) : (
-          <table className="w-full">
-            <thead>
-              <tr className="bg-surface-container-low text-on-surface-variant text-xs uppercase tracking-widest font-bold">
-                <th className="text-left px-6 py-4">Paciente</th>
-                <th className="text-left px-6 py-4">Fecha nacimiento</th>
-                <th className="text-left px-6 py-4">Actividad</th>
-                <th className="text-left px-6 py-4">Deporte</th>
-                <th className="px-6 py-4"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-outline-variant/5">
-              {patients.map((patient) => (
-                <tr key={patient.id} className="hover:bg-surface-container-low transition-colors group">
-                  <td className="px-6 py-5">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-primary-container text-primary flex items-center justify-center font-bold text-sm">
-                        {patient.firstName[0]}{patient.lastName[0]}
-                      </div>
-                      <div>
-                        <p className="font-bold text-on-surface text-sm">
-                          {patient.firstName} {patient.lastName}
-                        </p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-5 text-sm text-on-surface-variant">
-                    {new Date(patient.birthDate).toLocaleDateString('es-ES')}
-                  </td>
-                  <td className="px-6 py-5 text-sm text-on-surface-variant">
-                    {patient.occupation || '—'}
-                  </td>
-                  <td className="px-6 py-5 text-sm text-on-surface-variant">
-                    {patient.sport || '—'}
-                  </td>
-                  <td className="px-6 py-5 text-right">
-                    <Link
-                      href={`/dashboard/pacientes/${patient.id}`}
-                      className="text-sm font-bold text-primary hover:underline opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      Ver ficha →
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <BuscadorPacientes patients={patients} />
         )}
       </div>
     </div>
