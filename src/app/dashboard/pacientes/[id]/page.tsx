@@ -32,83 +32,107 @@ export default async function PacienteDetailPage({ params }: Props) {
 
   return (
     <div className="p-8">
-      <div className="flex justify-between items-start mb-8">
+      {/* Header */}
+      <div className="flex justify-between items-start mb-10">
         <div>
-          <Link href="/dashboard/pacientes" className="text-sm text-slate-400 hover:text-slate-600 mb-2 inline-block">
+          <Link
+            href="/dashboard/pacientes"
+            className="text-xs font-bold text-on-surface-variant hover:text-primary uppercase tracking-wider mb-3 inline-flex items-center gap-1 transition-colors"
+          >
             Volver a pacientes
           </Link>
-          <h1 className="text-2xl font-bold text-slate-900">
-            {patient.firstName} {patient.lastName}
-          </h1>
-          <p className="text-slate-500 mt-1">{age} años</p>
+          <div className="flex items-center gap-4 mt-2">
+            <div className="w-14 h-14 rounded-xl bg-primary-container text-primary flex items-center justify-center font-headline font-bold text-xl">
+              {patient.firstName[0]}{patient.lastName[0]}
+            </div>
+            <div>
+              <h1 className="text-3xl font-headline font-extrabold text-on-surface">
+                {patient.firstName} {patient.lastName}
+              </h1>
+              <p className="text-on-surface-variant mt-0.5">{age} años</p>
+            </div>
+          </div>
         </div>
         <Link
           href={`/dashboard/pacientes/${patient.id}/evaluacion/nueva`}
-          className="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors"
+          className="bg-primary text-on-primary px-5 py-2.5 rounded-lg text-sm font-bold hover:opacity-90 transition-opacity shadow-sm"
         >
           + Nueva evaluación
         </Link>
       </div>
 
-      <div className="grid grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Fecha de nacimiento</p>
-          <p className="font-medium text-slate-900">
+      {/* Patient info cards */}
+      <div className="grid grid-cols-3 gap-6 mb-10">
+        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/10 p-6 shadow-sm">
+          <p className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-2">
+            Fecha de nacimiento
+          </p>
+          <p className="font-bold text-on-surface">
             {new Date(patient.birthDate).toLocaleDateString('es-ES')}
           </p>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Actividad laboral</p>
-          <p className="font-medium text-slate-900">{patient.occupation || '—'}</p>
+        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/10 p-6 shadow-sm">
+          <p className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-2">
+            Actividad laboral
+          </p>
+          <p className="font-bold text-on-surface">{patient.occupation || '—'}</p>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Práctica deportiva</p>
-          <p className="font-medium text-slate-900">{patient.sport || '—'}</p>
+        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/10 p-6 shadow-sm">
+          <p className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-2">
+            Práctica deportiva
+          </p>
+          <p className="font-bold text-on-surface">{patient.sport || '—'}</p>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200">
-        <div className="px-6 py-4 border-b border-slate-100">
-          <h2 className="font-semibold text-slate-900">Evaluaciones</h2>
+      {/* Evaluations */}
+      <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/10 shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-outline-variant/10">
+          <h2 className="font-headline font-bold text-on-surface">Evaluaciones</h2>
         </div>
         {patient.evaluations.length === 0 ? (
-          <div className="px-6 py-12 text-center">
-            <p className="text-slate-400 text-sm">No hay evaluaciones todavía</p>
-            <p className="text-slate-400 text-xs mt-1">Inicia una nueva evaluación clínica</p>
+          <div className="px-6 py-16 text-center">
+            <p className="text-4xl mb-4">📋</p>
+            <p className="text-on-surface font-semibold mb-1">No hay evaluaciones todavía</p>
+            <p className="text-on-surface-variant text-sm">
+              Inicia una nueva evaluación clínica
+            </p>
           </div>
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="border-b border-slate-100">
-                <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Fecha</th>
-                <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Zona</th>
-                <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Diagnóstico</th>
-                <th className="px-6 py-3"></th>
+              <tr className="bg-surface-container-low text-on-surface-variant text-xs uppercase tracking-widest font-bold">
+                <th className="text-left px-6 py-4">Fecha</th>
+                <th className="text-left px-6 py-4">Zona</th>
+                <th className="text-left px-6 py-4">Diagnóstico</th>
+                <th className="px-6 py-4"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-outline-variant/5">
               {patient.evaluations.map((evaluation) => (
-                <tr key={evaluation.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-4 text-sm text-slate-500">
+                <tr key={evaluation.id} className="hover:bg-surface-container-low transition-colors group">
+                  <td className="px-6 py-4 text-sm text-on-surface-variant">
                     {new Date(evaluation.date).toLocaleDateString('es-ES')}
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-900 font-medium">
-                    {evaluation.bodyArea}
+                  <td className="px-6 py-4">
+                    <span className="text-xs font-bold bg-primary-container text-primary px-3 py-1 rounded-full">
+                      {evaluation.bodyArea}
+                    </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-500">
+                  <td className="px-6 py-4 text-sm text-on-surface font-medium">
                     {evaluation.diagnosis || 'Pendiente'}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-end gap-4">
                       <Link
                         href={`/dashboard/pacientes/${patient.id}/evaluacion/${evaluation.id}`}
-                        className="text-sm font-medium text-slate-900 hover:underline"
+                        className="text-sm font-bold text-on-surface-variant hover:text-primary transition-colors opacity-0 group-hover:opacity-100"
                       >
                         Ver
                       </Link>
                       <Link
                         href={`/api/evaluaciones/${evaluation.id}/pdf`}
-                        className="text-sm font-medium text-blue-600 hover:underline"
+                        className="text-sm font-bold text-primary hover:underline opacity-0 group-hover:opacity-100 transition-opacity"
                       >
                         PDF
                       </Link>

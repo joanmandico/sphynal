@@ -1,13 +1,10 @@
 'use client'
 
-// New patient form - Client Component
-
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent } from '@/components/ui/card'
 
 interface Props {
   userId: string
@@ -57,71 +54,96 @@ export default function NuevoPacienteForm({ userId }: Props) {
   }
 
   return (
-    <Card className="max-w-2xl">
-      <CardContent className="pt-6 space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+    <div className="max-w-2xl">
+      <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/10 p-8 space-y-6">
+
+        {/* Nombre y apellidos */}
+        <div className="grid grid-cols-2 gap-6">
           <div className="space-y-2">
-            <Label htmlFor="firstName">Nombre *</Label>
+            <Label htmlFor="firstName" className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
+              Nombre *
+            </Label>
             <Input
               id="firstName"
               name="firstName"
               placeholder="Joan"
               value={form.firstName}
               onChange={handleChange}
+              className="bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="lastName">Apellidos *</Label>
+            <Label htmlFor="lastName" className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
+              Apellidos *
+            </Label>
             <Input
               id="lastName"
               name="lastName"
               placeholder="García López"
               value={form.lastName}
               onChange={handleChange}
+              className="bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
         </div>
 
+        {/* Fecha de nacimiento */}
         <div className="space-y-2">
-          <Label htmlFor="birthDate">Fecha de nacimiento *</Label>
+          <Label htmlFor="birthDate" className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
+            Fecha de nacimiento *
+          </Label>
           <Input
             id="birthDate"
             name="birthDate"
             type="date"
             value={form.birthDate}
             onChange={handleChange}
+            className="bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20"
           />
         </div>
 
+        {/* Actividad laboral */}
         <div className="space-y-2">
-          <Label htmlFor="occupation">Actividad laboral</Label>
+          <Label htmlFor="occupation" className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
+            Actividad laboral
+          </Label>
           <Input
             id="occupation"
             name="occupation"
-            placeholder="Administrativo, enfermero..."
+            placeholder="Administrativo, enfermero, deportista..."
             value={form.occupation}
             onChange={handleChange}
+            className="bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20"
           />
         </div>
 
+        {/* Práctica deportiva */}
         <div className="space-y-2">
-          <Label htmlFor="sport">Práctica deportiva</Label>
+          <Label htmlFor="sport" className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
+            Práctica deportiva
+          </Label>
           <Input
             id="sport"
             name="sport"
-            placeholder="Fútbol, natación..."
+            placeholder="Fútbol, natación, ciclismo..."
             value={form.sport}
             onChange={handleChange}
+            className="bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20"
           />
         </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && (
+          <div className="p-4 bg-error/10 rounded-lg">
+            <p className="text-sm text-error font-medium">{error}</p>
+          </div>
+        )}
 
+        {/* Actions */}
         <div className="flex gap-3 pt-2">
           <Button
             onClick={handleSubmit}
             disabled={loading}
-            className="flex-1"
+            className="flex-1 bg-primary text-on-primary hover:opacity-90"
           >
             {loading ? 'Guardando...' : 'Crear paciente'}
           </Button>
@@ -129,11 +151,12 @@ export default function NuevoPacienteForm({ userId }: Props) {
             variant="outline"
             onClick={() => router.back()}
             disabled={loading}
+            className="border-outline-variant text-on-surface-variant hover:bg-surface-container-low"
           >
             Cancelar
           </Button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
