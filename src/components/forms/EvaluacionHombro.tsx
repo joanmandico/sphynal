@@ -51,25 +51,25 @@ function TestButton({
   onChange: (v: boolean) => void
 }) {
   return (
-    <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-      <span className="text-sm text-slate-700">{label}</span>
+    <div className="flex items-center justify-between p-3 bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors">
+      <span className="text-sm text-on-surface">{label}</span>
       <div className="flex gap-2">
         <button
           onClick={() => onChange(true)}
-          className={`px-3 py-1 rounded text-xs font-bold transition-colors ${
+          className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${
             value === true
               ? 'bg-red-100 text-red-700'
-              : 'bg-white border border-slate-200 text-slate-400'
+              : 'bg-surface-container-lowest border border-outline-variant/20 text-on-surface-variant hover:bg-surface-container-high'
           }`}
         >
           POS
         </button>
         <button
           onClick={() => onChange(false)}
-          className={`px-3 py-1 rounded text-xs font-bold transition-colors ${
+          className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${
             value === false
               ? 'bg-green-100 text-green-700'
-              : 'bg-white border border-slate-200 text-slate-400'
+              : 'bg-surface-container-lowest border border-outline-variant/20 text-on-surface-variant hover:bg-surface-container-high'
           }`}
         >
           NEG

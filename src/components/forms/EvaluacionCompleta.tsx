@@ -1,8 +1,5 @@
 'use client'
 
-// EvaluacionCompleta - Client Component
-// Orchestrates: Red Flags → Shoulder Evaluation
-
 import { useState } from 'react'
 import RedFlagsForm from './RedFlagsForm'
 import EvaluacionHombro from './EvaluacionHombro'
@@ -25,7 +22,6 @@ export default function EvaluacionCompleta({ patientId, userId }: Props) {
   function handleRedFlagsComplete(data: RedFlagsData, result: RedFlagResult) {
     setRedFlagsData(data)
     setRedFlagsResult(result)
-
     if (result.hasRedFlags) {
       setPhase('warning')
     } else {
@@ -36,25 +32,29 @@ export default function EvaluacionCompleta({ patientId, userId }: Props) {
   return (
     <div>
       {/* Step indicator */}
-      <div className="flex gap-2 mb-8">
-        <div className={`flex items-center gap-2`}>
-          <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
-            phase === 'redflags' ? 'bg-slate-900 text-white' : 'bg-green-500 text-white'
+      <div className="flex items-center gap-2 mb-8">
+        <div className="flex items-center gap-2">
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
+            phase === 'redflags' ? 'bg-primary text-on-primary' : 'bg-green-500 text-white'
           }`}>
             {phase === 'redflags' ? '1' : '✓'}
           </div>
-          <span className={`text-sm ${phase === 'redflags' ? 'font-semibold text-slate-900' : 'text-slate-400'}`}>
+          <span className={`text-sm font-semibold ${
+            phase === 'redflags' ? 'text-on-surface' : 'text-on-surface-variant'
+          }`}>
             Red Flags
           </span>
         </div>
-        <div className="w-8 h-px bg-slate-200 self-center mx-1" />
+        <div className="w-12 h-px bg-outline-variant mx-2" />
         <div className="flex items-center gap-2">
-          <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
-            phase === 'evaluation' ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-500'
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
+            phase === 'evaluation' ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface-variant'
           }`}>
             2
           </div>
-          <span className={`text-sm ${phase === 'evaluation' ? 'font-semibold text-slate-900' : 'text-slate-400'}`}>
+          <span className={`text-sm font-semibold ${
+            phase === 'evaluation' ? 'text-on-surface' : 'text-on-surface-variant'
+          }`}>
             Evaluación Hombro
           </span>
         </div>
@@ -65,75 +65,75 @@ export default function EvaluacionCompleta({ patientId, userId }: Props) {
         <RedFlagsForm onComplete={handleRedFlagsComplete} />
       )}
 
-      {/* Warning phase — red flags found */}
+      {/* Warning phase */}
       {phase === 'warning' && redFlagsResult && (
         <div className="max-w-3xl space-y-4">
           {redFlagsResult.critical.length > 0 && (
-            <Card className="border-red-200 bg-red-50">
-              <CardHeader>
-                <CardTitle className="text-red-700">⚠️ Red Flags críticas detectadas</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {redFlagsResult.critical.map((flag, i) => (
-                    <li key={i} className="text-sm text-red-700 flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block" />
-                      {flag}
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
+            <div className="bg-red-50 border border-red-200 rounded-xl p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-red-500 text-xl">⚠️</span>
+                <h3 className="font-headline font-bold text-red-700">Red Flags críticas detectadas</h3>
+              </div>
+              <ul className="space-y-2">
+                {redFlagsResult.critical.map((flag, i) => (
+                  <li key={i} className="text-sm text-red-700 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block flex-shrink-0" />
+                    {flag}
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
 
           {redFlagsResult.warnings.length > 0 && (
-            <Card className="border-yellow-200 bg-yellow-50">
-              <CardHeader>
-                <CardTitle className="text-yellow-700">⚡ Avisos</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {redFlagsResult.warnings.map((w, i) => (
-                    <li key={i} className="text-sm text-yellow-700 flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-yellow-500 inline-block" />
-                      {w}
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
+            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-yellow-500 text-xl">⚡</span>
+                <h3 className="font-headline font-bold text-yellow-700">Avisos</h3>
+              </div>
+              <ul className="space-y-2">
+                {redFlagsResult.warnings.map((w, i) => (
+                  <li key={i} className="text-sm text-yellow-700 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-yellow-500 inline-block flex-shrink-0" />
+                    {w}
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
 
           {redFlagsResult.shouldRefer.length > 0 && (
-            <Card className="border-slate-200">
-              <CardHeader>
-                <CardTitle className="text-slate-700">Derivaciones recomendadas</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {redFlagsResult.shouldRefer.map((r, i) => (
-                    <li key={i} className="text-sm text-slate-600 flex items-center gap-2">
-                      <span className="text-blue-500">→</span>
-                      {r}
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
+            <div className="bg-surface-container-lowest border border-outline-variant/10 rounded-xl p-6 shadow-sm">
+              <h3 className="font-headline font-bold text-on-surface mb-4">Derivaciones recomendadas</h3>
+              <ul className="space-y-2">
+                {redFlagsResult.shouldRefer.map((r, i) => (
+                  <li key={i} className="text-sm text-on-surface-variant flex items-center gap-2">
+                    <span className="text-primary">→</span>
+                    {r}
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
 
           <div className="flex gap-3 pt-2">
-            <Button variant="outline" onClick={() => setPhase('redflags')}>
+            <Button
+              variant="outline"
+              onClick={() => setPhase('redflags')}
+              className="border-outline-variant"
+            >
               ← Revisar red flags
             </Button>
-            {redFlagsResult.canContinue && (
-              <Button onClick={() => setPhase('evaluation')} className="flex-1">
+            {redFlagsResult.canContinue ? (
+              <Button
+                onClick={() => setPhase('evaluation')}
+                className="flex-1 bg-primary text-on-primary hover:opacity-90"
+              >
                 Continuar a evaluación del hombro →
               </Button>
-            )}
-            {!redFlagsResult.canContinue && (
-              <div className="flex-1 p-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 text-center font-medium">
-                No se puede continuar con la evaluación — derivación médica urgente requerida
+            ) : (
+              <div className="flex-1 p-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 text-center font-bold">
+                No se puede continuar — derivación médica urgente requerida
               </div>
             )}
           </div>
