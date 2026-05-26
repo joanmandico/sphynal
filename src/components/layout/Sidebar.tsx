@@ -1,17 +1,13 @@
 'use client'
 
-// Sidebar - Client Component
-// Main navigation for the dashboard
-
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
 
 const navItems = [
-  { href: '/dashboard', label: 'Inicio', icon: '⊞' },
+  { href: '/dashboard', label: 'Dashboard', icon: '⊞' },
   { href: '/dashboard/pacientes', label: 'Pacientes', icon: '👥' },
-  { href: '/dashboard/evaluaciones', label: 'Evaluaciones', icon: '📋' },
+  { href: '/dashboard/evaluaciones', label: 'Protocolos', icon: '📋' },
   { href: '/dashboard/configuracion', label: 'Configuración', icon: '⚙️' },
 ]
 
@@ -27,27 +23,28 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="w-64 h-screen bg-white border-r border-slate-200 flex flex-col">
+    <aside className="h-screen w-64 fixed left-0 top-0 bg-surface-container-low flex flex-col py-6 z-50">
       {/* Logo */}
-      <div className="px-6 py-6 border-b border-slate-100">
-        <h1 className="text-xl font-bold text-slate-900">Sphynal</h1>
-        <p className="text-xs text-slate-400 mt-1 uppercase tracking-wider">
-          Motor clínico
+      <div className="px-6 mb-10">
+        <h1 className="text-xl font-bold font-headline text-primary">Sphynal</h1>
+        <p className="text-[10px] tracking-widest uppercase opacity-50 font-bold mt-1">
+          Motor Clínico
         </p>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 py-6 space-y-1">
+      <nav className="flex-1 px-4 space-y-1">
         {navItems.map((item) => {
-          const isActive = pathname === item.href
+          const isActive = pathname === item.href ||
+            (item.href !== '/dashboard' && pathname.startsWith(item.href))
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all duration-200 rounded-l-lg ${
                 isActive
-                  ? 'bg-slate-900 text-white'
-                  : 'text-slate-600 hover:bg-slate-100'
+                  ? 'text-primary font-bold border-r-4 border-primary bg-surface-container-high translate-x-1'
+                  : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-bright'
               }`}
             >
               <span>{item.icon}</span>
@@ -57,11 +54,21 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Logout */}
-      <div className="px-4 py-4 border-t border-slate-100">
+      {/* New evaluation CTA */}
+      <div className="px-6 mb-6">
+        <Link
+          href="/dashboard/pacientes"
+          className="w-full py-3 px-4 rounded-lg bg-primary text-on-primary flex items-center justify-center gap-2 font-headline font-bold text-sm shadow-sm hover:opacity-90 transition-opacity"
+        >
+          + Nueva Evaluación
+        </Link>
+      </div>
+
+      {/* Footer */}
+      <div className="px-4 border-t border-outline-variant/10 pt-4 space-y-1">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-4 py-3 w-full rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
+          className="flex items-center gap-3 px-4 py-2 w-full text-on-surface-variant hover:text-on-surface transition-colors text-sm"
         >
           <span>🚪</span>
           Cerrar sesión
