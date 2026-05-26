@@ -1,27 +1,37 @@
-// Login page - Server Component
-// Handles authentication via Supabase Auth
-
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import LoginForm from '@/components/forms/LoginForm'
 
 export default async function LoginPage() {
-  // If user is already logged in, redirect to dashboard
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  
+
   if (user) {
     redirect('/dashboard')
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-50">
+    <main className="min-h-screen bg-background flex items-center justify-center">
       <div className="w-full max-w-md px-4">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-slate-900">Sphynal</h1>
-          <p className="text-slate-500 mt-2">Motor de decisión clínica</p>
+        {/* Logo */}
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-headline font-extrabold text-primary mb-2">
+            Sphynal
+          </h1>
+          <p className="text-on-surface-variant font-medium">
+            Motor de decisión clínica
+          </p>
         </div>
-        <LoginForm />
+
+        {/* Card */}
+        <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/10 p-8">
+          <LoginForm />
+        </div>
+
+        {/* Footer */}
+        <p className="text-center text-xs text-on-surface-variant mt-6">
+          Sphynal © 2026 — Uso exclusivo para profesionales sanitarios
+        </p>
       </div>
     </main>
   )

@@ -1,15 +1,11 @@
 'use client'
 
-// LoginForm - Client Component
-// Handles form state and submission
-
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 
 export default function LoginForm() {
   const [email, setEmail] = useState('')
@@ -39,43 +35,66 @@ export default function LoginForm() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Iniciar sesión</CardTitle>
-        <CardDescription>Accede a tu cuenta de Sphynal</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-headline font-bold text-on-surface mb-1">
+          Iniciar sesión
+        </h2>
+        <p className="text-sm text-on-surface-variant">
+          Accede a tu cuenta de Sphynal
+        </p>
+      </div>
+
+      <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <Label
+            htmlFor="email"
+            className="text-xs font-bold text-on-surface-variant uppercase tracking-wider"
+          >
+            Email
+          </Label>
           <Input
             id="email"
             type="email"
             placeholder="fisio@clinica.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            className="bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20"
           />
         </div>
+
         <div className="space-y-2">
-          <Label htmlFor="password">Contraseña</Label>
+          <Label
+            htmlFor="password"
+            className="text-xs font-bold text-on-surface-variant uppercase tracking-wider"
+          >
+            Contraseña
+          </Label>
           <Input
             id="password"
             type="password"
             placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
+            className="bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20"
           />
         </div>
-        {error && (
-          <p className="text-sm text-red-500">{error}</p>
-        )}
-        <Button 
-          className="w-full" 
-          onClick={handleLogin}
-          disabled={loading}
-        >
-          {loading ? 'Entrando...' : 'Entrar'}
-        </Button>
-      </CardContent>
-    </Card>
+      </div>
+
+      {error && (
+        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-sm text-red-700 font-medium">{error}</p>
+        </div>
+      )}
+
+      <Button
+        onClick={handleLogin}
+        disabled={loading}
+        className="w-full bg-primary text-on-primary hover:opacity-90 font-bold py-3"
+      >
+        {loading ? 'Entrando...' : 'Entrar'}
+      </Button>
+    </div>
   )
 }
