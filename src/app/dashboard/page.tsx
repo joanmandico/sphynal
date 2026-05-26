@@ -12,42 +12,68 @@ export default async function DashboardPage() {
 
   return (
     <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Inicio</h1>
-        <p className="text-slate-500 mt-1">Resumen de tu actividad clínica</p>
+      {/* Header */}
+      <div className="mb-10">
+        <h2 className="text-3xl font-headline font-extrabold tracking-tight text-on-surface mb-2">
+          Resumen clínico
+        </h2>
+        <p className="text-on-surface-variant font-medium">
+          Bienvenido a Sphynal — Motor de decisión clínica
+        </p>
       </div>
 
-      <div className="grid grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-xl p-6 border border-slate-200">
-          <p className="text-sm text-slate-500 font-medium uppercase tracking-wider">Pacientes</p>
-          <p className="text-3xl font-bold text-slate-900 mt-2">0</p>
-          <p className="text-xs text-slate-400 mt-1">Total registrados</p>
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div className="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/10">
+          <div className="flex justify-between items-start mb-4">
+            <span className="text-2xl">🏥</span>
+          </div>
+          <p className="text-on-surface-variant text-xs font-bold uppercase tracking-wider mb-1">
+            Pacientes
+          </p>
+          <p className="text-3xl font-headline font-extrabold text-on-surface">0</p>
+          <p className="text-xs text-on-surface-variant mt-1">Total registrados</p>
         </div>
-        <div className="bg-white rounded-xl p-6 border border-slate-200">
-          <p className="text-sm text-slate-500 font-medium uppercase tracking-wider">Evaluaciones</p>
-          <p className="text-3xl font-bold text-slate-900 mt-2">0</p>
-          <p className="text-xs text-slate-400 mt-1">Este mes</p>
+
+        <div className="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/10">
+          <div className="flex justify-between items-start mb-4">
+            <span className="text-2xl">📋</span>
+          </div>
+          <p className="text-on-surface-variant text-xs font-bold uppercase tracking-wider mb-1">
+            Evaluaciones
+          </p>
+          <p className="text-3xl font-headline font-extrabold text-on-surface">0</p>
+          <p className="text-xs text-on-surface-variant mt-1">Este mes</p>
         </div>
-        <div className="bg-white rounded-xl p-6 border border-slate-200">
-          <p className="text-sm text-slate-500 font-medium uppercase tracking-wider">Informes</p>
-          <p className="text-3xl font-bold text-slate-900 mt-2">0</p>
-          <p className="text-xs text-slate-400 mt-1">Generados</p>
+
+        <div className="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/10">
+          <div className="flex justify-between items-start mb-4">
+            <span className="text-2xl">📄</span>
+          </div>
+          <p className="text-on-surface-variant text-xs font-bold uppercase tracking-wider mb-1">
+            Informes
+          </p>
+          <p className="text-3xl font-headline font-extrabold text-on-surface">0</p>
+          <p className="text-xs text-on-surface-variant mt-1">Generados</p>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200">
-        <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-          <h2 className="font-semibold text-slate-900">Pacientes recientes</h2>
+      {/* Recent patients */}
+      <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/10">
+        <div className="px-6 py-4 border-b border-outline-variant/10 flex justify-between items-center">
+          <h3 className="font-headline font-bold text-on-surface">Pacientes recientes</h3>
           <Link
             href="/dashboard/pacientes/nuevo"
-            className="text-sm font-medium text-slate-900 bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg transition-colors"
+            className="text-sm font-bold text-primary bg-primary-container hover:opacity-80 px-4 py-2 rounded-lg transition-opacity"
           >
             + Nuevo paciente
           </Link>
         </div>
         <div className="px-6 py-12 text-center">
-          <p className="text-slate-400 text-sm">No hay pacientes todavía</p>
-          <p className="text-slate-400 text-xs mt-1">Crea tu primer paciente para empezar</p>
+          <p className="text-on-surface-variant text-sm">No hay pacientes todavía</p>
+          <p className="text-on-surface-variant text-xs mt-1">
+            Crea tu primer paciente para empezar
+          </p>
         </div>
       </div>
     </div>
