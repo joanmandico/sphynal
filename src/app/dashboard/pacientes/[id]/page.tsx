@@ -32,7 +32,6 @@ export default async function PacienteDetailPage({ params }: Props) {
 
   return (
     <div className="p-8">
-      {/* Header */}
       <div className="flex justify-between items-start mb-10">
         <div>
           <Link
@@ -53,39 +52,39 @@ export default async function PacienteDetailPage({ params }: Props) {
             </div>
           </div>
         </div>
-        <Link
-          href={`/dashboard/pacientes/${patient.id}/evaluacion/nueva`}
-          className="bg-primary text-on-primary px-5 py-2.5 rounded-lg text-sm font-bold hover:opacity-90 transition-opacity shadow-sm"
-        >
-          + Nueva evaluación
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href={`/dashboard/pacientes/${patient.id}/editar`}
+            className="border border-outline-variant text-on-surface-variant px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-surface-container-low transition-colors"
+          >
+            Editar
+          </Link>
+          <Link
+            href={`/dashboard/pacientes/${patient.id}/evaluacion/nueva`}
+            className="bg-primary text-on-primary px-5 py-2.5 rounded-lg text-sm font-bold hover:opacity-90 transition-opacity shadow-sm"
+          >
+            + Nueva evaluación
+          </Link>
+        </div>
       </div>
 
-      {/* Patient info cards */}
       <div className="grid grid-cols-3 gap-6 mb-10">
         <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/10 p-6 shadow-sm">
-          <p className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-2">
-            Fecha de nacimiento
-          </p>
+          <p className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-2">Fecha de nacimiento</p>
           <p className="font-bold text-on-surface">
             {new Date(patient.birthDate).toLocaleDateString('es-ES')}
           </p>
         </div>
         <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/10 p-6 shadow-sm">
-          <p className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-2">
-            Actividad laboral
-          </p>
+          <p className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-2">Actividad laboral</p>
           <p className="font-bold text-on-surface">{patient.occupation || '—'}</p>
         </div>
         <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/10 p-6 shadow-sm">
-          <p className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-2">
-            Práctica deportiva
-          </p>
+          <p className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-2">Práctica deportiva</p>
           <p className="font-bold text-on-surface">{patient.sport || '—'}</p>
         </div>
       </div>
 
-      {/* Evaluations */}
       <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/10 shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-outline-variant/10">
           <h2 className="font-headline font-bold text-on-surface">Evaluaciones</h2>
@@ -94,9 +93,7 @@ export default async function PacienteDetailPage({ params }: Props) {
           <div className="px-6 py-16 text-center">
             <p className="text-4xl mb-4">📋</p>
             <p className="text-on-surface font-semibold mb-1">No hay evaluaciones todavía</p>
-            <p className="text-on-surface-variant text-sm">
-              Inicia una nueva evaluación clínica
-            </p>
+            <p className="text-on-surface-variant text-sm">Inicia una nueva evaluación clínica</p>
           </div>
         ) : (
           <table className="w-full">
