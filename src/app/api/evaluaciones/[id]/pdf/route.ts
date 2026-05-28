@@ -1,12 +1,7 @@
-// API Route: GET /api/evaluaciones/[id]/pdf
-// Generates and returns a PDF report for a clinical evaluation
-
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { analyzeShoulderEvaluation, ShoulderEvaluationData } from '@/lib/algorithms/shoulder'
 import { analyzeRedFlags, RedFlagsData } from '@/lib/algorithms/redflags'
-
-const prisma = new PrismaClient()
 
 interface Props {
   params: Promise<{ id: string }>

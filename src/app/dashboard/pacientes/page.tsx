@@ -1,10 +1,10 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import BuscadorPacientes from '@/components/forms/BuscadorPacientes'
 
-const prisma = new PrismaClient()
+
 
 export default async function PacientesPage() {
   const supabase = await createClient()

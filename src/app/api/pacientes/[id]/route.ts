@@ -2,9 +2,7 @@
 // API Route: DELETE /api/pacientes/[id] - Delete patient and evaluations
 
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/prisma'
 
 interface Props {
   params: Promise<{ id: string }>

@@ -2,11 +2,10 @@
 
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import EditarPacienteForm from '@/components/forms/EditarPacienteForm'
 
-const prisma = new PrismaClient()
 
 interface Props {
   params: Promise<{ id: string }>

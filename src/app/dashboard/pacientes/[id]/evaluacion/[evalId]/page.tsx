@@ -3,12 +3,11 @@
 
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { analyzeShoulderEvaluation, ShoulderEvaluationData } from '@/lib/algorithms/shoulder'
 import { analyzeRedFlags, RedFlagsData } from '@/lib/algorithms/redflags'
 
-const prisma = new PrismaClient()
 
 interface Props {
   params: Promise<{ id: string; evalId: string }>
