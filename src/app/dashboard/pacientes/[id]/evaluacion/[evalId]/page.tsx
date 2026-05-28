@@ -38,8 +38,9 @@ export default async function EvaluacionDetailPage({ params }: Props) {
     redFlags?: RedFlagsData
   }
 
-  const shoulderData = data.shoulder as ShoulderEvaluationData
-  const redFlagsData = data.redFlags as RedFlagsData | undefined
+  // Support both old format (data directly) and new format (data.shoulder)
+const shoulderData = (data.shoulder || evaluation.data) as ShoulderEvaluationData
+const redFlagsData = data.redFlags as RedFlagsData | undefined
 
   const diagnosis = shoulderData ? analyzeShoulderEvaluation(shoulderData) : null
   const redFlagsResult = redFlagsData ? analyzeRedFlags(redFlagsData) : null
