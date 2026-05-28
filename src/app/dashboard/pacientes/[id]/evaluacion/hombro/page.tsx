@@ -1,13 +1,13 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
-import SelectorRegion from '@/components/forms/SelectorRegion'
+import EvaluacionCompleta from '@/components/forms/EvaluacionCompleta'
 
 interface Props {
   params: Promise<{ id: string }>
 }
 
-export default async function NuevaEvaluacionPage({ params }: Props) {
+export default async function EvaluacionHombroPage({ params }: Props) {
   const { id } = await params
 
   const supabase = await createClient()
@@ -31,14 +31,12 @@ export default async function NuevaEvaluacionPage({ params }: Props) {
         <p className="text-sm text-on-surface-variant mb-1">
           {patient.firstName} {patient.lastName}
         </p>
-        <h1 className="text-3xl font-headline font-extrabold text-on-surface">
-          Nueva evaluación
+        <h1 className="text-2xl font-headline font-extrabold text-on-surface">
+          Evaluación — Hombro
         </h1>
-        <p className="text-on-surface-variant mt-1">
-          Selecciona la región corporal a evaluar
-        </p>
+        <p className="text-on-surface-variant mt-1">Protocolo completo</p>
       </div>
-      <SelectorRegion patientId={patient.id} userId={user.id} />
+      <EvaluacionCompleta patientId={patient.id} userId={user.id} />
     </div>
   )
 }
