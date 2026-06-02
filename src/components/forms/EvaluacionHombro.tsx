@@ -17,6 +17,7 @@ interface Props {
 type Step = 'motivo' | 'pruebas' | 'resultado'
 
 const initialData: ShoulderEvaluationData = {
+  eva: 0,
   cannotRaiseArm: false,
   pointPain: false,
   activePain: false,
@@ -133,21 +134,44 @@ export default function EvaluacionHombro({ patientId, userId }: Props) {
       </div>
 
       {step === 'motivo' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Motivo de consulta</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <TestButton label="El paciente no puede levantar el brazo" value={data.cannotRaiseArm} onChange={toggle('cannotRaiseArm')} />
-            <TestButton label="Dolor a punta de dedo (localizado)" value={data.pointPain} onChange={toggle('pointPain')} />
-            <div className="pt-4">
-              <Button onClick={() => setStep('pruebas')} className="w-full">
-                Continuar a pruebas clínicas →
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+  <Card>
+    <CardHeader>
+      <CardTitle>Motivo de consulta</CardTitle>
+    </CardHeader>
+    <CardContent className="space-y-3">
+      <TestButton label="El paciente no puede levantar el brazo" value={data.cannotRaiseArm} onChange={toggle('cannotRaiseArm')} />
+      <TestButton label="Dolor a punta de dedo (localizado)" value={data.pointPain} onChange={toggle('pointPain')} />
+      <div className="space-y-3 pt-2">
+        <p className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">
+          Dolor actual (Escala EVA)
+        </p>
+        <div className="flex items-center gap-4">
+          <input
+            type="range"
+            min={0}
+            max={10}
+            step={1}
+            value={data.eva}
+            onChange={(e) => setData({ ...data, eva: Number(e.target.value) })}
+            className="flex-1 accent-primary"
+          />
+          <span className="text-2xl font-headline font-extrabold text-primary w-12 text-center">
+            {data.eva}/10
+          </span>
+        </div>
+        <div className="flex justify-between text-xs text-on-surface-variant px-1">
+          <span>Sin dolor</span>
+          <span>Dolor máximo</span>
+        </div>
+      </div>
+      <div className="pt-4">
+        <Button onClick={() => setStep('pruebas')} className="w-full">
+          Continuar a pruebas clínicas →
+        </Button>
+      </div>
+    </CardContent>
+  </Card>
+)}
 
       {step === 'pruebas' && (
         <div className="space-y-4">

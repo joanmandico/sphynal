@@ -2,6 +2,9 @@
 // Based on the evaluation protocol from the clinical document
 
 export interface ShoulderEvaluationData {
+  // Pain scale
+  eva: number
+  
   // Chief complaint
   cannotRaiseArm: boolean
   pointPain: boolean
