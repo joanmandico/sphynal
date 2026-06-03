@@ -2,6 +2,7 @@ import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
+import GraficoEVA from '@/components/GraficoEVA'
 
 
 interface Props {
@@ -83,6 +84,13 @@ export default async function PacienteDetailPage({ params }: Props) {
           <p className="font-bold text-on-surface">{patient.sport || '—'}</p>
         </div>
       </div>
+      
+{/* EVA Chart */}
+{patient.evaluations.length > 0 && (
+  <div className="mb-10">
+    <GraficoEVA evaluations={patient.evaluations} />
+  </div>
+)}
 
       <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/10 shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-outline-variant/10">
