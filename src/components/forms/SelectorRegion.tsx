@@ -24,7 +24,7 @@ const regions = [
   {
     category: 'Columna vertebral',
     items: [
-      { id: 'cervical', label: 'Columna cervical', icon: '🔝', available: false },
+      { id: 'cervical', label: 'Columna cervical', icon: '🔝', available: true },
       { id: 'dorsal', label: 'Columna dorsal', icon: '🔙', available: false },
       { id: 'lumbar', label: 'Columna lumbar', icon: '⬇️', available: false },
     ],
@@ -51,17 +51,17 @@ export default function SelectorRegion({ patientId, userId }: Props) {
   const router = useRouter()
   const [selected, setSelected] = useState<string | null>(null)
 
-  function handleContinue() {
-    if (!selected) return
+function handleContinue() {
+  if (!selected) return
 
-    if (selected === 'hombro') {
-      router.push(`/dashboard/pacientes/${patientId}/evaluacion/hombro`)
-    } else {
-      // Other protocols coming soon
-      alert('Este protocolo estará disponible próximamente')
-    }
+  if (selected === 'hombro') {
+    router.push(`/dashboard/pacientes/${patientId}/evaluacion/hombro`)
+  } else if (selected === 'cervical') {
+    router.push(`/dashboard/pacientes/${patientId}/evaluacion/cervical`)
+  } else {
+    alert('Este protocolo estará disponible próximamente')
   }
-
+}
   return (
     <div className="max-w-3xl space-y-8">
       {regions.map((region) => (
