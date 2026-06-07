@@ -1,8 +1,9 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
-import EvaluacionCompleta from '@/components/forms/EvaluacionCompleta'
-import EvaluacionCervical from '@/components/forms/EvaluacionCervical'
+import EvaluationForm from '@/components/evaluation/EvaluationForm'
+import { cervicalProtocol } from '@/lib/protocols'
+import Link from 'next/link'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -29,7 +30,13 @@ export default async function EvaluacionCervicalPage({ params }: Props) {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <p className="text-sm text-on-surface-variant mb-1">
+        <Link
+          href={`/dashboard/pacientes/${patient.id}`}
+          className="text-xs font-bold text-on-surface-variant hover:text-primary uppercase tracking-wider mb-3 inline-block transition-colors"
+        >
+          Volver a la ficha
+        </Link>
+        <p className="text-sm text-on-surface-variant mb-1 mt-2">
           {patient.firstName} {patient.lastName}
         </p>
         <h1 className="text-2xl font-headline font-extrabold text-on-surface">
@@ -37,7 +44,11 @@ export default async function EvaluacionCervicalPage({ params }: Props) {
         </h1>
         <p className="text-on-surface-variant mt-1">Protocolo completo</p>
       </div>
-      <EvaluacionCervical patientId={patient.id} userId={user.id} />
+      <EvaluationForm
+        protocol={cervicalProtocol}
+        patientId={patient.id}
+        userId={user.id}
+      />
     </div>
   )
 }

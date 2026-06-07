@@ -32,6 +32,7 @@ model User {
 
   patients  Patient[]
   evaluations Evaluation[]
+  notes     ClinicalNote[]
 }
 
 enum Role {
@@ -57,6 +58,7 @@ model Patient {
   user        User     @relation(fields: [userId], references: [id])
 
   evaluations Evaluation[]
+  notes     ClinicalNote[]
 }
 
 // One evaluation per clinical session
@@ -74,4 +76,18 @@ model Evaluation {
 
   userId      String
   user        User     @relation(fields: [userId], references: [id])
+}
+
+// Clinical notes per patient session
+model ClinicalNote {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  patientId String
+  patient   Patient  @relation(fields: [patientId], references: [id])
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
 }

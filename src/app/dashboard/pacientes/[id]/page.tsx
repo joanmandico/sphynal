@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import GraficoEVA from '@/components/GraficoEVA'
+import NotasClinicas from '@/components/NotasClinicas'
 
 
 interface Props {
@@ -146,8 +147,14 @@ export default async function PacienteDetailPage({ params }: Props) {
               ))}
             </tbody>
           </table>
-        )}
+      )}
       </div>
+
+      {/* Clinical notes */}
+      <div className="mt-8">
+        <NotasClinicas patientId={patient.id} userId={user.id} />
+      </div>
+
     </div>
   )
 }
