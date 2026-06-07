@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { analyzeShoulderEvaluation, ShoulderEvaluationData } from '@/lib/algorithms/shoulder'
 import { analyzeRedFlags, RedFlagsData } from '@/lib/algorithms/redflags'
+import { shoulderProtocol } from '@/lib/protocols'
+import { ShoulderData } from '@/lib/protocols/schema'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -22,13 +23,13 @@ export async function GET(req: NextRequest, { params }: Props) {
 
     const data = evaluation.data as {
       redFlags?: RedFlagsData
-      shoulder?: ShoulderEvaluationData
+      shoulder?: ShoulderData
     }
 
-    const shoulderData = (data.shoulder || data) as ShoulderEvaluationData
+    const shoulderData = (data.shoulder || data) as ShoulderData
     const redFlagsData = data.redFlags as RedFlagsData | undefined
 
-    const diagnosis = analyzeShoulderEvaluation(shoulderData)
+    const diagnosis = shoulderProtocol.diagnose(shoulderData as Record<string, unknown>)
     const redFlagsResult = redFlagsData
       ? analyzeRedFlags(redFlagsData)
       : { hasRedFlags: false, critical: [], warnings: [], shouldRefer: [], canContinue: true }
@@ -42,7 +43,7 @@ export async function GET(req: NextRequest, { params }: Props) {
       evaluationDate: evaluation.date,
       redFlagsData: redFlagsData ?? {} as RedFlagsData,
       redFlagsResult,
-      shoulderData,
+      shoulderData: shoulderData as Record<string, unknown>,
       diagnosis,
     })
 

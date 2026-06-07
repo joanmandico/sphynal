@@ -1,6 +1,3 @@
-// PDF Report generator for shoulder evaluation
-// Uses @react-pdf/renderer to generate clinical reports
-
 import {
   Document,
   Page,
@@ -8,8 +5,8 @@ import {
   View,
   StyleSheet,
 } from '@react-pdf/renderer'
-import { ShoulderEvaluationData, DiagnosisResult } from '@/lib/algorithms/shoulder'
 import { RedFlagsData, RedFlagResult } from '@/lib/algorithms/redflags'
+import { DiagnosisResult } from '@/lib/protocols/types'
 
 const styles = StyleSheet.create({
   page: {
@@ -129,7 +126,7 @@ interface Props {
   evaluationDate: Date
   redFlagsData: RedFlagsData
   redFlagsResult: RedFlagResult
-  shoulderData: ShoulderEvaluationData
+  shoulderData: Record<string, unknown>
   diagnosis: DiagnosisResult
   clinicianName?: string
 }
@@ -159,13 +156,11 @@ export function InformeHombro({
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>Sphynal — Informe Clínico</Text>
           <Text style={styles.subtitle}>Evaluación de Hombro — Protocolo Completo</Text>
         </View>
 
-        {/* Patient info */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>DATOS DEL PACIENTE</Text>
           <View style={styles.row}>
@@ -194,7 +189,6 @@ export function InformeHombro({
           </View>
         </View>
 
-        {/* Red Flags */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>RED FLAGS</Text>
           {redFlagsResult.hasRedFlags ? (
@@ -218,24 +212,22 @@ export function InformeHombro({
           )}
         </View>
 
-        {/* Clinical tests */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>PRUEBAS CLÍNICAS</Text>
-          <BoolRow label="No puede levantar el brazo" value={shoulderData.cannotRaiseArm} />
-          <BoolRow label="Dolor a punta de dedo" value={shoulderData.pointPain} />
-          <BoolRow label="Signo de caída del brazo" value={shoulderData.dropArmSign} />
-          <BoolRow label="Prueba del infraespinoso" value={shoulderData.infraspinatus} />
-          <BoolRow label="Test lata vacía / Jobe" value={shoulderData.emptyCanTest} />
-          <BoolRow label="Neer test" value={shoulderData.neerTest} />
-          <BoolRow label="Hawkins-Kennedy" value={shoulderData.hawkinsKennedy} />
-          <BoolRow label="Signo arco doloroso" value={shoulderData.painfulArcSign} />
-          <BoolRow label="Hombro congelado" value={shoulderData.frozenShoulder} />
-          <BoolRow label="Aprehensión / inestabilidad" value={shoulderData.apprehension} />
-          <BoolRow label="Test de Crank" value={shoulderData.crankTest} />
-          <BoolRow label="Test O'Brien" value={shoulderData.obrienTest} />
+          <BoolRow label="No puede levantar el brazo" value={shoulderData.cannotRaiseArm as boolean} />
+          <BoolRow label="Dolor a punta de dedo" value={shoulderData.pointPain as boolean} />
+          <BoolRow label="Signo de caída del brazo" value={shoulderData.dropArmSign as boolean} />
+          <BoolRow label="Prueba del infraespinoso" value={shoulderData.infraspinatus as boolean} />
+          <BoolRow label="Test lata vacía / Jobe" value={shoulderData.emptyCanTest as boolean} />
+          <BoolRow label="Neer test" value={shoulderData.neerTest as boolean} />
+          <BoolRow label="Hawkins-Kennedy" value={shoulderData.hawkinsKennedy as boolean} />
+          <BoolRow label="Signo arco doloroso" value={shoulderData.painfulArcSign as boolean} />
+          <BoolRow label="Hombro congelado" value={shoulderData.frozenShoulder as boolean} />
+          <BoolRow label="Aprehensión / inestabilidad" value={shoulderData.apprehension as boolean} />
+          <BoolRow label="Test de Crank" value={shoulderData.crankTest as boolean} />
+          <BoolRow label="Test O'Brien" value={shoulderData.obrienTest as boolean} />
         </View>
 
-        {/* Diagnosis */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>DIAGNÓSTICO</Text>
           <View style={styles.diagnosisBox}>
@@ -252,17 +244,16 @@ export function InformeHombro({
               </>
             )}
           </View>
-          {diagnosis.recommendations.length > 0 && (
+          {diagnosis.treatment.length > 0 && (
             <>
               <Text style={[styles.sectionTitle, { marginTop: 8 }]}>RECOMENDACIONES</Text>
-              {diagnosis.recommendations.map((r, i) => (
+              {diagnosis.treatment.map((r, i) => (
                 <Text key={i} style={styles.listItem}>✓ {r}</Text>
               ))}
             </>
           )}
         </View>
 
-        {/* Footer */}
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Sphynal — Motor de Decisión Clínica</Text>
           <Text style={styles.footerText}>
