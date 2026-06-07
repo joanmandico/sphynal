@@ -10,6 +10,7 @@ import { buildInitialData, isSectionVisible, isFieldVisible, runDiagnosis } from
 import EvaluationResult from './EvaluationResult'
 import RedFlagsForm from '@/components/forms/RedFlagsForm'
 import { RedFlagsData, RedFlagResult } from '@/lib/algorithms/redflags'
+import FloatingNoteButton from './FloatingNoteButton'
 
 type Phase = 'redflags' | 'redflags_warning' | 'evaluation'
 
@@ -349,6 +350,8 @@ export default function EvaluationForm({ protocolId, patientId, userId }: Props)
           )}
         </>
       )}
+      {/* Floating note button */}
+      <FloatingNoteButton patientId={patientId} userId={userId} />
     </div>
   )
 }
