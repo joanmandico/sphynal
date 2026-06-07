@@ -45,10 +45,10 @@ export default async function EvaluacionCervicalPage({ params }: Props) {
         <p className="text-on-surface-variant mt-1">Protocolo completo</p>
       </div>
       <EvaluationForm
-        protocol={cervicalProtocol}
-        patientId={patient.id}
-        userId={user.id}
-      />
+  protocolId="cervical"
+  patientId={patient.id}
+  userId={user.id}
+/>
     </div>
   )
 }

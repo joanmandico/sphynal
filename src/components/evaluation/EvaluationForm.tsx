@@ -1,28 +1,21 @@
 'use client'
 
-// Generic evaluation form - Client Component
-// Renders any protocol using the protocol definition
-
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Protocol, ProtocolData, ProtocolSection } from '@/lib/protocols/types'
+import { protocols } from '@/lib/protocols'
+import { ProtocolData, ProtocolSection } from '@/lib/protocols/types'
 import { buildInitialData, isSectionVisible, isFieldVisible, runDiagnosis } from '@/lib/protocols/engine'
 import EvaluationResult from './EvaluationResult'
 
 interface Props {
-  protocol: Protocol
+  protocolId: string
   patientId: string
   userId: string
 }
 
-function BooleanField({
-  label,
-  sublabel,
-  value,
-  onChange,
-}: {
+function BooleanField({ label, sublabel, value, onChange }: {
   label: string
   sublabel?: string
   value: boolean
@@ -38,35 +31,21 @@ function BooleanField({
         <button
           onClick={() => onChange(true)}
           className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${
-            value === true
-              ? 'bg-red-100 text-red-700'
-              : 'bg-surface-container-lowest border border-outline-variant/20 text-on-surface-variant'
+            value === true ? 'bg-red-100 text-red-700' : 'bg-surface-container-lowest border border-outline-variant/20 text-on-surface-variant'
           }`}
-        >
-          POS
-        </button>
+        >POS</button>
         <button
           onClick={() => onChange(false)}
           className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${
-            value === false
-              ? 'bg-green-100 text-green-700'
-              : 'bg-surface-container-lowest border border-outline-variant/20 text-on-surface-variant'
+            value === false ? 'bg-green-100 text-green-700' : 'bg-surface-container-lowest border border-outline-variant/20 text-on-surface-variant'
           }`}
-        >
-          NEG
-        </button>
+        >NEG</button>
       </div>
     </div>
   )
 }
 
-function ScaleField({
-  label,
-  value,
-  min = 0,
-  max = 10,
-  onChange,
-}: {
+function ScaleField({ label, value, min = 0, max = 10, onChange }: {
   label: string
   value: number
   min?: number
@@ -75,9 +54,7 @@ function ScaleField({
 }) {
   return (
     <div className="space-y-3 py-2">
-      <p className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">
-        {label}
-      </p>
+      <p className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">{label}</p>
       <div className="flex items-center gap-4">
         <input
           type="range"
@@ -100,41 +77,23 @@ function ScaleField({
   )
 }
 
-function SectionRenderer({
-  section,
-  data,
-  onChange,
-}: {
+function SectionRenderer({ section, data, onChange }: {
   section: ProtocolSection
   data: ProtocolData
   onChange: (key: string, value: unknown) => void
 }) {
-  const sectionVariantClass = section.variant === 'danger'
-    ? 'border-red-200'
-    : section.variant === 'warning'
-    ? 'border-yellow-200'
-    : ''
-
-  const titleVariantClass = section.variant === 'danger'
-    ? 'text-red-700'
-    : section.variant === 'warning'
-    ? 'text-yellow-700'
-    : ''
+  const sectionVariantClass = section.variant === 'danger' ? 'border-red-200' : section.variant === 'warning' ? 'border-yellow-200' : ''
+  const titleVariantClass = section.variant === 'danger' ? 'text-red-700' : section.variant === 'warning' ? 'text-yellow-700' : ''
 
   return (
     <Card className={sectionVariantClass}>
       <CardHeader>
-        <CardTitle className={`text-base ${titleVariantClass}`}>
-          {section.title}
-        </CardTitle>
-        {section.description && (
-          <p className="text-sm text-on-surface-variant">{section.description}</p>
-        )}
+        <CardTitle className={`text-base ${titleVariantClass}`}>{section.title}</CardTitle>
+        {section.description && <p className="text-sm text-on-surface-variant">{section.description}</p>}
       </CardHeader>
       <CardContent className="space-y-3">
         {section.fields.map((field) => {
           if (!isFieldVisible(field, data)) return null
-
           if (field.type === 'boolean') {
             return (
               <BooleanField
@@ -146,7 +105,6 @@ function SectionRenderer({
               />
             )
           }
-
           if (field.type === 'scale') {
             return (
               <ScaleField
@@ -159,7 +117,6 @@ function SectionRenderer({
               />
             )
           }
-
           return null
         })}
       </CardContent>
@@ -167,7 +124,8 @@ function SectionRenderer({
   )
 }
 
-export default function EvaluationForm({ protocol, patientId, userId }: Props) {
+export default function EvaluationForm({ protocolId, patientId, userId }: Props) {
+  const protocol = protocols[protocolId]
   const router = useRouter()
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
   const [data, setData] = useState<ProtocolData>(buildInitialData(protocol))
@@ -184,7 +142,6 @@ export default function EvaluationForm({ protocol, patientId, userId }: Props) {
 
   async function handleSave() {
     setLoading(true)
-
     const res = await fetch('/api/evaluaciones', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -196,12 +153,10 @@ export default function EvaluationForm({ protocol, patientId, userId }: Props) {
         diagnosis: diagnosis.primary,
       }),
     })
-
     if (res.ok) {
       router.push(`/dashboard/pacientes/${patientId}`)
       router.refresh()
     }
-
     setLoading(false)
   }
 
@@ -218,7 +173,6 @@ export default function EvaluationForm({ protocol, patientId, userId }: Props) {
 
   return (
     <div className="max-w-3xl space-y-6">
-      {/* Steps indicator */}
       <div className="flex items-center gap-2 flex-wrap">
         {protocol.steps.map((step, i) => (
           <div key={step.id} className="flex items-center gap-2">
@@ -229,14 +183,10 @@ export default function EvaluationForm({ protocol, patientId, userId }: Props) {
             }`}>
               {currentStepIndex > i ? '✓' : i + 1}
             </div>
-            <span className={`text-sm font-semibold ${
-              currentStepIndex === i ? 'text-on-surface' : 'text-on-surface-variant'
-            }`}>
+            <span className={`text-sm font-semibold ${currentStepIndex === i ? 'text-on-surface' : 'text-on-surface-variant'}`}>
               {step.title}
             </span>
-            {i < protocol.steps.length - 1 && (
-              <div className="w-6 h-px bg-outline-variant mx-1" />
-            )}
+            {i < protocol.steps.length - 1 && <div className="w-6 h-px bg-outline-variant mx-1" />}
           </div>
         ))}
         <div className="flex items-center gap-2">
@@ -249,7 +199,6 @@ export default function EvaluationForm({ protocol, patientId, userId }: Props) {
         </div>
       </div>
 
-      {/* Current step sections */}
       <div className="space-y-4">
         {currentStep.sections.map((section) => {
           if (!isSectionVisible(section, data)) return null
@@ -264,29 +213,18 @@ export default function EvaluationForm({ protocol, patientId, userId }: Props) {
         })}
       </div>
 
-      {/* Navigation */}
       <div className="flex gap-3">
         {currentStepIndex > 0 && (
-          <Button
-            variant="outline"
-            onClick={() => setCurrentStepIndex(i => i - 1)}
-            className="border-outline-variant"
-          >
+          <Button variant="outline" onClick={() => setCurrentStepIndex(i => i - 1)} className="border-outline-variant">
             ← Atrás
           </Button>
         )}
         {isLastStep ? (
-          <Button
-            onClick={() => setShowResult(true)}
-            className="flex-1 bg-primary text-on-primary"
-          >
+          <Button onClick={() => setShowResult(true)} className="flex-1 bg-primary text-on-primary">
             Ver resultado →
           </Button>
         ) : (
-          <Button
-            onClick={() => setCurrentStepIndex(i => i + 1)}
-            className="flex-1 bg-primary text-on-primary"
-          >
+          <Button onClick={() => setCurrentStepIndex(i => i + 1)} className="flex-1 bg-primary text-on-primary">
             Continuar →
           </Button>
         )}
