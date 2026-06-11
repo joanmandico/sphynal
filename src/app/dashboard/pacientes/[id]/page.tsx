@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import GraficoEVA from '@/components/GraficoEVA'
 import NotasClinicas from '@/components/NotasClinicas'
+import EpisodiosClinicosPanel from '@/components/EpisodiosClinicosPanel'
 
 
 interface Props {
@@ -152,6 +153,10 @@ export default async function PacienteDetailPage({ params }: Props) {
 
       {/* Clinical notes */}
       <div className="mt-8">
+        {/* Clinical episodes */}
+<div className="mt-8">
+  <EpisodiosClinicosPanel patientId={patient.id} userId={user.id} />
+</div>
         <NotasClinicas patientId={patient.id} userId={user.id} />
       </div>
 
