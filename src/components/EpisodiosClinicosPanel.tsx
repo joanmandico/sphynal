@@ -192,7 +192,7 @@ export default function EpisodiosClinicosPanel({ patientId, userId }: Props) {
         <ul className="divide-y divide-outline-variant/5">
           {episodes.map((episode) => {
             const isExpanded = expandedId === episode.id
-            const evaValues = episode.evaluations
+            const evaValues = (episode.evaluations || [])
               .map(e => getEVA(e.data as Record<string, unknown>))
               .filter((v): v is number => v !== null)
             const firstEva = evaValues[0]
@@ -234,7 +234,7 @@ export default function EpisodiosClinicosPanel({ patientId, userId }: Props) {
                         {new Date(episode.openedAt).toLocaleDateString('es-ES')}
                         {episode.closedAt && ` → ${new Date(episode.closedAt).toLocaleDateString('es-ES')}`}
                       </span>
-                      <span>{episode.evaluations.length} sesión{episode.evaluations.length !== 1 ? 'es' : ''}</span>
+                      <span>{(episode.evaluations || []).length} sesión{(episode.evaluations || []).length !== 1 ? 'es' : ''}</span>
                       {evaImprovement !== null && (
                         <span className={evaImprovement > 0 ? 'text-green-600 font-bold' : evaImprovement < 0 ? 'text-red-600 font-bold' : ''}>
                           EVA: {firstEva} → {lastEva}
@@ -275,7 +275,7 @@ export default function EpisodiosClinicosPanel({ patientId, userId }: Props) {
                     {episode.evaluations.length === 0 ? (
                       <p className="text-xs text-on-surface-variant">No hay evaluaciones en este episodio todavía</p>
                     ) : (
-                      episode.evaluations.map((evaluation, i) => {
+                      (episode.evaluations || []).map((evaluation, i) => {
                         const eva = getEVA(evaluation.data as Record<string, unknown>)
                         return (
                           <div key={evaluation.id} className="flex items-center justify-between">
