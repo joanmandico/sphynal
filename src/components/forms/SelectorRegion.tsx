@@ -1,9 +1,6 @@
 'use client'
 
-// Body region selector - Client Component
-// Shows available protocols and routes to the correct evaluation
-
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 
@@ -11,6 +8,13 @@ interface Props {
   patientId: string
   userId: string
   episodioId?: string
+}
+
+interface Episode {
+  id: string
+  name: string
+  status: 'OPEN' | 'CLOSED'
+  regions: string[]
 }
 
 const regions = [
@@ -51,22 +55,44 @@ const regions = [
 export default function SelectorRegion({ patientId, userId, episodioId }: Props) {
   const router = useRouter()
   const [selected, setSelected] = useState<string | null>(null)
+  const [episodes, setEpisodes] = useState<Episode[]>([])
+  const [selectedEpisodioId, setSelectedEpisodioId] = useState<string | null>(episodioId || null)
+  const [loadingEpisodes, setLoadingEpisodes] = useState(false)
 
-function handleContinue() {
-  if (!selected) return
+  // Only fetch episodes if no episodioId was passed (coming from general button)
+  useEffect(() => {
+    if (!episodioId) {
+      fetchEpisodes()
+    }
+  }, [patientId, episodioId])
 
-  const episodioParam = episodioId ? `?episodioId=${episodioId}` : ''
-
-  if (selected === 'hombro') {
-    router.push(`/dashboard/pacientes/${patientId}/evaluacion/hombro${episodioParam}`)
-  } else if (selected === 'cervical') {
-    router.push(`/dashboard/pacientes/${patientId}/evaluacion/cervical${episodioParam}`)
-  } else {
-    alert('Este protocolo estará disponible próximamente')
+  async function fetchEpisodes() {
+    setLoadingEpisodes(true)
+    const res = await fetch(`/api/episodios?patientId=${patientId}`)
+    if (res.ok) {
+      const data = await res.json()
+      setEpisodes(data.filter((e: Episode) => e.status === 'OPEN'))
+    }
+    setLoadingEpisodes(false)
   }
-}
+
+  function handleContinue() {
+    if (!selected) return
+
+    const episodioParam = selectedEpisodioId ? `?episodioId=${selectedEpisodioId}` : ''
+
+    if (selected === 'hombro') {
+      router.push(`/dashboard/pacientes/${patientId}/evaluacion/hombro${episodioParam}`)
+    } else if (selected === 'cervical') {
+      router.push(`/dashboard/pacientes/${patientId}/evaluacion/cervical${episodioParam}`)
+    } else {
+      alert('Este protocolo estará disponible próximamente')
+    }
+  }
+
   return (
     <div className="max-w-3xl space-y-8">
+      {/* Region selector */}
       {regions.map((region) => (
         <div key={region.category}>
           <h3 className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-3">
@@ -107,13 +133,65 @@ function handleContinue() {
         </div>
       ))}
 
-      <div className="pt-4">
+      {/* Episode selector — only shown when coming from general button */}
+      {!episodioId && (
+        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/10 p-5 space-y-3">
+          <p className="text-sm font-bold text-on-surface">
+            ¿Asociar a un episodio clínico?
+          </p>
+          <p className="text-xs text-on-surface-variant">
+            Opcional — vincula esta evaluación a un episodio existente para hacer seguimiento
+          </p>
+
+          {loadingEpisodes ? (
+            <p className="text-xs text-on-surface-variant">Cargando episodios...</p>
+          ) : episodes.length === 0 ? (
+            <p className="text-xs text-on-surface-variant">No hay episodios abiertos todavía</p>
+          ) : (
+            <div className="space-y-2">
+              <button
+                onClick={() => setSelectedEpisodioId(null)}
+                className={`w-full text-left px-4 py-2.5 rounded-lg text-sm transition-colors ${
+                  selectedEpisodioId === null
+                    ? 'bg-surface-container font-bold text-on-surface'
+                    : 'text-on-surface-variant hover:bg-surface-container-low'
+                }`}
+              >
+                Sin episodio — evaluación independiente
+              </button>
+              {episodes.map(episode => (
+                <button
+                  key={episode.id}
+                  onClick={() => setSelectedEpisodioId(episode.id)}
+                  className={`w-full text-left px-4 py-2.5 rounded-lg text-sm transition-colors ${
+                    selectedEpisodioId === episode.id
+                      ? 'bg-primary-container text-primary font-bold'
+                      : 'text-on-surface-variant hover:bg-surface-container-low'
+                  }`}
+                >
+                  <span className="font-medium">{episode.name}</span>
+                  {episode.regions.length > 0 && (
+                    <span className="text-xs ml-2 opacity-70">
+                      ({episode.regions.join(', ')})
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="pt-2">
         <Button
           onClick={handleContinue}
           disabled={!selected}
           className="w-full bg-primary text-on-primary hover:opacity-90 font-bold py-3 disabled:opacity-40"
         >
-          {selected ? `Iniciar evaluación de ${regions.flatMap(r => r.items).find(i => i.id === selected)?.label}` : 'Selecciona una región para continuar'}
+          {selected
+            ? `Iniciar evaluación de ${regions.flatMap(r => r.items).find(i => i.id === selected)?.label}`
+            : 'Selecciona una región para continuar'
+          }
         </Button>
       </div>
     </div>
