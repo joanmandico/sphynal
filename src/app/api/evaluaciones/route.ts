@@ -1,13 +1,10 @@
-// API Route: POST /api/evaluaciones
-// Saves a clinical evaluation to the database
-
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { patientId, userId, bodyArea, data, diagnosis } = body
+    const { patientId, userId, bodyArea, data, diagnosis, episodioId } = body
 
     if (!patientId || !userId || !bodyArea || !data) {
       return NextResponse.json(
@@ -23,6 +20,7 @@ export async function POST(req: NextRequest) {
         bodyArea,
         data,
         diagnosis: diagnosis || null,
+        ...(episodioId && { episodeId: episodioId }),
       },
     })
 

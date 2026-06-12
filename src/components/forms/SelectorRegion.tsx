@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 interface Props {
   patientId: string
   userId: string
+  episodioId?: string
 }
 
 const regions = [
@@ -47,17 +48,19 @@ const regions = [
   },
 ]
 
-export default function SelectorRegion({ patientId, userId }: Props) {
+export default function SelectorRegion({ patientId, userId, episodioId }: Props) {
   const router = useRouter()
   const [selected, setSelected] = useState<string | null>(null)
 
 function handleContinue() {
   if (!selected) return
 
+  const episodioParam = episodioId ? `?episodioId=${episodioId}` : ''
+
   if (selected === 'hombro') {
-    router.push(`/dashboard/pacientes/${patientId}/evaluacion/hombro`)
+    router.push(`/dashboard/pacientes/${patientId}/evaluacion/hombro${episodioParam}`)
   } else if (selected === 'cervical') {
-    router.push(`/dashboard/pacientes/${patientId}/evaluacion/cervical`)
+    router.push(`/dashboard/pacientes/${patientId}/evaluacion/cervical${episodioParam}`)
   } else {
     alert('Este protocolo estará disponible próximamente')
   }

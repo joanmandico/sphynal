@@ -1,8 +1,5 @@
 'use client'
 
-// Clinical episodes panel - Client Component
-// Shows and manages clinical episodes for a patient
-
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
@@ -83,7 +80,7 @@ export default function EpisodiosClinicosPanel({ patientId, userId }: Props) {
 
     if (res.ok) {
       const episode = await res.json()
-      setEpisodes([episode, ...episodes])
+      setEpisodes([{ ...episode, evaluations: [] }, ...episodes])
       setNewName('')
       setNewRegions([])
       setShowNewForm(false)
@@ -99,7 +96,7 @@ export default function EpisodiosClinicosPanel({ patientId, userId }: Props) {
       body: JSON.stringify({ status: 'CLOSED' }),
     })
     if (res.ok) {
-      setEpisodes(episodes.map(e => e.id === id ? { ...e, status: 'CLOSED', closedAt: new Date().toISOString() } : e))
+      setEpisodes(episodes.map(e => e.id === id ? { ...e, status: 'CLOSED' as const, closedAt: new Date().toISOString() } : e))
     }
   }
 
@@ -110,7 +107,7 @@ export default function EpisodiosClinicosPanel({ patientId, userId }: Props) {
       body: JSON.stringify({ status: 'OPEN' }),
     })
     if (res.ok) {
-      setEpisodes(episodes.map(e => e.id === id ? { ...e, status: 'OPEN', closedAt: null } : e))
+      setEpisodes(episodes.map(e => e.id === id ? { ...e, status: 'OPEN' as const, closedAt: null } : e))
     }
   }
 
@@ -132,7 +129,6 @@ export default function EpisodiosClinicosPanel({ patientId, userId }: Props) {
         </button>
       </div>
 
-      {/* New episode form */}
       {showNewForm && (
         <div className="px-6 py-4 border-b border-outline-variant/10 bg-surface-container-low space-y-4">
           <input
@@ -178,7 +174,6 @@ export default function EpisodiosClinicosPanel({ patientId, userId }: Props) {
         </div>
       )}
 
-      {/* Episodes list */}
       {loading ? (
         <div className="px-6 py-8 text-center">
           <p className="text-on-surface-variant text-sm">Cargando episodios...</p>
@@ -269,14 +264,13 @@ export default function EpisodiosClinicosPanel({ patientId, userId }: Props) {
                   </div>
                 </div>
 
-                {/* Expanded sessions */}
                 {isExpanded && (
-                  <div className="mt-4 pl-4 border-l-2 border-outline-variant/20 space-y-2">
-                    {episode.evaluations.length === 0 ? (
+                  <div className="mt-4 pl-4 border-l-2 border-outline-variant/20 space-y-3">
+                    {(episode.evaluations || []).length === 0 ? (
                       <p className="text-xs text-on-surface-variant">No hay evaluaciones en este episodio todavía</p>
                     ) : (
                       (episode.evaluations || []).map((evaluation, i) => {
-                        const eva = getEVA(evaluation.data as Record<string, unknown>)
+                        const evaVal = getEVA(evaluation.data as Record<string, unknown>)
                         return (
                           <div key={evaluation.id} className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
@@ -285,7 +279,7 @@ export default function EpisodiosClinicosPanel({ patientId, userId }: Props) {
                                 <p className="text-sm text-on-surface font-medium">{evaluation.diagnosis || 'Sin diagnóstico'}</p>
                                 <p className="text-xs text-on-surface-variant">
                                   {new Date(evaluation.date).toLocaleDateString('es-ES')} — {evaluation.bodyArea}
-                                  {eva !== null && ` — EVA: ${eva}/10`}
+                                  {evaVal !== null && ` — EVA: ${evaVal}/10`}
                                 </p>
                               </div>
                             </div>
@@ -298,6 +292,14 @@ export default function EpisodiosClinicosPanel({ patientId, userId }: Props) {
                           </div>
                         )
                       })
+                    )}
+                    {episode.status === 'OPEN' && (
+                      <Link
+                        href={`/dashboard/pacientes/${patientId}/evaluacion/nueva?episodioId=${episode.id}`}
+                        className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline mt-2"
+                      >
+                        + Nueva sesión en este episodio
+                      </Link>
                     )}
                   </div>
                 )}

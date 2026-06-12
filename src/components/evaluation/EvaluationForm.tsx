@@ -18,6 +18,7 @@ interface Props {
   protocolId: string
   patientId: string
   userId: string
+  episodioId?: string
 }
 
 function BooleanField({ label, sublabel, value, onChange }: {
@@ -129,7 +130,7 @@ function SectionRenderer({ section, data, onChange }: {
   )
 }
 
-export default function EvaluationForm({ protocolId, patientId, userId }: Props) {
+export default function EvaluationForm({ protocolId, patientId, userId, episodioId }: Props) {
   const protocol = protocols[protocolId]
   const router = useRouter()
   const [phase, setPhase] = useState<Phase>('redflags')
@@ -169,6 +170,7 @@ export default function EvaluationForm({ protocolId, patientId, userId }: Props)
         bodyArea: protocol.name,
         data: { [protocol.id]: data, redFlags: redFlagsData },
         diagnosis: diagnosis.primary,
+        episodioId: episodioId || null,
       }),
     })
     if (res.ok) {
@@ -178,7 +180,6 @@ export default function EvaluationForm({ protocolId, patientId, userId }: Props)
     setLoading(false)
   }
 
-  // Phase indicator
   const phases = [
     { id: 'redflags', label: 'Red Flags' },
     { id: 'evaluation', label: protocol.name },
@@ -193,7 +194,7 @@ export default function EvaluationForm({ protocolId, patientId, userId }: Props)
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
               phase === 'redflags' && i === 0 ? 'bg-primary text-on-primary'
               : phase !== 'redflags' && i === 0 ? 'bg-green-500 text-white'
-              : phase === 'evaluation' || phase === 'redflags_warning' && i === 1 ? 'bg-primary text-on-primary'
+              : phase === 'evaluation' && i === 1 ? 'bg-primary text-on-primary'
               : 'bg-surface-container-highest text-on-surface-variant'
             }`}>
               {phase !== 'redflags' && i === 0 ? '✓' : i + 1}
@@ -280,7 +281,6 @@ export default function EvaluationForm({ protocolId, patientId, userId }: Props)
       {/* Evaluation phase */}
       {phase === 'evaluation' && (
         <>
-          {/* Steps indicator */}
           <div className="flex items-center gap-2 flex-wrap">
             {protocol.steps.map((step, i) => (
               <div key={step.id} className="flex items-center gap-2">
@@ -350,7 +350,7 @@ export default function EvaluationForm({ protocolId, patientId, userId }: Props)
           )}
         </>
       )}
-      {/* Floating note button */}
+
       <FloatingNoteButton patientId={patientId} userId={userId} />
     </div>
   )
