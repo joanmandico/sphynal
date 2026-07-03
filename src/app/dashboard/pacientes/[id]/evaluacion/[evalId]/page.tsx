@@ -119,16 +119,19 @@ export default async function EvaluacionDetailPage({ params }: Props) {
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant/5">
-              {[
-                { label: 'No puede levantar el brazo', value: shoulderData.cannotRaiseArm },
-                { label: 'Dolor a punta de dedo', value: shoulderData.pointPain },
-                { label: 'Signo de caída del brazo', value: shoulderData.dropArmSign },
+           {[
+                { label: 'Rama: No puede levantar el brazo', value: shoulderData.branchCannotRaise },
+                { label: 'Rama: Dolor a punta de dedo', value: shoulderData.branchPointPain },
+                { label: 'Rama: Dolor general / Neural', value: shoulderData.branchGeneralNeural },
+                { label: 'Drop Arm Sign', value: shoulderData.dropArmSign },
+                { label: 'Supraspinatus Strength Test', value: shoulderData.supraspinatusStrengthTest },
                 { label: 'Prueba del infraespinoso', value: shoulderData.infraspinatus },
-                { label: 'Test lata vacía / Jobe', value: shoulderData.emptyCanTest },
+                { label: 'Lateral Rotation Lag Sign', value: shoulderData.lateralRotationLagSign },
+                { label: 'Internal Rotation Lag Sign', value: shoulderData.internalRotationLagSign },
                 { label: 'Neer test', value: shoulderData.neerTest },
                 { label: 'Hawkins-Kennedy', value: shoulderData.hawkinsKennedy },
                 { label: 'Signo arco doloroso', value: shoulderData.painfulArcSign },
-                { label: 'Hombro congelado', value: shoulderData.frozenShoulder },
+                { label: 'Coracoid Pain Test', value: shoulderData.coracoidPainTest },
                 { label: 'Aprehensión / inestabilidad', value: shoulderData.apprehension },
                 { label: 'Test de Crank', value: shoulderData.crankTest },
                 { label: "Test O'Brien", value: shoulderData.obrienTest },
