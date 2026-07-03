@@ -73,7 +73,7 @@ function diagnose(rawData: Record<string, unknown>): DiagnosisResult {
         ? 'Síndrome del estrecho torácico — derivación recomendada'
         : 'Síndrome del estrecho torácico (TOS)',
       confidence: 'moderada',
-      shouldRefer: tosPositive >= 3 && data.sintomasNeurologicos,
+      shouldRefer: tosPositive >= 3 && data.sintomasNeurologicos === true,
       referReason: 'TOS con pérdida de fuerza y conducción',
       differentials: ['Compresión del plexo braquial', 'Costilla cervical'],
       treatment: [
