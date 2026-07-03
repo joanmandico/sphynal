@@ -38,6 +38,10 @@ export interface ProtocolStep {
   id: string
   title: string
   sections: ProtocolSection[]
+  showIf?: {
+    field: string
+    value: boolean | number | string
+  }
 }
 
 export interface DiagnosisResult {
@@ -58,4 +62,4 @@ export interface Protocol {
   diagnose: (data: Record<string, unknown>) => DiagnosisResult
 }
 
-export type ProtocolData = Record<string, unknown>
+export type ProtocolData = Record<string, boolean | number | string | null>

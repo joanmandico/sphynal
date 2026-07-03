@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { protocols } from '@/lib/protocols'
-import { ProtocolData, ProtocolSection } from '@/lib/protocols/types'
+import { ProtocolData, ProtocolSection, ProtocolStep } from '@/lib/protocols/types'
 import { buildInitialData, isSectionVisible, isFieldVisible, runDiagnosis } from '@/lib/protocols/engine'
 import EvaluationResult from './EvaluationResult'
 import RedFlagsForm from '@/components/forms/RedFlagsForm'
@@ -24,8 +24,8 @@ interface Props {
 function BooleanField({ label, sublabel, value, onChange }: {
   label: string
   sublabel?: string
-  value: boolean
-  onChange: (v: boolean) => void
+  value: boolean | null
+  onChange: (v: boolean | null) => void
 }) {
   return (
     <div className="flex items-center justify-between p-3 bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors">
@@ -37,13 +37,25 @@ function BooleanField({ label, sublabel, value, onChange }: {
         <button
           onClick={() => onChange(true)}
           className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${
-            value === true ? 'bg-red-100 text-red-700' : 'bg-surface-container-lowest border border-outline-variant/20 text-on-surface-variant'
+            value === true
+              ? 'bg-red-100 text-red-700 border border-red-300'
+              : 'bg-surface-container-lowest border border-outline-variant/20 text-on-surface-variant'
           }`}
         >POS</button>
         <button
+          onClick={() => onChange(null)}
+          className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${
+            value === null
+              ? 'bg-surface-container-highest text-on-surface border border-outline-variant'
+              : 'bg-surface-container-lowest border border-outline-variant/20 text-on-surface-variant'
+          }`}
+        >NV</button>
+        <button
           onClick={() => onChange(false)}
           className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${
-            value === false ? 'bg-green-100 text-green-700' : 'bg-surface-container-lowest border border-outline-variant/20 text-on-surface-variant'
+            value === false
+              ? 'bg-green-100 text-green-700 border border-green-300'
+              : 'bg-surface-container-lowest border border-outline-variant/20 text-on-surface-variant'
           }`}
         >NEG</button>
       </div>
@@ -51,34 +63,24 @@ function BooleanField({ label, sublabel, value, onChange }: {
   )
 }
 
-function ScaleField({ label, value, min = 0, max = 10, onChange }: {
+function SelectField({ label, value, options, onChange }: {
   label: string
-  value: number
-  min?: number
-  max?: number
-  onChange: (v: number) => void
+  value: string
+  options: string[]
+  onChange: (v: string) => void
 }) {
   return (
-    <div className="space-y-3 py-2">
-      <p className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">{label}</p>
-      <div className="flex items-center gap-4">
-        <input
-          type="range"
-          min={min}
-          max={max}
-          step={1}
-          value={value}
-          onChange={(e) => onChange(Number(e.target.value))}
-          className="flex-1 accent-primary"
-        />
-        <span className="text-2xl font-headline font-extrabold text-primary w-16 text-center">
-          {value}/{max}
-        </span>
-      </div>
-      <div className="flex justify-between text-xs text-on-surface-variant px-1">
-        <span>Sin dolor</span>
-        <span>Dolor máximo</span>
-      </div>
+    <div className="flex items-center justify-between p-3 bg-surface-container-low rounded-lg">
+      <span className="text-sm text-on-surface">{label}</span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="text-sm bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-3 py-1.5 outline-none focus:ring-2 focus:ring-primary/20 text-on-surface"
+      >
+        {options.map(opt => (
+          <option key={opt} value={opt}>{opt}</option>
+        ))}
+      </select>
     </div>
   )
 }
@@ -86,7 +88,7 @@ function ScaleField({ label, value, min = 0, max = 10, onChange }: {
 function SectionRenderer({ section, data, onChange }: {
   section: ProtocolSection
   data: ProtocolData
-  onChange: (key: string, value: unknown) => void
+  onChange: (key: string, value: boolean | number | string | null) => void
 }) {
   const sectionVariantClass = section.variant === 'danger' ? 'border-red-200' : section.variant === 'warning' ? 'border-yellow-200' : ''
   const titleVariantClass = section.variant === 'danger' ? 'text-red-700' : section.variant === 'warning' ? 'text-yellow-700' : ''
@@ -106,19 +108,43 @@ function SectionRenderer({ section, data, onChange }: {
                 key={field.id}
                 label={field.label}
                 sublabel={field.sublabel}
-                value={data[field.id] as boolean ?? false}
+                value={data[field.id] as boolean | null ?? null}
                 onChange={(v) => onChange(field.id, v)}
               />
             )
           }
           if (field.type === 'scale') {
             return (
-              <ScaleField
+              <div key={field.id} className="space-y-3 py-2">
+                <p className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">{field.label}</p>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="range"
+                    min={field.min ?? 0}
+                    max={field.max ?? 10}
+                    step={1}
+                    value={data[field.id] as number ?? 0}
+                    onChange={(e) => onChange(field.id, Number(e.target.value))}
+                    className="flex-1 accent-primary"
+                  />
+                  <span className="text-2xl font-headline font-extrabold text-primary w-16 text-center">
+                    {data[field.id] as number ?? 0}/{field.max ?? 10}
+                  </span>
+                </div>
+                <div className="flex justify-between text-xs text-on-surface-variant px-1">
+                  <span>Sin dolor</span>
+                  <span>Dolor máximo</span>
+                </div>
+              </div>
+            )
+          }
+          if (field.type === 'select') {
+            return (
+              <SelectField
                 key={field.id}
                 label={field.label}
-                value={data[field.id] as number ?? 0}
-                min={field.min}
-                max={field.max}
+                value={data[field.id] as string ?? field.options?.[0] ?? ''}
+                options={field.options ?? []}
                 onChange={(v) => onChange(field.id, v)}
               />
             )
@@ -128,6 +154,11 @@ function SectionRenderer({ section, data, onChange }: {
       </CardContent>
     </Card>
   )
+}
+
+function isStepVisible(step: ProtocolStep, data: ProtocolData): boolean {
+  if (!step.showIf) return true
+  return data[step.showIf.field] === step.showIf.value
 }
 
 export default function EvaluationForm({ protocolId, patientId, userId, episodioId }: Props) {
@@ -141,8 +172,10 @@ export default function EvaluationForm({ protocolId, patientId, userId, episodio
   const [loading, setLoading] = useState(false)
   const [showResult, setShowResult] = useState(false)
 
-  const currentStep = protocol.steps[currentStepIndex]
-  const isLastStep = currentStepIndex === protocol.steps.length - 1
+  // Filter visible steps based on current data
+  const visibleSteps = protocol.steps.filter(step => isStepVisible(step, data))
+  const currentStep = visibleSteps[currentStepIndex] ?? visibleSteps[0]
+  const isLastStep = currentStepIndex === visibleSteps.length - 1
   const diagnosis = runDiagnosis(protocol, data)
 
   function handleRedFlagsComplete(rfData: RedFlagsData, rfResult: RedFlagResult) {
@@ -155,8 +188,18 @@ export default function EvaluationForm({ protocolId, patientId, userId, episodio
     }
   }
 
-  function handleChange(key: string, value: unknown) {
-    setData(prev => ({ ...prev, [key]: value }))
+  function handleChange(key: string, value: boolean | number | string | null) {
+    setData(prev => ({ ...prev, [key]: value }) as ProtocolData)
+  }
+
+  function handleNext() {
+    // Recalculate visible steps with updated data before advancing
+    const nextIndex = currentStepIndex + 1
+    setCurrentStepIndex(nextIndex)
+  }
+
+  function handleBack() {
+    setCurrentStepIndex(i => Math.max(0, i - 1))
   }
 
   async function handleSave() {
@@ -229,7 +272,6 @@ export default function EvaluationForm({ protocolId, patientId, userId, episodio
               </ul>
             </div>
           )}
-
           {redFlagsResult.warnings.length > 0 && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
               <div className="flex items-center gap-2 mb-4">
@@ -246,7 +288,6 @@ export default function EvaluationForm({ protocolId, patientId, userId, episodio
               </ul>
             </div>
           )}
-
           {redFlagsResult.shouldRefer.length > 0 && (
             <div className="bg-surface-container-lowest border border-outline-variant/10 rounded-xl p-6 shadow-sm">
               <h3 className="font-headline font-bold text-on-surface mb-4">Derivaciones recomendadas</h3>
@@ -260,7 +301,6 @@ export default function EvaluationForm({ protocolId, patientId, userId, episodio
               </ul>
             </div>
           )}
-
           <div className="flex gap-3">
             <Button variant="outline" onClick={() => setPhase('redflags')} className="border-outline-variant">
               ← Revisar red flags
@@ -281,8 +321,9 @@ export default function EvaluationForm({ protocolId, patientId, userId, episodio
       {/* Evaluation phase */}
       {phase === 'evaluation' && (
         <>
+          {/* Steps indicator */}
           <div className="flex items-center gap-2 flex-wrap">
-            {protocol.steps.map((step, i) => (
+            {visibleSteps.map((step, i) => (
               <div key={step.id} className="flex items-center gap-2">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
                   currentStepIndex > i ? 'bg-green-500 text-white'
@@ -294,14 +335,14 @@ export default function EvaluationForm({ protocolId, patientId, userId, episodio
                 <span className={`text-sm font-semibold ${currentStepIndex === i ? 'text-on-surface' : 'text-on-surface-variant'}`}>
                   {step.title}
                 </span>
-                {i < protocol.steps.length - 1 && <div className="w-6 h-px bg-outline-variant mx-1" />}
+                {i < visibleSteps.length - 1 && <div className="w-6 h-px bg-outline-variant mx-1" />}
               </div>
             ))}
             <div className="flex items-center gap-2">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
                 showResult ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface-variant'
               }`}>
-                {protocol.steps.length + 1}
+                {visibleSteps.length + 1}
               </div>
               <span className="text-sm font-semibold text-on-surface-variant">Resultado</span>
             </div>
@@ -332,7 +373,7 @@ export default function EvaluationForm({ protocolId, patientId, userId, episodio
 
               <div className="flex gap-3">
                 {currentStepIndex > 0 && (
-                  <Button variant="outline" onClick={() => setCurrentStepIndex(i => i - 1)} className="border-outline-variant">
+                  <Button variant="outline" onClick={handleBack} className="border-outline-variant">
                     ← Atrás
                   </Button>
                 )}
@@ -341,7 +382,7 @@ export default function EvaluationForm({ protocolId, patientId, userId, episodio
                     Ver resultado →
                   </Button>
                 ) : (
-                  <Button onClick={() => setCurrentStepIndex(i => i + 1)} className="flex-1 bg-primary text-on-primary">
+                  <Button onClick={handleNext} className="flex-1 bg-primary text-on-primary">
                     Continuar →
                   </Button>
                 )}

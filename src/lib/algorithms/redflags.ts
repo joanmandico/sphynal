@@ -1,102 +1,91 @@
 // Red flags algorithm for shoulder evaluation
 // Based on the clinical protocol document
 
+type BoolField = boolean | null
+
 export interface RedFlagsData {
-  // 3D/5N (PAG 1)
-  disartria: boolean
-  disfagia: boolean
-  diplopia: boolean
-  discinesia: boolean
-  dropAtack: boolean
-  nistagmus: boolean
-  nubness: boolean
-  nauseas: boolean
-
-  // Vascular (PAG 2)
-  extensionRotationTest: boolean
-  coloracionRojaAzul: boolean
-  varicesDolorosas: boolean
-  aumentoTemperatura: boolean
-  // TVP
-  materialVenoso: boolean
-  edemaUnilateral: boolean
-  dolorExtremidadSuperior: boolean
-  otroDiagnosticoCardiovascular: boolean
-
-  // Fractura EESS (PAG 4)
-  fracturaDescartadaRx: boolean
-  antecedenteTraumatismo: boolean
-  edadMayor50: boolean
-  osteoporosis: boolean
-  corticoides: boolean
-  dolorIntensoMovimiento: boolean
-  hinchazoneInflamacion: boolean
-  limitacionMovimientoHombro: boolean
-  deformidad: boolean
-  sensibilidadPalpacion: boolean
-  hematoma: boolean
-  pruebaAuscultacionDiapason: boolean
-
-  // Fracturas vertebrales (PAG 5)
-  fracturaVertebralDescartadaRx: boolean
-  antecedenteTraumatismoCuello: boolean
-  // Reglas canadienses
-  edad65oMas: boolean
-  mecanismosPeligrosos: boolean
-  colisionTrasera: boolean
-  puedeEstarSentado: boolean
-  ambulanteDesdeAccidente: boolean
-  retrasoInicioDolor: boolean
-  noSignosSensibilidadLineaMedia: boolean
-  noPuedeRotarCabeza45: boolean
-
-  // Integridad ligamento (PAG 6)
-  antecedenteTraumatismoCabezaCuello: boolean
-  cincoD3N: boolean
-  sindromeDown: boolean
-  artritisReumatoide: boolean
-  testCizallamientoAnterior: boolean
-  testEstrésLigamentoAlar: boolean
-
-  // Tumor/Cáncer (PAG 7)
-  sintomatologiaTumor: boolean
-
-  // Infección (PAG 8)
-  sintomatologiaInfeccion: boolean
-
-  // Reuma (PAG 9)
-  afectacionesCutaneas: boolean
-  poliartralgia: boolean
-
-  // Neural grave (PAG 10)
-  problemasMotores: boolean
-  problemasSensitivos: boolean
-  problemasCognitivos: boolean
-
-  // Pares craneales (PAG 11-30) - solo si neural positivo
-  nervioOlfatorio: boolean
-  agudezaVisual: boolean
-  cuadrantesVisuales: boolean
-  funcionRefleja: boolean
-  evaluacionPupila: boolean
-  evaluacionMovimientoOcular: boolean
-  evaluacionSensorial: boolean
-  evaluacionReflejoCorneal: boolean
-  evaluacionMotora: boolean
-  evaluacionReflejoMandibula: boolean
-  nervioFacial: boolean
-  evaluacionAuditiva: boolean
-  pruebaRinne: boolean
-  pruebaWeber: boolean
-  evaluacionGeneral: boolean
-  evaluacionReflejoNauseoso: boolean
-  nervioAccesorio: boolean
-  nervioHipogloso: boolean
-
+  // 3D/5N
+  disartria: BoolField
+  disfagia: BoolField
+  diplopia: BoolField
+  discinesia: BoolField
+  dropAtack: BoolField
+  nistagmus: BoolField
+  nubness: BoolField
+  nauseas: BoolField
+  // Vascular
+  extensionRotationTest: BoolField
+  coloracionRojaAzul: BoolField
+  varicesDolorosas: BoolField
+  aumentoTemperatura: BoolField
+  materialVenoso: BoolField
+  edemaUnilateral: BoolField
+  dolorExtremidadSuperior: BoolField
+  otroDiagnosticoCardiovascular: BoolField
+  // Fractura EESS
+  fracturaDescartadaRx: BoolField
+  antecedenteTraumatismo: BoolField
+  edadMayor50: BoolField
+  osteoporosis: BoolField
+  corticoides: BoolField
+  dolorIntensoMovimiento: BoolField
+  hinchazoneInflamacion: BoolField
+  limitacionMovimientoHombro: BoolField
+  deformidad: BoolField
+  sensibilidadPalpacion: BoolField
+  hematoma: BoolField
+  pruebaAuscultacionDiapason: BoolField
+  // Fracturas vertebrales
+  fracturaVertebralDescartadaRx: BoolField
+  antecedenteTraumatismoCuello: BoolField
+  edad65oMas: BoolField
+  mecanismosPeligrosos: BoolField
+  colisionTrasera: BoolField
+  puedeEstarSentado: BoolField
+  ambulanteDesdeAccidente: BoolField
+  retrasoInicioDolor: BoolField
+  noSignosSensibilidadLineaMedia: BoolField
+  noPuedeRotarCabeza45: BoolField
+  // Ligamento
+  antecedenteTraumatismoCabezaCuello: BoolField
+  cincoD3N: BoolField
+  sindromeDown: BoolField
+  artritisReumatoide: BoolField
+  testCizallamientoAnterior: BoolField
+  testEstrésLigamentoAlar: BoolField
+  // Tumor
+  sintomatologiaTumor: BoolField
+  // Infección
+  sintomatologiaInfeccion: BoolField
+  // Reuma
+  afectacionesCutaneas: BoolField
+  poliartralgia: BoolField
+  // Neural grave
+  problemasMotores: BoolField
+  problemasSensitivos: BoolField
+  problemasCognitivos: BoolField
+  // Pares craneales
+  nervioOlfatorio: BoolField
+  agudezaVisual: BoolField
+  cuadrantesVisuales: BoolField
+  funcionRefleja: BoolField
+  evaluacionPupila: BoolField
+  evaluacionMovimientoOcular: BoolField
+  evaluacionSensorial: BoolField
+  evaluacionReflejoCorneal: BoolField
+  evaluacionMotora: BoolField
+  evaluacionReflejoMandibula: BoolField
+  nervioFacial: BoolField
+  evaluacionAuditiva: BoolField
+  pruebaRinne: BoolField
+  pruebaWeber: BoolField
+  evaluacionGeneral: BoolField
+  evaluacionReflejoNauseoso: BoolField
+  nervioAccesorio: BoolField
+  nervioHipogloso: BoolField
   // Escala Tinetti
   marchaScore: number
   equilibrioScore: number
-
   // Miotomas MMSS
   deltoidesIzq: number
   bicepsIzq: number
@@ -128,31 +117,31 @@ export function analyzeRedFlags(data: RedFlagsData): RedFlagResult {
   const shouldRefer: string[] = []
 
   // 3D/5N
-  if (data.disartria) critical.push('Disartria positiva')
-  if (data.disfagia) critical.push('Disfagia positiva')
-  if (data.diplopia) critical.push('Diplopia positiva')
-  if (data.discinesia) critical.push('Discinesia positiva')
-  if (data.dropAtack) critical.push('Drop attack positivo')
-  if (data.nistagmus) critical.push('Nistagmus positivo')
-  if (data.nubness) warnings.push('Nubness/entumecimiento positivo')
-  if (data.nauseas) warnings.push('Náuseas positivas')
+  if (data.disartria === true) critical.push('Disartria positiva')
+  if (data.disfagia === true) critical.push('Disfagia positiva')
+  if (data.diplopia === true) critical.push('Diplopia positiva')
+  if (data.discinesia === true) critical.push('Discinesia positiva')
+  if (data.dropAtack === true) critical.push('Drop attack positivo')
+  if (data.nistagmus === true) critical.push('Nistagmus positivo')
+  if (data.nubness === true) warnings.push('Nubness/entumecimiento positivo')
+  if (data.nauseas === true) warnings.push('Náuseas positivas')
 
-  if (critical.length > 0 || warnings.some(w => w.includes('3D/5N'))) {
+  if (critical.length > 0) {
     shouldRefer.push('Derivación urgente — posible afectación del tronco del encéfalo')
   }
 
   // Vascular
-  if (data.extensionRotationTest) {
+  if (data.extensionRotationTest === true) {
     critical.push('Extension Rotation Test positivo — posible afectación vertebrobasilar')
     shouldRefer.push('Derivación urgente — insuficiencia vertebrobasilar')
   }
 
   // TVP score
   const tvpScore =
-    (data.materialVenoso ? 1 : 0) +
-    (data.edemaUnilateral ? 1 : 0) +
-    (data.dolorExtremidadSuperior ? 1 : 0) +
-    (data.otroDiagnosticoCardiovascular ? -1 : 0)
+    (data.materialVenoso === true ? 1 : 0) +
+    (data.edemaUnilateral === true ? 1 : 0) +
+    (data.dolorExtremidadSuperior === true ? 1 : 0) +
+    (data.otroDiagnosticoCardiovascular === true ? -1 : 0)
 
   if (tvpScore >= 2) {
     critical.push(`Score TVP: ${tvpScore} — Alta sospecha trombosis venosa profunda`)
@@ -160,8 +149,8 @@ export function analyzeRedFlags(data: RedFlagsData): RedFlagResult {
   }
 
   // Fractura EESS
-  if (!data.fracturaDescartadaRx) {
-    if (data.antecedenteTraumatismo || data.osteoporosis) {
+  if (data.fracturaDescartadaRx !== true) {
+    if (data.antecedenteTraumatismo === true || data.osteoporosis === true) {
       const signos = [
         data.dolorIntensoMovimiento,
         data.hinchazoneInflamacion,
@@ -170,7 +159,7 @@ export function analyzeRedFlags(data: RedFlagsData): RedFlagResult {
         data.sensibilidadPalpacion,
         data.hematoma,
         data.pruebaAuscultacionDiapason,
-      ].filter(Boolean).length
+      ].filter(v => v === true).length
 
       if (signos >= 2) {
         warnings.push(`${signos} signos de fractura EESS positivos`)
@@ -179,44 +168,44 @@ export function analyzeRedFlags(data: RedFlagsData): RedFlagResult {
     }
   }
 
-  // Fracturas vertebrales - Reglas canadienses
-  if (!data.fracturaVertebralDescartadaRx) {
-    if (data.edad65oMas || data.mecanismosPeligrosos) {
+  // Fracturas vertebrales
+  if (data.fracturaVertebralDescartadaRx !== true) {
+    if (data.edad65oMas === true || data.mecanismosPeligrosos === true) {
       critical.push('Factor de alto riesgo fractura cervical — edad ≥65 o mecanismo peligroso')
       shouldRefer.push('Derivación urgente — sospecha fractura cervical')
     }
-    if (data.noPuedeRotarCabeza45) {
+    if (data.noPuedeRotarCabeza45 === true) {
       warnings.push('No puede rotar cabeza >45º — posible fractura cervical')
       shouldRefer.push('Derivación para radiografía — reglas canadienses')
     }
   }
 
-  // Ligamento transverso/alar
-  if (data.testCizallamientoAnterior || data.testEstrésLigamentoAlar) {
+  // Ligamento
+  if (data.testCizallamientoAnterior === true || data.testEstrésLigamentoAlar === true) {
     critical.push('Test ligamento transverso/alar positivo — inestabilidad C1-C2')
     shouldRefer.push('Derivación urgente — inestabilidad atlantoaxoidea')
   }
 
   // Tumor
-  if (data.sintomatologiaTumor) {
+  if (data.sintomatologiaTumor === true) {
     warnings.push('Sintomatología compatible con tumor/cáncer')
     shouldRefer.push('Derivación médica — descartar proceso neoplásico')
   }
 
   // Infección
-  if (data.sintomatologiaInfeccion) {
+  if (data.sintomatologiaInfeccion === true) {
     warnings.push('Sintomatología compatible con infección')
     shouldRefer.push('Derivación médica — descartar proceso infeccioso')
   }
 
   // Reuma
-  if (data.afectacionesCutaneas || data.poliartralgia) {
+  if (data.afectacionesCutaneas === true || data.poliartralgia === true) {
     warnings.push('Posible afectación reumática')
     shouldRefer.push('Derivación reumatología — descartar enfermedad reumática')
   }
 
   // Neural grave
-  if (data.problemasMotores || data.problemasSensitivos || data.problemasCognitivos) {
+  if (data.problemasMotores === true || data.problemasSensitivos === true || data.problemasCognitivos === true) {
     warnings.push('Afectación neurológica grave detectada')
     shouldRefer.push('Derivación neurología — afectación neural grave')
   }

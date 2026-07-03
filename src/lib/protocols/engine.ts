@@ -14,7 +14,7 @@ export function buildInitialData(protocol: Protocol): ProtocolData {
         if (field.defaultValue !== undefined) {
           data[field.id] = field.defaultValue
         } else if (field.type === 'boolean') {
-          data[field.id] = false
+          data[field.id] = null
         } else if (field.type === 'scale' || field.type === 'number') {
           data[field.id] = field.min ?? 0
         } else if (field.type === 'select') {

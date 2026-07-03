@@ -13,36 +13,36 @@ interface Props {
 }
 
 const initialData: RedFlagsData = {
-  disartria: false, disfagia: false, diplopia: false, discinesia: false,
-  dropAtack: false, nistagmus: false, nubness: false, nauseas: false,
-  extensionRotationTest: false, coloracionRojaAzul: false,
-  varicesDolorosas: false, aumentoTemperatura: false,
-  materialVenoso: false, edemaUnilateral: false,
-  dolorExtremidadSuperior: false, otroDiagnosticoCardiovascular: false,
-  fracturaDescartadaRx: false, antecedenteTraumatismo: false,
-  edadMayor50: false, osteoporosis: false, corticoides: false,
-  dolorIntensoMovimiento: false, hinchazoneInflamacion: false,
-  limitacionMovimientoHombro: false, deformidad: false,
-  sensibilidadPalpacion: false, hematoma: false,
-  pruebaAuscultacionDiapason: false,
-  fracturaVertebralDescartadaRx: false, antecedenteTraumatismoCuello: false,
-  edad65oMas: false, mecanismosPeligrosos: false, colisionTrasera: false,
-  puedeEstarSentado: false, ambulanteDesdeAccidente: false,
-  retrasoInicioDolor: false, noSignosSensibilidadLineaMedia: false,
-  noPuedeRotarCabeza45: false,
-  antecedenteTraumatismoCabezaCuello: false, cincoD3N: false,
-  sindromeDown: false, artritisReumatoide: false,
-  testCizallamientoAnterior: false, testEstrésLigamentoAlar: false,
-  sintomatologiaTumor: false, sintomatologiaInfeccion: false,
-  afectacionesCutaneas: false, poliartralgia: false,
-  problemasMotores: false, problemasSensitivos: false, problemasCognitivos: false,
-  nervioOlfatorio: false, agudezaVisual: false, cuadrantesVisuales: false,
-  funcionRefleja: false, evaluacionPupila: false, evaluacionMovimientoOcular: false,
-  evaluacionSensorial: false, evaluacionReflejoCorneal: false,
-  evaluacionMotora: false, evaluacionReflejoMandibula: false,
-  nervioFacial: false, evaluacionAuditiva: false, pruebaRinne: false,
-  pruebaWeber: false, evaluacionGeneral: false, evaluacionReflejoNauseoso: false,
-  nervioAccesorio: false, nervioHipogloso: false,
+  disartria: null, disfagia: null, diplopia: null, discinesia: null,
+  dropAtack: null, nistagmus: null, nubness: null, nauseas: null,
+  extensionRotationTest: null, coloracionRojaAzul: null,
+  varicesDolorosas: null, aumentoTemperatura: null,
+  materialVenoso: null, edemaUnilateral: null,
+  dolorExtremidadSuperior: null, otroDiagnosticoCardiovascular: null,
+  fracturaDescartadaRx: null, antecedenteTraumatismo: null,
+  edadMayor50: null, osteoporosis: null, corticoides: null,
+  dolorIntensoMovimiento: null, hinchazoneInflamacion: null,
+  limitacionMovimientoHombro: null, deformidad: null,
+  sensibilidadPalpacion: null, hematoma: null,
+  pruebaAuscultacionDiapason: null,
+  fracturaVertebralDescartadaRx: null, antecedenteTraumatismoCuello: null,
+  edad65oMas: null, mecanismosPeligrosos: null, colisionTrasera: null,
+  puedeEstarSentado: null, ambulanteDesdeAccidente: null,
+  retrasoInicioDolor: null, noSignosSensibilidadLineaMedia: null,
+  noPuedeRotarCabeza45: null,
+  antecedenteTraumatismoCabezaCuello: null, cincoD3N: null,
+  sindromeDown: null, artritisReumatoide: null,
+  testCizallamientoAnterior: null, testEstrésLigamentoAlar: null,
+  sintomatologiaTumor: null, sintomatologiaInfeccion: null,
+  afectacionesCutaneas: null, poliartralgia: null,
+  problemasMotores: null, problemasSensitivos: null, problemasCognitivos: null,
+  nervioOlfatorio: null, agudezaVisual: null, cuadrantesVisuales: null,
+  funcionRefleja: null, evaluacionPupila: null, evaluacionMovimientoOcular: null,
+  evaluacionSensorial: null, evaluacionReflejoCorneal: null,
+  evaluacionMotora: null, evaluacionReflejoMandibula: null,
+  nervioFacial: null, evaluacionAuditiva: null, pruebaRinne: null,
+  pruebaWeber: null, evaluacionGeneral: null, evaluacionReflejoNauseoso: null,
+  nervioAccesorio: null, nervioHipogloso: null,
   marchaScore: 12, equilibrioScore: 16,
   deltoidesIzq: 5, bicepsIzq: 5, extensoresMunecaIzq: 5, tricepsIzq: 5,
   flexorRadialIzq: 5, abductorPulgarIzq: 5, interoseoIzq: 5,
@@ -54,8 +54,8 @@ function Toggle({
   label, value, onChange
 }: {
   label: string
-  value: boolean
-  onChange: (v: boolean) => void
+  value: boolean | null
+  onChange: (v: boolean | null) => void
 }) {
   return (
     <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
@@ -64,13 +64,19 @@ function Toggle({
         <button
           onClick={() => onChange(true)}
           className={`px-3 py-1 rounded text-xs font-bold transition-colors ${
-            value ? 'bg-red-100 text-red-700' : 'bg-white border border-slate-200 text-slate-400'
+            value === true ? 'bg-red-100 text-red-700 border border-red-300' : 'bg-white border border-slate-200 text-slate-400'
           }`}
         >SI</button>
         <button
+          onClick={() => onChange(null)}
+          className={`px-3 py-1 rounded text-xs font-bold transition-colors ${
+            value === null ? 'bg-slate-200 text-slate-700 border border-slate-400' : 'bg-white border border-slate-200 text-slate-400'
+          }`}
+        >NV</button>
+        <button
           onClick={() => onChange(false)}
           className={`px-3 py-1 rounded text-xs font-bold transition-colors ${
-            !value ? 'bg-green-100 text-green-700' : 'bg-white border border-slate-200 text-slate-400'
+            value === false ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-white border border-slate-200 text-slate-400'
           }`}
         >NO</button>
       </div>
@@ -120,7 +126,7 @@ export default function RedFlagsForm({ onComplete }: Props) {
   const [section, setSection] = useState<Section>('3d5n')
 
   function set(key: keyof RedFlagsData) {
-    return (value: boolean | number) =>
+    return (value: boolean | null | number) =>
       setData(prev => ({ ...prev, [key]: value }))
   }
 
@@ -168,14 +174,14 @@ export default function RedFlagsForm({ onComplete }: Props) {
             <CardTitle>3D/5N — Signos de afectación del tronco del encéfalo</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Toggle label="Disartria" value={data.disartria} onChange={set('disartria') as (v: boolean) => void} />
-            <Toggle label="Disfagia" value={data.disfagia} onChange={set('disfagia') as (v: boolean) => void} />
-            <Toggle label="Diplopia" value={data.diplopia} onChange={set('diplopia') as (v: boolean) => void} />
-            <Toggle label="Discinesia" value={data.discinesia} onChange={set('discinesia') as (v: boolean) => void} />
-            <Toggle label="Drop Attack" value={data.dropAtack} onChange={set('dropAtack') as (v: boolean) => void} />
-            <Toggle label="Nistagmus" value={data.nistagmus} onChange={set('nistagmus') as (v: boolean) => void} />
-            <Toggle label="Nubness / Entumecimiento" value={data.nubness} onChange={set('nubness') as (v: boolean) => void} />
-            <Toggle label="Náuseas" value={data.nauseas} onChange={set('nauseas') as (v: boolean) => void} />
+            <Toggle label="Disartria" value={data.disartria} onChange={set('disartria') } />
+            <Toggle label="Disfagia" value={data.disfagia} onChange={set('disfagia') } />
+            <Toggle label="Diplopia" value={data.diplopia} onChange={set('diplopia') } />
+            <Toggle label="Discinesia" value={data.discinesia} onChange={set('discinesia') } />
+            <Toggle label="Drop Attack" value={data.dropAtack} onChange={set('dropAtack') } />
+            <Toggle label="Nistagmus" value={data.nistagmus} onChange={set('nistagmus') } />
+            <Toggle label="Nubness / Entumecimiento" value={data.nubness} onChange={set('nubness') } />
+            <Toggle label="Náuseas" value={data.nauseas} onChange={set('nauseas') } />
           </CardContent>
         </Card>
       )}
@@ -187,15 +193,15 @@ export default function RedFlagsForm({ onComplete }: Props) {
             <CardTitle>Vascular</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Toggle label="Extension Rotation Test (arteria vertebral y carótida)" value={data.extensionRotationTest} onChange={set('extensionRotationTest') as (v: boolean) => void} />
-            <Toggle label="Coloración roja/azul" value={data.coloracionRojaAzul} onChange={set('coloracionRojaAzul') as (v: boolean) => void} />
-            <Toggle label="Varices visibles dolorosas" value={data.varicesDolorosas} onChange={set('varicesDolorosas') as (v: boolean) => void} />
-            <Toggle label="Aumento de temperatura" value={data.aumentoTemperatura} onChange={set('aumentoTemperatura') as (v: boolean) => void} />
+            <Toggle label="Extension Rotation Test (arteria vertebral y carótida)" value={data.extensionRotationTest} onChange={set('extensionRotationTest') } />
+            <Toggle label="Coloración roja/azul" value={data.coloracionRojaAzul} onChange={set('coloracionRojaAzul') } />
+            <Toggle label="Varices visibles dolorosas" value={data.varicesDolorosas} onChange={set('varicesDolorosas') } />
+            <Toggle label="Aumento de temperatura" value={data.aumentoTemperatura} onChange={set('aumentoTemperatura') } />
             <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider pt-2">Trombosis Venosa Profunda (TVP)</p>
-            <Toggle label="Presencia de material venoso (catéter, marcapasos...)" value={data.materialVenoso} onChange={set('materialVenoso') as (v: boolean) => void} />
-            <Toggle label="Edema unilateral EESS + signo fóvea positivo" value={data.edemaUnilateral} onChange={set('edemaUnilateral') as (v: boolean) => void} />
-            <Toggle label="Dolor localizado en la extremidad superior" value={data.dolorExtremidadSuperior} onChange={set('dolorExtremidadSuperior') as (v: boolean) => void} />
-            <Toggle label="Otro diagnóstico cardiovascular plausible" value={data.otroDiagnosticoCardiovascular} onChange={set('otroDiagnosticoCardiovascular') as (v: boolean) => void} />
+            <Toggle label="Presencia de material venoso (catéter, marcapasos...)" value={data.materialVenoso} onChange={set('materialVenoso') } />
+            <Toggle label="Edema unilateral EESS + signo fóvea positivo" value={data.edemaUnilateral} onChange={set('edemaUnilateral') } />
+            <Toggle label="Dolor localizado en la extremidad superior" value={data.dolorExtremidadSuperior} onChange={set('dolorExtremidadSuperior') } />
+            <Toggle label="Otro diagnóstico cardiovascular plausible" value={data.otroDiagnosticoCardiovascular} onChange={set('otroDiagnosticoCardiovascular') } />
           </CardContent>
         </Card>
       )}
@@ -207,23 +213,23 @@ export default function RedFlagsForm({ onComplete }: Props) {
             <CardTitle>Fractura EESS</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Toggle label="Ya se han descartado fracturas con RX" value={data.fracturaDescartadaRx} onChange={set('fracturaDescartadaRx') as (v: boolean) => void} />
+            <Toggle label="Ya se han descartado fracturas con RX" value={data.fracturaDescartadaRx} onChange={set('fracturaDescartadaRx') } />
             {!data.fracturaDescartadaRx && (
               <>
-                <Toggle label="Antecedente de traumatismo" value={data.antecedenteTraumatismo} onChange={set('antecedenteTraumatismo') as (v: boolean) => void} />
-                <Toggle label="Edad mayor de 50 años" value={data.edadMayor50} onChange={set('edadMayor50') as (v: boolean) => void} />
-                <Toggle label="Diagnóstico de osteoporosis" value={data.osteoporosis} onChange={set('osteoporosis') as (v: boolean) => void} />
-                <Toggle label="El paciente toma corticoides" value={data.corticoides} onChange={set('corticoides') as (v: boolean) => void} />
+                <Toggle label="Antecedente de traumatismo" value={data.antecedenteTraumatismo} onChange={set('antecedenteTraumatismo') } />
+                <Toggle label="Edad mayor de 50 años" value={data.edadMayor50} onChange={set('edadMayor50') } />
+                <Toggle label="Diagnóstico de osteoporosis" value={data.osteoporosis} onChange={set('osteoporosis') } />
+                <Toggle label="El paciente toma corticoides" value={data.corticoides} onChange={set('corticoides') } />
                 {(data.antecedenteTraumatismo || data.osteoporosis) && (
                   <>
                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider pt-2">Signos adicionales</p>
-                    <Toggle label="Dolor intenso que empeora con movimiento pasivo/activo" value={data.dolorIntensoMovimiento} onChange={set('dolorIntensoMovimiento') as (v: boolean) => void} />
-                    <Toggle label="Hinchazón / Inflamación" value={data.hinchazoneInflamacion} onChange={set('hinchazoneInflamacion') as (v: boolean) => void} />
-                    <Toggle label="Limitación de movimiento del hombro" value={data.limitacionMovimientoHombro} onChange={set('limitacionMovimientoHombro') as (v: boolean) => void} />
-                    <Toggle label="Deformidad" value={data.deformidad} onChange={set('deformidad') as (v: boolean) => void} />
-                    <Toggle label="Sensibilidad a la palpación" value={data.sensibilidadPalpacion} onChange={set('sensibilidadPalpacion') as (v: boolean) => void} />
-                    <Toggle label="Hematoma" value={data.hematoma} onChange={set('hematoma') as (v: boolean) => void} />
-                    <Toggle label="Prueba de auscultación del diapasón positiva" value={data.pruebaAuscultacionDiapason} onChange={set('pruebaAuscultacionDiapason') as (v: boolean) => void} />
+                    <Toggle label="Dolor intenso que empeora con movimiento pasivo/activo" value={data.dolorIntensoMovimiento} onChange={set('dolorIntensoMovimiento') } />
+                    <Toggle label="Hinchazón / Inflamación" value={data.hinchazoneInflamacion} onChange={set('hinchazoneInflamacion') } />
+                    <Toggle label="Limitación de movimiento del hombro" value={data.limitacionMovimientoHombro} onChange={set('limitacionMovimientoHombro') } />
+                    <Toggle label="Deformidad" value={data.deformidad} onChange={set('deformidad') } />
+                    <Toggle label="Sensibilidad a la palpación" value={data.sensibilidadPalpacion} onChange={set('sensibilidadPalpacion') } />
+                    <Toggle label="Hematoma" value={data.hematoma} onChange={set('hematoma') } />
+                    <Toggle label="Prueba de auscultación del diapasón positiva" value={data.pruebaAuscultacionDiapason} onChange={set('pruebaAuscultacionDiapason') } />
                   </>
                 )}
               </>
@@ -239,20 +245,20 @@ export default function RedFlagsForm({ onComplete }: Props) {
             <CardTitle>Fracturas Vertebrales — Reglas Canadienses</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Toggle label="Ya se han descartado fracturas con RX" value={data.fracturaVertebralDescartadaRx} onChange={set('fracturaVertebralDescartadaRx') as (v: boolean) => void} />
+            <Toggle label="Ya se han descartado fracturas con RX" value={data.fracturaVertebralDescartadaRx} onChange={set('fracturaVertebralDescartadaRx') } />
             {!data.fracturaVertebralDescartadaRx && (
               <>
-                <Toggle label="Antecedente de traumatismo cabeza/cuello" value={data.antecedenteTraumatismoCuello} onChange={set('antecedenteTraumatismoCuello') as (v: boolean) => void} />
+                <Toggle label="Antecedente de traumatismo cabeza/cuello" value={data.antecedenteTraumatismoCuello} onChange={set('antecedenteTraumatismoCuello') } />
                 <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider pt-2">Factores de alto riesgo</p>
-                <Toggle label="Edad 65 o más" value={data.edad65oMas} onChange={set('edad65oMas') as (v: boolean) => void} />
-                <Toggle label="Mecanismos peligrosos" value={data.mecanismosPeligrosos} onChange={set('mecanismosPeligrosos') as (v: boolean) => void} />
+                <Toggle label="Edad 65 o más" value={data.edad65oMas} onChange={set('edad65oMas') } />
+                <Toggle label="Mecanismos peligrosos" value={data.mecanismosPeligrosos} onChange={set('mecanismosPeligrosos') } />
                 <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider pt-2">Factores de bajo riesgo</p>
-                <Toggle label="Colisión trasera simple" value={data.colisionTrasera} onChange={set('colisionTrasera') as (v: boolean) => void} />
-                <Toggle label="Puede estar sentado durante un tiempo" value={data.puedeEstarSentado} onChange={set('puedeEstarSentado') as (v: boolean) => void} />
-                <Toggle label="Ambulante en todo momento desde el accidente" value={data.ambulanteDesdeAccidente} onChange={set('ambulanteDesdeAccidente') as (v: boolean) => void} />
-                <Toggle label="Retraso en el inicio del dolor de cuello" value={data.retrasoInicioDolor} onChange={set('retrasoInicioDolor') as (v: boolean) => void} />
-                <Toggle label="No signos de sensibilidad en línea media cervical" value={data.noSignosSensibilidadLineaMedia} onChange={set('noSignosSensibilidadLineaMedia') as (v: boolean) => void} />
-                <Toggle label="Paciente NO puede rotar cabeza >45º en alguna dirección" value={data.noPuedeRotarCabeza45} onChange={set('noPuedeRotarCabeza45') as (v: boolean) => void} />
+                <Toggle label="Colisión trasera simple" value={data.colisionTrasera} onChange={set('colisionTrasera') } />
+                <Toggle label="Puede estar sentado durante un tiempo" value={data.puedeEstarSentado} onChange={set('puedeEstarSentado') } />
+                <Toggle label="Ambulante en todo momento desde el accidente" value={data.ambulanteDesdeAccidente} onChange={set('ambulanteDesdeAccidente') } />
+                <Toggle label="Retraso en el inicio del dolor de cuello" value={data.retrasoInicioDolor} onChange={set('retrasoInicioDolor') } />
+                <Toggle label="No signos de sensibilidad en línea media cervical" value={data.noSignosSensibilidadLineaMedia} onChange={set('noSignosSensibilidadLineaMedia') } />
+                <Toggle label="Paciente NO puede rotar cabeza >45º en alguna dirección" value={data.noPuedeRotarCabeza45} onChange={set('noPuedeRotarCabeza45') } />
               </>
             )}
           </CardContent>
@@ -266,12 +272,12 @@ export default function RedFlagsForm({ onComplete }: Props) {
             <CardTitle>Integridad Ligamento Transverso/Alar</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Toggle label="Antecedente de traumatismo cabeza/cuello" value={data.antecedenteTraumatismoCabezaCuello} onChange={set('antecedenteTraumatismoCabezaCuello') as (v: boolean) => void} />
-            <Toggle label="5D o 3N Red Flags presentes" value={data.cincoD3N} onChange={set('cincoD3N') as (v: boolean) => void} />
-            <Toggle label="Síndrome de Down" value={data.sindromeDown} onChange={set('sindromeDown') as (v: boolean) => void} />
-            <Toggle label="Artritis Reumatoide" value={data.artritisReumatoide} onChange={set('artritisReumatoide') as (v: boolean) => void} />
-            <Toggle label="Test de cizallamiento anterior (Lig. Transverso) positivo" value={data.testCizallamientoAnterior} onChange={set('testCizallamientoAnterior') as (v: boolean) => void} />
-            <Toggle label="Test de estrés del ligamento alar positivo" value={data.testEstrésLigamentoAlar} onChange={set('testEstrésLigamentoAlar') as (v: boolean) => void} />
+            <Toggle label="Antecedente de traumatismo cabeza/cuello" value={data.antecedenteTraumatismoCabezaCuello} onChange={set('antecedenteTraumatismoCabezaCuello') } />
+            <Toggle label="5D o 3N Red Flags presentes" value={data.cincoD3N} onChange={set('cincoD3N') } />
+            <Toggle label="Síndrome de Down" value={data.sindromeDown} onChange={set('sindromeDown') } />
+            <Toggle label="Artritis Reumatoide" value={data.artritisReumatoide} onChange={set('artritisReumatoide') } />
+            <Toggle label="Test de cizallamiento anterior (Lig. Transverso) positivo" value={data.testCizallamientoAnterior} onChange={set('testCizallamientoAnterior') } />
+            <Toggle label="Test de estrés del ligamento alar positivo" value={data.testEstrésLigamentoAlar} onChange={set('testEstrésLigamentoAlar') } />
           </CardContent>
         </Card>
       )}
@@ -283,7 +289,7 @@ export default function RedFlagsForm({ onComplete }: Props) {
             <CardTitle>Tumor / Cáncer</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Toggle label="Sintomatología relacionada con tumor/cáncer" value={data.sintomatologiaTumor} onChange={set('sintomatologiaTumor') as (v: boolean) => void} />
+            <Toggle label="Sintomatología relacionada con tumor/cáncer" value={data.sintomatologiaTumor} onChange={set('sintomatologiaTumor') } />
           </CardContent>
         </Card>
       )}
@@ -295,7 +301,7 @@ export default function RedFlagsForm({ onComplete }: Props) {
             <CardTitle>Infección</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Toggle label="Sintomatología relacionada con infección" value={data.sintomatologiaInfeccion} onChange={set('sintomatologiaInfeccion') as (v: boolean) => void} />
+            <Toggle label="Sintomatología relacionada con infección" value={data.sintomatologiaInfeccion} onChange={set('sintomatologiaInfeccion') } />
           </CardContent>
         </Card>
       )}
@@ -307,8 +313,8 @@ export default function RedFlagsForm({ onComplete }: Props) {
             <CardTitle>Reuma</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Toggle label="Afectaciones cutáneas o membrana mucosas" value={data.afectacionesCutaneas} onChange={set('afectacionesCutaneas') as (v: boolean) => void} />
-            <Toggle label="Poliartralgia" value={data.poliartralgia} onChange={set('poliartralgia') as (v: boolean) => void} />
+            <Toggle label="Afectaciones cutáneas o membrana mucosas" value={data.afectacionesCutaneas} onChange={set('afectacionesCutaneas') } />
+            <Toggle label="Poliartralgia" value={data.poliartralgia} onChange={set('poliartralgia') } />
           </CardContent>
         </Card>
       )}
@@ -320,31 +326,31 @@ export default function RedFlagsForm({ onComplete }: Props) {
             <CardTitle>Neural Grave</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Toggle label="Problemas motores" value={data.problemasMotores} onChange={set('problemasMotores') as (v: boolean) => void} />
-            <Toggle label="Problemas sensitivos" value={data.problemasSensitivos} onChange={set('problemasSensitivos') as (v: boolean) => void} />
-            <Toggle label="Problemas cognitivos" value={data.problemasCognitivos} onChange={set('problemasCognitivos') as (v: boolean) => void} />
+            <Toggle label="Problemas motores" value={data.problemasMotores} onChange={set('problemasMotores') } />
+            <Toggle label="Problemas sensitivos" value={data.problemasSensitivos} onChange={set('problemasSensitivos') } />
+            <Toggle label="Problemas cognitivos" value={data.problemasCognitivos} onChange={set('problemasCognitivos') } />
 
             {(data.problemasMotores || data.problemasSensitivos || data.problemasCognitivos) && (
               <>
                 <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider pt-2">Pares Craneales</p>
-                <Toggle label="Nervio olfatorio (I par craneal)" value={data.nervioOlfatorio} onChange={set('nervioOlfatorio') as (v: boolean) => void} />
-                <Toggle label="Agudeza visual (II par craneal)" value={data.agudezaVisual} onChange={set('agudezaVisual') as (v: boolean) => void} />
-                <Toggle label="Cuadrantes visuales" value={data.cuadrantesVisuales} onChange={set('cuadrantesVisuales') as (v: boolean) => void} />
-                <Toggle label="Función refleja" value={data.funcionRefleja} onChange={set('funcionRefleja') as (v: boolean) => void} />
-                <Toggle label="Evaluación de la pupila (III, IV, VI par)" value={data.evaluacionPupila} onChange={set('evaluacionPupila') as (v: boolean) => void} />
-                <Toggle label="Evaluación movimiento ocular" value={data.evaluacionMovimientoOcular} onChange={set('evaluacionMovimientoOcular') as (v: boolean) => void} />
-                <Toggle label="Evaluación sensorial (V par craneal)" value={data.evaluacionSensorial} onChange={set('evaluacionSensorial') as (v: boolean) => void} />
-                <Toggle label="Evaluación reflejo corneal" value={data.evaluacionReflejoCorneal} onChange={set('evaluacionReflejoCorneal') as (v: boolean) => void} />
-                <Toggle label="Evaluación motora" value={data.evaluacionMotora} onChange={set('evaluacionMotora') as (v: boolean) => void} />
-                <Toggle label="Evaluación reflejo de la mandíbula" value={data.evaluacionReflejoMandibula} onChange={set('evaluacionReflejoMandibula') as (v: boolean) => void} />
-                <Toggle label="Nervio facial (VII par craneal)" value={data.nervioFacial} onChange={set('nervioFacial') as (v: boolean) => void} />
-                <Toggle label="Evaluación auditiva (VIII par craneal)" value={data.evaluacionAuditiva} onChange={set('evaluacionAuditiva') as (v: boolean) => void} />
-                <Toggle label="Prueba de Rinne" value={data.pruebaRinne} onChange={set('pruebaRinne') as (v: boolean) => void} />
-                <Toggle label="Prueba de Weber" value={data.pruebaWeber} onChange={set('pruebaWeber') as (v: boolean) => void} />
-                <Toggle label="Evaluación general (IX, X par craneal)" value={data.evaluacionGeneral} onChange={set('evaluacionGeneral') as (v: boolean) => void} />
-                <Toggle label="Evaluación reflejo nauseoso" value={data.evaluacionReflejoNauseoso} onChange={set('evaluacionReflejoNauseoso') as (v: boolean) => void} />
-                <Toggle label="Nervio accesorio/espinal (XI par craneal)" value={data.nervioAccesorio} onChange={set('nervioAccesorio') as (v: boolean) => void} />
-                <Toggle label="Nervio hipogloso (XII par craneal)" value={data.nervioHipogloso} onChange={set('nervioHipogloso') as (v: boolean) => void} />
+                <Toggle label="Nervio olfatorio (I par craneal)" value={data.nervioOlfatorio} onChange={set('nervioOlfatorio') } />
+                <Toggle label="Agudeza visual (II par craneal)" value={data.agudezaVisual} onChange={set('agudezaVisual') } />
+                <Toggle label="Cuadrantes visuales" value={data.cuadrantesVisuales} onChange={set('cuadrantesVisuales') } />
+                <Toggle label="Función refleja" value={data.funcionRefleja} onChange={set('funcionRefleja') } />
+                <Toggle label="Evaluación de la pupila (III, IV, VI par)" value={data.evaluacionPupila} onChange={set('evaluacionPupila') } />
+                <Toggle label="Evaluación movimiento ocular" value={data.evaluacionMovimientoOcular} onChange={set('evaluacionMovimientoOcular') } />
+                <Toggle label="Evaluación sensorial (V par craneal)" value={data.evaluacionSensorial} onChange={set('evaluacionSensorial') } />
+                <Toggle label="Evaluación reflejo corneal" value={data.evaluacionReflejoCorneal} onChange={set('evaluacionReflejoCorneal') } />
+                <Toggle label="Evaluación motora" value={data.evaluacionMotora} onChange={set('evaluacionMotora') } />
+                <Toggle label="Evaluación reflejo de la mandíbula" value={data.evaluacionReflejoMandibula} onChange={set('evaluacionReflejoMandibula') } />
+                <Toggle label="Nervio facial (VII par craneal)" value={data.nervioFacial} onChange={set('nervioFacial') } />
+                <Toggle label="Evaluación auditiva (VIII par craneal)" value={data.evaluacionAuditiva} onChange={set('evaluacionAuditiva') } />
+                <Toggle label="Prueba de Rinne" value={data.pruebaRinne} onChange={set('pruebaRinne') } />
+                <Toggle label="Prueba de Weber" value={data.pruebaWeber} onChange={set('pruebaWeber') } />
+                <Toggle label="Evaluación general (IX, X par craneal)" value={data.evaluacionGeneral} onChange={set('evaluacionGeneral') } />
+                <Toggle label="Evaluación reflejo nauseoso" value={data.evaluacionReflejoNauseoso} onChange={set('evaluacionReflejoNauseoso') } />
+                <Toggle label="Nervio accesorio/espinal (XI par craneal)" value={data.nervioAccesorio} onChange={set('nervioAccesorio') } />
+                <Toggle label="Nervio hipogloso (XII par craneal)" value={data.nervioHipogloso} onChange={set('nervioHipogloso') } />
 
                 <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider pt-2">Escala Tinetti</p>
                 <ScoreInput label="Marcha" value={data.marchaScore} max={12} onChange={set('marchaScore') as (v: number) => void} />
