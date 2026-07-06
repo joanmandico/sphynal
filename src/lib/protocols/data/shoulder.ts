@@ -424,7 +424,7 @@ export const shoulderProtocol: Protocol = {
         },
       ],
     },
-    {
+{
       id: 'point_pain',
       title: 'Dolor a punta de dedo',
       showIf: { field: 'branchPointPain', value: true },
@@ -433,14 +433,14 @@ export const shoulderProtocol: Protocol = {
           id: 'instability',
           title: 'Inestabilidad glenohumeral',
           fields: [
-            { id: 'apprehension', label: 'Aprehensión / sensación de inestabilidad', type: 'boolean' },
-            { id: 'apprehensionAnterior', label: 'Test aprehensión/manivela — inestabilidad ANTERIOR', type: 'boolean', showIf: { field: 'apprehension', value: true } },
-            { id: 'relocationTest', label: 'Test de recolocación — inestabilidad ANTERIOR', type: 'boolean', showIf: { field: 'apprehension', value: true } },
-            { id: 'surpriseTest', label: 'Test liberación/sorpresa — inestabilidad ANTERIOR', type: 'boolean', showIf: { field: 'apprehension', value: true } },
-            { id: 'sulcusSign', label: 'Sulcus Test — inestabilidad INFERIOR', sublabel: 'Fijamos codo, traccionamos brazo. (+) dislocación hombro', type: 'boolean', showIf: { field: 'apprehension', value: true } },
-            { id: 'gageyTest', label: 'Gagey Test — inestabilidad INFERIOR', sublabel: 'Fijamos clavícula, ABD hombro desde codo. (+) si ABD >105º', type: 'boolean', showIf: { field: 'apprehension', value: true } },
+            { id: 'apprehension', label: 'Aprehensión / sensación de inestabilidad por parte del paciente', type: 'boolean' },
+            { id: 'apprehensionAnterior', label: 'Aprehension Shoulder Test / Anterior Shoulder Dislocation', sublabel: 'Hombro ABD y RE. Forzar la RE. (+) dolor cara anterior → impingement subacromial / dolor posterior → impingement glenoideo interno posterosuperior', type: 'boolean', showIf: { field: 'apprehension', value: true } },
+            { id: 'surpriseTest', label: 'Shoulder Release / Surprise Test', sublabel: 'Brazo ABD, flex codo y RE. Compresión hacia posterior y dejar la compresión. (+) dolor y desplazamiento anterior cabeza húmero', type: 'boolean', showIf: { field: 'apprehension', value: true } },
+            { id: 'relocationTest', label: 'Relocation Test', sublabel: 'Recolocación de la cabeza humeral. (+) alivio del dolor anterior', type: 'boolean', showIf: { field: 'apprehension', value: true } },
+            { id: 'sulcusSign', label: 'Sulcus Test — inestabilidad INFERIOR', sublabel: 'Paciente de pie. Fijamos desde articulación del codo y traccionamos el brazo. (+) dislocación hombro = inestabilidad inferior o laxitud glenohumeral', type: 'boolean', showIf: { field: 'apprehension', value: true } },
+            { id: 'gageyTest', label: 'Gagey Test — inestabilidad INFERIOR', sublabel: 'Paciente sentado. Fijamos clavícula. ABD hombro cogiendo desde codo. (+) si ABD excede 105º', type: 'boolean', showIf: { field: 'apprehension', value: true } },
             { id: 'jerkTest', label: 'Jerk Test — inestabilidad POSTERIOR', type: 'boolean', showIf: { field: 'apprehension', value: true } },
-            { id: 'posteriorImpingement', label: 'Impingement posterointerno', sublabel: 'Pinchazo zona posterosuperior en 90-110º ABD + ligera EXT y máxima RE', type: 'boolean', showIf: { field: 'apprehension', value: true } },
+            { id: 'posteriorImpingement', label: 'Impingement posterointerno', sublabel: 'Pinchazo zona posterosuperior al realizar 90-110º ABD + ligera EXT y máxima RE', type: 'boolean', showIf: { field: 'apprehension', value: true } },
           ],
         },
         {
@@ -450,7 +450,21 @@ export const shoulderProtocol: Protocol = {
           fields: [
             { id: 'instabilityTUBS', label: 'TUBS', sublabel: 'Traumático / Unilateral / Bankart / IQ anterior', type: 'boolean' },
             { id: 'instabilityAMBRI', label: 'AMBRI', sublabel: 'Atraumático / Multidireccional / Bilateral / Rehab / Inferior', type: 'boolean' },
-            { id: 'instabilityAIOS', label: 'AIOS (GIRD/lanzadores)', sublabel: 'Suma RI+RE <180º o pérdida ≥20º RI + Test aducción horizontal con fijación escapular', type: 'boolean' },
+            { id: 'instabilityAIOS', label: 'AIOS (GIRD/lanzadores)', sublabel: 'Suma RI+RE <180º o pérdida ≥20º de RI + Test de aducción horizontal con fijación escapular', type: 'boolean' },
+          ],
+        },
+        {
+          id: 'frozen_shoulder_dpd',
+          title: 'Hombro congelado',
+          fields: [
+            { id: 'frozenLess50ExternalRotation', label: 'Menos RE que en contralateral / menos del 50% de RE', type: 'boolean' },
+            { id: 'frozenLess30ExternalRotation', label: 'Menos del 30% de rotación externa (60º glenohumeral)', type: 'boolean' },
+            { id: 'frozenPainForcedER', label: 'Dolor en rotación externa forzada', type: 'boolean' },
+            { id: 'frozenLessHorizontalAdduction', label: 'Menos aducción horizontal (20º glenohumeral)', type: 'boolean' },
+            { id: 'frozenLessInternalRotation', label: 'Menos rotación medial/interna (110º glenohumeral)', type: 'boolean' },
+            { id: 'frozenLessFlexion', label: 'Menos extensión glenohumeral', type: 'boolean' },
+            { id: 'coracoidPainTest', label: 'Coracoid Pain Test positivo', sublabel: 'Coracoides tiene 3+ puntos más de dolor que AC y zona subacromial', type: 'boolean' },
+            { id: 'age60Plus', label: 'Paciente mayor de 60 años', sublabel: '≥60 años → posible artritis (RMN) / <60 años → hombro congelado (ECO)', type: 'boolean' },
           ],
         },
         {
@@ -461,19 +475,29 @@ export const shoulderProtocol: Protocol = {
             { id: 'acCrossbodyAdduction', label: 'Cross Body Adduction Test', sublabel: 'ADH horizontal pasiva. (+) dolor en articulación AC', type: 'boolean' },
             { id: 'acResistedExtension', label: 'AC Resisted Extension Test', sublabel: 'Flexión brazo con RI a 90º. Resistimos ADD. (+) dolor en AC', type: 'boolean' },
             { id: 'acOBrien', label: "O'Brien / Active Compression Test", sublabel: '90º flex + 10-15º ADD + RI y luego RE. (+) dolor en RI, alivia en RE', type: 'boolean' },
-            { id: 'acPaxino', label: "Paxino's Sign", sublabel: 'Pinzar acromion desde posterior y anterior. Comprimir. (+) genera dolor', type: 'boolean' },
+            { id: 'acPaxino', label: "Paxino's Sign", sublabel: 'Pinzar acromion desde posterior y anterior. Comprimir. (+) genera dolor. Si negativo → Hawkins Kennedy', type: 'boolean' },
             { id: 'acHawkins', label: 'Hawkins Kennedy Test (Krill)', sublabel: 'Si Paxino negativo. Brazo 90º flex + RI pasiva. (+) dolor en AC', type: 'boolean' },
             { id: 'acTraumatic', label: '¿Lesión traumática?', type: 'boolean' },
-            { id: 'acKeySign', label: 'Signo de la tecla (traumática)', sublabel: 'Clasificación Rockwood: I-II cabestrillo / III-VI valorar IQ', type: 'boolean', showIf: { field: 'acTraumatic', value: true } },
+            { id: 'acKeySign', label: 'Signo de la tecla', sublabel: 'Clasificación Rockwood: I-II → cabestrillo y reposo / III-VI → valorar IQ', type: 'boolean', showIf: { field: 'acTraumatic', value: true } },
           ],
         },
         {
           id: 'subacromial',
           title: 'Muscular / Tendinoso / Subacromial — Manguito rotadores',
           fields: [
-            { id: 'neerTest', label: 'Neer Test', sublabel: 'Fijamos escápula desde posterior, flex máxima pasiva. (+) dolor en AC', type: 'boolean' },
-            { id: 'hawkinsKennedy', label: 'Hawkins-Kennedy Test', sublabel: 'Brazo 90º flex + RI pasiva. (+) dolor', type: 'boolean' },
-            { id: 'painfulArcSign', label: 'Painful Arc Syndrome', sublabel: 'ABD hasta final del recorrido. Dolor 60-120º = glenohumeral / 170-180º = AC', type: 'boolean' },
+            { id: 'neerTest', label: 'Neer Test', sublabel: 'Fijamos escápula desde posterior. Flex máxima pasiva del brazo. (+) dolor en AC', type: 'boolean' },
+            { id: 'hawkinsKennedy', label: 'Hawkins-Kennedy Test', sublabel: 'Brazo 90º flex + codo. Pasar brazo proximal por debajo y presión hombro contra. RI pasiva. (+) dolor en AC', type: 'boolean' },
+            { id: 'painfulArcSign', label: 'Painful Arc Syndrome', sublabel: 'ABD palmas al frente hasta final del recorrido. Dolor 45-60º = glenohumeral / 170-180º = AC', type: 'boolean' },
+          ],
+        },
+        {
+          id: 'biceps_bursitis',
+          title: 'Tenosinovitis / Inestabilidad cabeza larga bíceps / Bursitis',
+          description: 'Valorar si subacromial negativo → ECO',
+          fields: [
+            { id: 'bicepsTendinopathy', label: 'Tenosinovitis cabeza larga bíceps', sublabel: 'Sin afectación subescapular / Con afectación subescapular', type: 'boolean' },
+            { id: 'bicepsInstability', label: 'Inestabilidad cabeza larga bíceps', type: 'boolean' },
+            { id: 'bursitis', label: 'Bursitis', type: 'boolean' },
           ],
         },
         {
@@ -487,9 +511,18 @@ export const shoulderProtocol: Protocol = {
             { id: 'compressionRotationTest', label: 'Compression Rotation Test', sublabel: '90º ABD. Compresión + RE y RI pasiva. (+) dolor o chasquido', type: 'boolean', showIf: { field: 'abdHorizontalPainful', value: true } },
             { id: 'dynamicLabralShearTest', label: 'Dynamic Labral Shear Test', sublabel: 'Presión posterior hacia anterior. Flex pasiva 90º a 150º. (+) reproduce dolor', type: 'boolean', showIf: { field: 'abdHorizontalPainful', value: true } },
             { id: 'passiveCompressionTest', label: 'Passive Compression Test', sublabel: 'DL. Fijamos hombro desde AC. RE + 30º ABD + compresión + ext. (+) dolor o chasquido', type: 'boolean', showIf: { field: 'abdHorizontalPainful', value: true } },
+            { id: 'jerkTestSlap', label: 'Jerk Test', type: 'boolean', showIf: { field: 'abdHorizontalPainful', value: true } },
             { id: 'yergasonTest', label: 'Yergason Test', type: 'boolean', showIf: { field: 'abdHorizontalPainful', value: true } },
             { id: 'bicepsLoadTest', label: 'Biceps Load Test I y II', type: 'boolean', showIf: { field: 'abdHorizontalPainful', value: true } },
             { id: 'passiveDistractionTest', label: 'Passive Distraction Test', type: 'boolean', showIf: { field: 'abdHorizontalPainful', value: true } },
+          ],
+        },
+        {
+          id: 'reactive_tendinopathy',
+          title: 'Tendinopatía reactiva',
+          description: 'Si SLAP negativo → ECO. Mejora con trabajo activo (isométricos), progresión de cargas, ondas de choque e infiltración',
+          fields: [
+            { id: 'reactiveTendinopathy', label: 'Tendinopatía reactiva', type: 'boolean' },
           ],
         },
         {
@@ -497,8 +530,8 @@ export const shoulderProtocol: Protocol = {
           title: 'Neuropatía / Sensibilización central',
           fields: [
             { id: 'supraspinatusNeuropathy', label: 'Neuropatía nervio supraescapular', sublabel: 'Falta fuerza ABD/RE + atrofia supraespinoso e infraespinoso → RMN', type: 'boolean' },
-            { id: 'axillaryNeuropathy', label: 'Neuropatía nervio axilar', sublabel: 'Signo retraso extensión deltoides + pérdida contorno hombro → RMN', type: 'boolean' },
-            { id: 'psychosocialFactors', label: 'Factores psicosociales / Sensibilización central', sublabel: 'Derivar especialista indicado', type: 'boolean' },
+            { id: 'axillaryNeuropathy', label: 'Neuropatía nervio axilar', sublabel: 'Signo de retraso en extensión deltoides + pérdida de contorno del hombro (atrofia deltoides) → RMN', type: 'boolean' },
+            { id: 'psychosocialFactors', label: 'Factores psicosociales / Sensibilización central', sublabel: 'SÍ → Derivar especialista indicado / NO → Revisar banderas rojas → Derivar médico', type: 'boolean' },
           ],
         },
       ],
