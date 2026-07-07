@@ -156,6 +156,21 @@ export const cervicalDataSchema = z.object({
   bursitis: booleanField,
   jerkTestSlap: booleanField,
   reactiveTendinopathy: booleanField,
+  acOsteoarthritis: booleanField,
+  scPainOnPalpation: booleanField,
+  scSwelling: booleanField,
+  scCrepitus: booleanField,
+  ghRomReduction: booleanField,
+  ghImprovesWithMobilization: booleanField,
+  abnormalScapulohumeral: booleanField,
+  satTest: booleanField,
+  srtTest: booleanField,
+  isrtTest: booleanField,
+  spineImprovesWithMobilization: booleanField,
+  spineLocalPain: booleanField,
+  supineFlexionResistanceTest: booleanField,
+  resistedSupinationERTest: booleanField,
+  labralTensionTest: booleanField,
 })
 
 export type ShoulderData = z.infer<typeof shoulderDataSchema>
