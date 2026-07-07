@@ -171,6 +171,13 @@ export const cervicalDataSchema = z.object({
   supineFlexionResistanceTest: booleanField,
   resistedSupinationERTest: booleanField,
   labralTensionTest: booleanField,
+  scTraumatic: booleanField,
+  scLuxation: booleanField,
+  scFracture: booleanField,
+  scSoftTissue: booleanField,
+  scArtrosis: booleanField,
+  scRheumatoid: booleanField,
+  scSubluxation: booleanField,
 })
 
 export type ShoulderData = z.infer<typeof shoulderDataSchema>

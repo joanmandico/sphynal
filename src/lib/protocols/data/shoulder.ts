@@ -479,17 +479,21 @@ export const shoulderProtocol: Protocol = {
             { id: 'acHawkins', label: 'Hawkins Kennedy Test (Krill)', sublabel: 'Si Paxino negativo. Brazo 90º flex + RI pasiva. (+) dolor en AC', type: 'boolean' },
             { id: 'acTraumatic', label: '¿Lesión traumática?', type: 'boolean' },
             { id: 'acKeySign', label: 'Signo de la tecla', sublabel: 'Clasificación Rockwood: I-II → cabestrillo y reposo / III-VI → valorar IQ', type: 'boolean', showIf: { field: 'acTraumatic', value: true } },
-            { id: 'acOsteoarthritis', label: 'Osteoartritis', sublabel: 'Presencia de rubor, calor, engrosamiento óseo, movilidad anómala, crepitaciones', type: 'boolean', showIf: { field: 'acTraumatic', value: false } },
+            { id: 'acOsteoarthritis', label: 'Osteoartritis → ECO', sublabel: 'Dolor en interlinea a la palpación / Dolor al movilizar la art. AC', type: 'boolean', showIf: { field: 'acTraumatic', value: false } },
           ],
         },
-        {
+       {
           id: 'sternoclavicular',
           title: 'Articulación esternoclavicular',
-          description: 'Valorar si articulación AC negativa',
           fields: [
             { id: 'scPainOnPalpation', label: 'Dolor a punta de dedo en articulación EC o parte superior', sublabel: 'Musculatura del cuello anterior y lateral del mismo lado', type: 'boolean' },
-            { id: 'scSwelling', label: 'Hinchazón o deformidad articulación esternoclavicular', type: 'boolean' },
-            { id: 'scCrepitus', label: 'Crepitación al movimiento', type: 'boolean' },
+            { id: 'scTraumatic', label: '¿Lesión traumática?', type: 'boolean' },
+            { id: 'scLuxation', label: 'Luxación', type: 'boolean', showIf: { field: 'scTraumatic', value: true } },
+            { id: 'scFracture', label: 'Fractura', type: 'boolean', showIf: { field: 'scTraumatic', value: true } },
+            { id: 'scSoftTissue', label: 'Lesiones de partes blandas', type: 'boolean', showIf: { field: 'scTraumatic', value: true } },
+            { id: 'scArtrosis', label: 'Artrosis', sublabel: '>60 años / Factores de riesgo: menopausia, IQ, trabajos manuales con carga de peso', type: 'boolean', showIf: { field: 'scTraumatic', value: false } },
+            { id: 'scRheumatoid', label: 'Artritis reumatoide / Artritis séptica', sublabel: 'Infecciones, inmunodeficiencia, IQ', type: 'boolean', showIf: { field: 'scTraumatic', value: false } },
+            { id: 'scSubluxation', label: 'Subluxación atraumática', sublabel: 'De 10 a 30 años / Asociada a hiperlaxitud / Aparece al solicitar elevación de la ES / Pruebas complementarias normales', type: 'boolean', showIf: { field: 'scTraumatic', value: false } },
           ],
         },
        {
@@ -505,6 +509,7 @@ export const shoulderProtocol: Protocol = {
           id: 'glenohumeral',
           title: 'Articulación glenohumeral',
           description: 'Disminución ROM de flexión y/o ABD — mejora con movilizaciones GH → ECO',
+          showIf: { field: 'neerTest', value: true },
           fields: [
             { id: 'ghRomReduction', label: 'Disminución ROM flexión y/o ABD', type: 'boolean' },
             { id: 'ghImprovesWithMobilization', label: 'Mejora con movilizaciones glenohumerales', type: 'boolean', showIf: { field: 'ghRomReduction', value: true } },
@@ -514,6 +519,7 @@ export const shoulderProtocol: Protocol = {
           id: 'scapular_dysfunction',
           title: 'Disfunción escapular',
           description: 'Movimiento escapulohumeral anormal',
+          showIf: { field: 'neerTest', value: true },
           fields: [
             { id: 'abnormalScapulohumeral', label: 'Movimiento escapulohumeral anormal', type: 'boolean' },
             { id: 'satTest', label: 'SAT — Scapular Assistance Test', sublabel: 'Fijamos borde inferior escápula y clavícula, asistimos en flexión. (+) mejora movilidad o síntomas', type: 'boolean', showIf: { field: 'abnormalScapulohumeral', value: true } },
@@ -525,6 +531,7 @@ export const shoulderProtocol: Protocol = {
           id: 'spine_cervical_dorsal',
           title: 'Raquis (cervical/dorsal)',
           description: 'Movilizaciones intervertebrales pasivas accesorias (PAIVMs) y movilizaciones pasivas raquis mejoran sintomatología → PGM',
+           showIf: { field: 'neerTest', value: true },
           fields: [
             { id: 'spineImprovesWithMobilization', label: 'Síntomas mejoran con movilizaciones pasivas cervicales/dorsales', type: 'boolean' },
             { id: 'spineLocalPain', label: 'Dolor local en raquis cervical o dorsal', type: 'boolean' },
@@ -535,8 +542,8 @@ export const shoulderProtocol: Protocol = {
           title: 'Tenosinovitis / Inestabilidad cabeza larga bíceps / Bursitis',
           description: 'Valorar si subacromial negativo → ECO',
           fields: [
-            { id: 'bicepsTendinopathy', label: 'Tenosinovitis cabeza larga bíceps', sublabel: 'Sin afectación subescapular / Con afectación subescapular', type: 'boolean' },
-            { id: 'bicepsInstability', label: 'Inestabilidad cabeza larga bíceps', type: 'boolean' },
+            { id: 'bicepsTendinopathy', label: 'Tenosinovitis cabeza larga bíceps', type: 'boolean' },
+            { id: 'bicepsInstability', label: 'Inestabilidad cabeza larga bíceps', sublabel: 'Sin afectación subescapular / Con afectación subescapular', type: 'boolean' },
             { id: 'bursitis', label: 'Bursitis', type: 'boolean' },
           ],
         },
