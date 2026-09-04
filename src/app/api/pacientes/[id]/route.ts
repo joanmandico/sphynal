@@ -12,7 +12,7 @@ export async function PUT(req: NextRequest, { params }: Props) {
   try {
     const { id } = await params
     const body = await req.json()
-    const { firstName, lastName, birthDate, occupation, sport } = body
+    const { firstName, lastName, birthDate, occupation, sport, phone, dni, address, email } = body
 
     if (!firstName || !lastName || !birthDate) {
       return NextResponse.json(
@@ -24,12 +24,16 @@ export async function PUT(req: NextRequest, { params }: Props) {
     const patient = await prisma.patient.update({
       where: { id },
       data: {
-        firstName,
-        lastName,
-        birthDate: new Date(birthDate),
-        occupation: occupation || null,
-        sport: sport || null,
-      },
+  firstName,
+  lastName,
+  birthDate: new Date(birthDate),
+  occupation: occupation || null,
+  sport: sport || null,
+  phone: phone || null,
+  dni: dni || null,
+  address: address || null,
+  email: email || null,
+},
     })
 
     return NextResponse.json(patient)
