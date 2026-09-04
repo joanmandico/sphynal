@@ -7,10 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// A clinic can have multiple physiotherapists
 model Clinic {
   id        String   @id @default(cuid())
   name      String
+  address   String?
+  phone     String?
+  email     String?
+  nif       String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -18,22 +21,23 @@ model Clinic {
   patients  Patient[]
 }
 
-// Users: admin (clinic) or physio
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
-  role      Role     @default(PHYSIO)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  episodes    Episode[]
+  id                String   @id @default(cuid())
+  email             String   @unique
+  name              String
+  role              Role     @default(PHYSIO)
+  collegiateNumber  String?
+  specialty         String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
-  clinicId  String
-  clinic    Clinic   @relation(fields: [clinicId], references: [id])
+  clinicId          String
+  clinic            Clinic   @relation(fields: [clinicId], references: [id])
 
-  patients  Patient[]
-  evaluations Evaluation[]
-  notes     ClinicalNote[]
+  patients          Patient[]
+  evaluations       Evaluation[]
+  notes             ClinicalNote[]
+  episodes          Episode[]
 }
 
 enum Role {
@@ -41,7 +45,6 @@ enum Role {
   PHYSIO
 }
 
-// Patients belong to a clinic and are managed by a physio
 model Patient {
   id          String   @id @default(cuid())
   firstName   String
@@ -49,9 +52,12 @@ model Patient {
   birthDate   DateTime
   occupation  String?
   sport       String?
+  phone       String?
+  dni         String?
+  address     String?
+  email       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  episodes    Episode[]
 
   clinicId    String
   clinic      Clinic   @relation(fields: [clinicId], references: [id])
@@ -60,20 +66,21 @@ model Patient {
   user        User     @relation(fields: [userId], references: [id])
 
   evaluations Evaluation[]
-  notes     ClinicalNote[]
+  notes       ClinicalNote[]
+  episodes    Episode[]
 }
 
-// One evaluation per clinical session
 model Evaluation {
   id          String   @id @default(cuid())
   date        DateTime @default(now())
-  bodyArea    String   // e.g. "shoulder", "spine"
-  data        Json     // stores all clinical test results
-  diagnosis   String?  // generated diagnosis
+  bodyArea    String
+  data        Json
+  diagnosis   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   episodeId   String?
-episode     Episode? @relation(fields: [episodeId], references: [id])
+
+  episode     Episode? @relation(fields: [episodeId], references: [id])
 
   patientId   String
   patient     Patient  @relation(fields: [patientId], references: [id])
@@ -82,7 +89,6 @@ episode     Episode? @relation(fields: [episodeId], references: [id])
   user        User     @relation(fields: [userId], references: [id])
 }
 
-// Clinical notes per patient session
 model ClinicalNote {
   id        String   @id @default(cuid())
   content   String
@@ -95,23 +101,23 @@ model ClinicalNote {
   userId    String
   user      User     @relation(fields: [userId], references: [id])
 }
-// Clinical episode — groups evaluations of the same pathology
+
 model Episode {
-  id          String   @id @default(cuid())
+  id          String        @id @default(cuid())
   name        String
   status      EpisodeStatus @default(OPEN)
-  regions     String[] // e.g. ["Hombro", "Cervical"]
-  openedAt    DateTime @default(now())
+  regions     String[]
+  openedAt    DateTime      @default(now())
   closedAt    DateTime?
   notes       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
   patientId   String
-  patient     Patient  @relation(fields: [patientId], references: [id])
+  patient     Patient       @relation(fields: [patientId], references: [id])
 
   userId      String
-  user        User     @relation(fields: [userId], references: [id])
+  user        User          @relation(fields: [userId], references: [id])
 
   evaluations Evaluation[]
 }
