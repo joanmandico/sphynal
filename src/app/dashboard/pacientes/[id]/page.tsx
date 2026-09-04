@@ -62,6 +62,12 @@ export default async function PacienteDetailPage({ params }: Props) {
             Editar
           </Link>
           <Link
+            href={`/dashboard/pacientes/${patient.id}/consentimiento`}
+            className="border border-primary text-primary px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-primary/5 transition-colors"
+          >
+            Consentimiento informado
+          </Link>
+          <Link
             href={`/dashboard/pacientes/${patient.id}/evaluacion/nueva`}
             className="bg-primary text-on-primary px-5 py-2.5 rounded-lg text-sm font-bold hover:opacity-90 transition-opacity shadow-sm"
           >

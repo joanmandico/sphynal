@@ -8,85 +8,73 @@ datasource db {
 }
 
 model Clinic {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   address   String?
-  phone     String?
   email     String?
   nif       String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  users     User[]
+  phone     String?
   patients  Patient[]
+  users     User[]
 }
 
 model User {
-  id                String   @id @default(cuid())
-  email             String   @unique
-  name              String
-  role              Role     @default(PHYSIO)
-  collegiateNumber  String?
-  specialty         String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  clinicId          String
-  clinic            Clinic   @relation(fields: [clinicId], references: [id])
-
-  patients          Patient[]
-  evaluations       Evaluation[]
-  notes             ClinicalNote[]
-  episodes          Episode[]
-}
-
-enum Role {
-  ADMIN
-  PHYSIO
+  id               String         @id @default(cuid())
+  email            String         @unique
+  name             String
+  role             Role           @default(PHYSIO)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  clinicId         String
+  collegiateNumber String?
+  specialty        String?
+  notes            ClinicalNote[]
+  consents         Consent[]
+  episodes         Episode[]
+  evaluations      Evaluation[]
+  patients         Patient[]
+  clinic           Clinic         @relation(fields: [clinicId], references: [id])
 }
 
 model Patient {
-  id          String   @id @default(cuid())
+  id          String         @id @default(cuid())
   firstName   String
   lastName    String
   birthDate   DateTime
   occupation  String?
   sport       String?
-  phone       String?
-  dni         String?
-  address     String?
-  email       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
   clinicId    String
-  clinic      Clinic   @relation(fields: [clinicId], references: [id])
-
   userId      String
-  user        User     @relation(fields: [userId], references: [id])
-
-  evaluations Evaluation[]
+  address     String?
+  dni         String?
+  email       String?
+  phone       String?
   notes       ClinicalNote[]
+  consents    Consent[]
   episodes    Episode[]
+  evaluations Evaluation[]
+  clinic      Clinic         @relation(fields: [clinicId], references: [id])
+  user        User           @relation(fields: [userId], references: [id])
 }
 
 model Evaluation {
-  id          String   @id @default(cuid())
-  date        DateTime @default(now())
-  bodyArea    String
-  data        Json
-  diagnosis   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  episodeId   String?
-
-  episode     Episode? @relation(fields: [episodeId], references: [id])
-
-  patientId   String
-  patient     Patient  @relation(fields: [patientId], references: [id])
-
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
+  id        String   @id @default(cuid())
+  date      DateTime @default(now())
+  bodyArea  String
+  data      Json
+  diagnosis String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  patientId String
+  userId    String
+  episodeId String?
+  episode   Episode? @relation(fields: [episodeId], references: [id])
+  patient   Patient  @relation(fields: [patientId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model ClinicalNote {
@@ -94,11 +82,9 @@ model ClinicalNote {
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
   patientId String
-  patient   Patient  @relation(fields: [patientId], references: [id])
-
   userId    String
+  patient   Patient  @relation(fields: [patientId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
 }
 
@@ -112,14 +98,28 @@ model Episode {
   notes       String?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
-
   patientId   String
-  patient     Patient       @relation(fields: [patientId], references: [id])
-
   userId      String
+  patient     Patient       @relation(fields: [patientId], references: [id])
   user        User          @relation(fields: [userId], references: [id])
-
   evaluations Evaluation[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Consent {
+  id        String   @id @default(cuid())
+  signedAt  DateTime @default(now())
+  signature String
+  createdAt DateTime @default(now())
+  patientId String
+  userId    String
+  patient   Patient  @relation(fields: [patientId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  ADMIN
+  PHYSIO
 }
 
 enum EpisodeStatus {
