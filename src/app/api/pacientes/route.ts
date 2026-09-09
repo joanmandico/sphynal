@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma'
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { firstName, lastName, birthDate, occupation, sport, userId } = body
+    const { firstName, lastName, birthDate, occupation, sport, phone, dni, address, email, userId } = body
 
     if (!firstName || !lastName || !birthDate || !userId) {
       return NextResponse.json(
@@ -44,6 +44,10 @@ export async function POST(req: NextRequest) {
         birthDate: new Date(birthDate),
         occupation: occupation || null,
         sport: sport || null,
+        phone: phone || null,
+        dni: dni || null,
+        address: address || null,
+        email: email || null,
         userId,
         clinicId: clinic.id,
       },

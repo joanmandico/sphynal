@@ -21,6 +21,10 @@ export default function NuevoPacienteForm({ userId }: Props) {
     birthDate: '',
     occupation: '',
     sport: '',
+    phone: '',
+    dni: '',
+    address: '',
+    email: '',
   })
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -131,7 +135,67 @@ export default function NuevoPacienteForm({ userId }: Props) {
             className="bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20"
           />
         </div>
+        {/* DNI y Teléfono */}
+        <div className="grid grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="dni" className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
+              DNI
+            </Label>
+            <Input
+              id="dni"
+              name="dni"
+              placeholder="12345678A"
+              value={form.dni}
+              onChange={handleChange}
+              className="bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="phone" className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
+              Teléfono
+            </Label>
+            <Input
+              id="phone"
+              name="phone"
+              type="tel"
+              placeholder="600 000 000"
+              value={form.phone}
+              onChange={handleChange}
+              className="bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+        </div>
 
+        {/* Email */}
+        <div className="space-y-2">
+          <Label htmlFor="email" className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
+            Correo electrónico
+          </Label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="paciente@email.com"
+            value={form.email}
+            onChange={handleChange}
+            className="bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20"
+          />
+        </div>
+
+        {/* Domicilio */}
+        <div className="space-y-2">
+          <Label htmlFor="address" className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
+            Domicilio
+          </Label>
+          <Input
+            id="address"
+            name="address"
+            placeholder="Calle, número, ciudad"
+            value={form.address}
+            onChange={handleChange}
+            className="bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20"
+          />
+        </div>
         {error && (
           <div className="p-4 bg-error/10 rounded-lg">
             <p className="text-sm text-error font-medium">{error}</p>
