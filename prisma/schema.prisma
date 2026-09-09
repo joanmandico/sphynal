@@ -75,6 +75,7 @@ model Evaluation {
   episode   Episode? @relation(fields: [episodeId], references: [id])
   patient   Patient  @relation(fields: [patientId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
+  clinicalHistory ClinicalHistory?
 }
 
 model ClinicalNote {
@@ -115,6 +116,70 @@ model Consent {
   userId    String
   patient   Patient  @relation(fields: [patientId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
+}
+
+model ClinicalHistory {
+  id String @id @default(cuid())
+
+  // Datos generales
+  laborActivity         String?
+  sportsActivity        String?
+  hasPreviousDiagnosis  Boolean?
+  previousDiagnosisWhat String?
+  previousDiagnosisBy   String?
+
+  // Motivo de consulta
+  consultReason String
+
+  // Características del dolor
+  painCharacterType       PainCharacterType?
+  radiatesPain            Boolean?
+  radiatesTo              String?
+  neurologicalSigns       Boolean?
+  neurologicalSignsDetail String?
+  jointClicking           Boolean?
+  lockingSensation        Boolean?
+  apprehension            Boolean?
+  painTiming              PainTiming?
+  painEVA                 Int?
+  aggravatingFactors      String?
+  relievingFactors        String?
+  onsetDescription        String?
+  onsetMechanism          String?
+  evolution               EvolutionType?
+  evolutionDetail         String?
+
+  // Antecedentes
+  previousTreatments     String?
+  relevantMedicalHistory String?
+  hasMedication          Boolean?
+  medicationDetail       String?
+  hasAllergies           Boolean?
+  allergyDetail          String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  evaluationId String     @unique
+  evaluation   Evaluation @relation(fields: [evaluationId], references: [id])
+}
+
+enum PainCharacterType {
+  PUNTUAL
+  GENERAL
+}
+
+enum PainTiming {
+  DIA
+  NOCHE
+  AMBOS
+}
+
+enum EvolutionType {
+  MEJORANDO
+  EMPEORANDO
+  IGUAL
+  ALTIBAJOS
 }
 
 enum Role {

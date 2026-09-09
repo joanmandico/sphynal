@@ -10,9 +10,10 @@ import { analyzeRedFlags, RedFlagsData } from '@/lib/algorithms/redflags'
 
 interface Props {
   onComplete: (data: RedFlagsData, result: ReturnType<typeof analyzeRedFlags>) => void
+  initialData?: RedFlagsData
 }
 
-const initialData: RedFlagsData = {
+const defaultRedFlagsData: RedFlagsData = {
   disartria: null, disfagia: null, diplopia: null, discinesia: null,
   dropAtack: null, nistagmus: null, nubness: null, nauseas: null,
   extensionRotationTest: null, coloracionRojaAzul: null,
@@ -121,8 +122,8 @@ const sections: { id: Section; label: string }[] = [
   { id: 'neural', label: 'Neural Grave' },
 ]
 
-export default function RedFlagsForm({ onComplete }: Props) {
-  const [data, setData] = useState<RedFlagsData>(initialData)
+export default function RedFlagsForm({ onComplete, initialData }: Props) {
+  const [data, setData] = useState<RedFlagsData>(initialData ?? defaultRedFlagsData)
   const [section, setSection] = useState<Section>('3d5n')
 
   function set(key: keyof RedFlagsData) {

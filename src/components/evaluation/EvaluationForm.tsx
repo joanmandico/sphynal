@@ -11,8 +11,11 @@ import EvaluationResult from './EvaluationResult'
 import RedFlagsForm from '@/components/forms/RedFlagsForm'
 import { RedFlagsData, RedFlagResult } from '@/lib/algorithms/redflags'
 import FloatingNoteButton from './FloatingNoteButton'
+import ClinicalHistoryForm from '@/components/forms/ClinicalHistoryForm'
+import { ClinicalHistoryData } from '@/types/clinical-history'
 
-type Phase = 'redflags' | 'redflags_warning' | 'evaluation'
+type Phase = 'history' | 'redflags' | 'redflags_warning' | 'evaluation'
+type TabPhase = 'history' | 'redflags' | 'evaluation'
 
 interface Props {
   protocolId: string
@@ -164,7 +167,9 @@ function isStepVisible(step: ProtocolStep, data: ProtocolData): boolean {
 export default function EvaluationForm({ protocolId, patientId, userId, episodioId }: Props) {
   const protocol = protocols[protocolId]
   const router = useRouter()
-  const [phase, setPhase] = useState<Phase>('redflags')
+  const [phase, setPhase] = useState<Phase>('history')
+  const [maxPhaseReached, setMaxPhaseReached] = useState(0)
+  const [historyData, setHistoryData] = useState<ClinicalHistoryData | null>(null)
   const [redFlagsData, setRedFlagsData] = useState<RedFlagsData | null>(null)
   const [redFlagsResult, setRedFlagsResult] = useState<RedFlagResult | null>(null)
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
@@ -178,6 +183,12 @@ export default function EvaluationForm({ protocolId, patientId, userId, episodio
   const isLastStep = currentStepIndex === visibleSteps.length - 1
   const diagnosis = runDiagnosis(protocol, data)
 
+  function handleHistoryComplete(hData: ClinicalHistoryData) {
+    setHistoryData(hData)
+    setPhase('redflags')
+    setMaxPhaseReached(prev => Math.max(prev, 1))
+  }
+
   function handleRedFlagsComplete(rfData: RedFlagsData, rfResult: RedFlagResult) {
     setRedFlagsData(rfData)
     setRedFlagsResult(rfResult)
@@ -185,6 +196,9 @@ export default function EvaluationForm({ protocolId, patientId, userId, episodio
       setPhase('redflags_warning')
     } else {
       setPhase('evaluation')
+    }
+    if (rfResult.canContinue) {
+      setMaxPhaseReached(prev => Math.max(prev, 2))
     }
   }
 
@@ -214,6 +228,7 @@ export default function EvaluationForm({ protocolId, patientId, userId, episodio
         data: { [protocol.id]: data, redFlags: redFlagsData },
         diagnosis: diagnosis.primary,
         episodioId: episodioId || null,
+        history: historyData,
       }),
     })
     if (res.ok) {
@@ -223,34 +238,63 @@ export default function EvaluationForm({ protocolId, patientId, userId, episodio
     setLoading(false)
   }
 
-  const phases = [
+  const phases: { id: TabPhase; label: string }[] = [
+    { id: 'history', label: 'Historia Clínica' },
     { id: 'redflags', label: 'Red Flags' },
     { id: 'evaluation', label: protocol.name },
   ]
+  const normalizedPhase: TabPhase = phase === 'redflags_warning' ? 'redflags' : phase
+  const currentPhaseIndex = phases.findIndex(p => p.id === normalizedPhase)
+
+  function goToPhase(target: TabPhase, index: number) {
+    if (index <= maxPhaseReached) {
+      setPhase(target)
+    }
+  }
 
   return (
     <div className="max-w-3xl space-y-6">
-      {/* Phase indicator */}
-      <div className="flex items-center gap-2 mb-2">
-        {phases.map((p, i) => (
-          <div key={p.id} className="flex items-center gap-2">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
-              phase === 'redflags' && i === 0 ? 'bg-primary text-on-primary'
-              : phase !== 'redflags' && i === 0 ? 'bg-green-500 text-white'
-              : phase === 'evaluation' && i === 1 ? 'bg-primary text-on-primary'
-              : 'bg-surface-container-highest text-on-surface-variant'
-            }`}>
-              {phase !== 'redflags' && i === 0 ? '✓' : i + 1}
+      {/* Phase indicator — clicable entre fases ya alcanzadas */}
+      <div className="flex items-center gap-2 mb-2 flex-wrap">
+        {phases.map((p, i) => {
+          const isReached = i <= maxPhaseReached
+          const isCurrent = i === currentPhaseIndex
+          return (
+            <div key={p.id} className="flex items-center gap-2">
+              <button
+                type="button"
+                disabled={!isReached}
+                onClick={() => goToPhase(p.id, i)}
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
+                  isCurrent ? 'bg-primary text-on-primary'
+                  : isReached ? 'bg-green-500 text-white hover:opacity-80 cursor-pointer'
+                  : 'bg-surface-container-highest text-on-surface-variant cursor-not-allowed opacity-50'
+                }`}
+              >
+                {isReached && !isCurrent ? '✓' : i + 1}
+              </button>
+              <button
+                type="button"
+                disabled={!isReached}
+                onClick={() => goToPhase(p.id, i)}
+                className={`text-sm font-semibold ${isReached ? 'text-on-surface-variant hover:text-on-surface cursor-pointer' : 'text-on-surface-variant/50 cursor-not-allowed'}`}
+              >
+                {p.label}
+              </button>
+              {i < phases.length - 1 && <div className="w-8 h-px bg-outline-variant mx-1" />}
             </div>
-            <span className="text-sm font-semibold text-on-surface-variant">{p.label}</span>
-            {i < phases.length - 1 && <div className="w-8 h-px bg-outline-variant mx-1" />}
-          </div>
-        ))}
+          )
+        })}
       </div>
+
+      {/* Clinical history phase */}
+      {phase === 'history' && (
+        <ClinicalHistoryForm onComplete={handleHistoryComplete} initialData={historyData ?? undefined} />
+      )}
 
       {/* Red Flags phase */}
       {phase === 'redflags' && (
-        <RedFlagsForm onComplete={handleRedFlagsComplete} />
+        <RedFlagsForm onComplete={handleRedFlagsComplete} initialData={redFlagsData ?? undefined} />
       )}
 
       {/* Red Flags warning */}
