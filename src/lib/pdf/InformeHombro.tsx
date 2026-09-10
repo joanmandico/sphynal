@@ -7,6 +7,7 @@ import {
 } from '@react-pdf/renderer'
 import { RedFlagsData, RedFlagResult } from '@/lib/algorithms/redflags'
 import { DiagnosisResult } from '@/lib/protocols/types'
+import { buildRedFlagsReport } from './redFlagsReport'
 
 const styles = StyleSheet.create({
   page: {
@@ -39,6 +40,22 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     backgroundColor: '#f1f5f9',
     padding: 4,
+  },
+  subSectionBlock: {
+    marginBottom: 10,
+  },
+  subSectionTitle: {
+    fontSize: 10,
+    fontFamily: 'Helvetica-Bold',
+    color: '#0f172a',
+    marginBottom: 4,
+    textDecoration: 'underline',
+  },
+  noteText: {
+    fontSize: 9,
+    color: '#64748b',
+    fontStyle: 'italic',
+    marginBottom: 4,
   },
   row: {
     flexDirection: 'row',
@@ -166,6 +183,7 @@ export function InformeHombro({
 }: Props) {
   const age = new Date().getFullYear() - new Date(patient.birthDate).getFullYear()
   const isBlocked = !shoulderData || !diagnosis
+  const redFlagsReportSections = buildRedFlagsReport(redFlagsData)
 
   return (
     <Document>
@@ -206,7 +224,7 @@ export function InformeHombro({
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>RED FLAGS</Text>
+          <Text style={styles.sectionTitle}>RED FLAGS — RESUMEN</Text>
           {redFlagsResult.hasRedFlags ? (
             <>
               {redFlagsResult.critical.map((flag, i) => (
@@ -227,6 +245,24 @@ export function InformeHombro({
             </View>
           )}
         </View>
+
+        {redFlagsReportSections.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>RED FLAGS — DETALLE DE PRUEBAS REALIZADAS</Text>
+            {redFlagsReportSections.map((sec, i) => (
+              <View key={i} style={styles.subSectionBlock}>
+                <Text style={styles.subSectionTitle}>{sec.title}</Text>
+                {sec.note && <Text style={styles.noteText}>{sec.note}</Text>}
+                {sec.lines.map((ln, j) => (
+                  <View key={j} style={styles.row}>
+                    <Text style={styles.label}>{ln.label}</Text>
+                    <Text style={ln.isPositive ? styles.positive : styles.negative}>{ln.result}</Text>
+                  </View>
+                ))}
+              </View>
+            ))}
+          </View>
+        )}
 
         {isBlocked ? (
           <View style={styles.section}>
