@@ -98,6 +98,19 @@ const styles = StyleSheet.create({
     color: '#dc2626',
     fontSize: 9,
   },
+  blockedBox: {
+    backgroundColor: '#fef2f2',
+    borderWidth: 1,
+    borderColor: '#dc2626',
+    padding: 12,
+    borderRadius: 4,
+  },
+  blockedText: {
+    color: '#dc2626',
+    fontFamily: 'Helvetica-Bold',
+    fontSize: 11,
+    textAlign: 'center',
+  },
   footer: {
     position: 'absolute',
     bottom: 30,
@@ -126,8 +139,8 @@ interface Props {
   evaluationDate: Date
   redFlagsData: RedFlagsData
   redFlagsResult: RedFlagResult
-  shoulderData: Record<string, unknown>
-  diagnosis: DiagnosisResult
+  shoulderData: Record<string, unknown> | null
+  diagnosis: DiagnosisResult | null
   clinicianName?: string
 }
 
@@ -152,13 +165,16 @@ export function InformeHombro({
   clinicianName,
 }: Props) {
   const age = new Date().getFullYear() - new Date(patient.birthDate).getFullYear()
+  const isBlocked = !shoulderData || !diagnosis
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           <Text style={styles.title}>Sphynal — Informe Clínico</Text>
-          <Text style={styles.subtitle}>Evaluación de Hombro — Protocolo Completo</Text>
+          <Text style={styles.subtitle}>
+            Evaluación de Hombro — {isBlocked ? 'Interrumpida por Red Flags' : 'Protocolo Completo'}
+          </Text>
         </View>
 
         <View style={styles.section}>
@@ -212,47 +228,72 @@ export function InformeHombro({
           )}
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>PRUEBAS CLÍNICAS</Text>
-          <BoolRow label="No puede levantar el brazo" value={shoulderData.cannotRaiseArm as boolean} />
-          <BoolRow label="Dolor a punta de dedo" value={shoulderData.pointPain as boolean} />
-          <BoolRow label="Signo de caída del brazo" value={shoulderData.dropArmSign as boolean} />
-          <BoolRow label="Prueba del infraespinoso" value={shoulderData.infraspinatus as boolean} />
-          <BoolRow label="Test lata vacía / Jobe" value={shoulderData.emptyCanTest as boolean} />
-          <BoolRow label="Neer test" value={shoulderData.neerTest as boolean} />
-          <BoolRow label="Hawkins-Kennedy" value={shoulderData.hawkinsKennedy as boolean} />
-          <BoolRow label="Signo arco doloroso" value={shoulderData.painfulArcSign as boolean} />
-          <BoolRow label="Hombro congelado" value={shoulderData.frozenShoulder as boolean} />
-          <BoolRow label="Aprehensión / inestabilidad" value={shoulderData.apprehension as boolean} />
-          <BoolRow label="Test de Crank" value={shoulderData.crankTest as boolean} />
-          <BoolRow label="Test O'Brien" value={shoulderData.obrienTest as boolean} />
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>DIAGNÓSTICO</Text>
-          <View style={styles.diagnosisBox}>
-            <Text style={styles.diagnosisTitle}>{diagnosis.primary}</Text>
-            <Text style={styles.confidence}>
-              Confianza: {diagnosis.confidence.toUpperCase()}
-            </Text>
-            {diagnosis.differentials.length > 0 && (
+        {isBlocked ? (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>ESTADO DE LA EVALUACIÓN</Text>
+            <View style={styles.blockedBox}>
+              <Text style={styles.blockedText}>
+                Evaluación no continuada — derivación médica urgente requerida
+              </Text>
+              <Text style={[styles.redFlagText, { textAlign: 'center', marginTop: 6 }]}>
+                No se completaron las pruebas clínicas del protocolo de hombro debido a la presencia
+                de Red Flags críticas detectadas durante la anamnesis.
+              </Text>
+            </View>
+            {redFlagsResult.shouldRefer.length > 0 && (
               <>
-                <Text style={[styles.label, { marginBottom: 4 }]}>Diagnósticos diferenciales:</Text>
-                {diagnosis.differentials.map((d, i) => (
-                  <Text key={i} style={styles.listItem}>• {d}</Text>
+                <Text style={[styles.sectionTitle, { marginTop: 8 }]}>DERIVACIONES RECOMENDADAS</Text>
+                {redFlagsResult.shouldRefer.map((r, i) => (
+                  <Text key={i} style={styles.listItem}>→ {r}</Text>
                 ))}
               </>
             )}
           </View>
-          {diagnosis.treatment.length > 0 && (
-            <>
-              <Text style={[styles.sectionTitle, { marginTop: 8 }]}>RECOMENDACIONES</Text>
-              {diagnosis.treatment.map((r, i) => (
-                <Text key={i} style={styles.listItem}>✓ {r}</Text>
-              ))}
-            </>
-          )}
-        </View>
+        ) : (
+          <>
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>PRUEBAS CLÍNICAS</Text>
+              <BoolRow label="No puede levantar el brazo" value={shoulderData.cannotRaiseArm as boolean} />
+              <BoolRow label="Dolor a punta de dedo" value={shoulderData.pointPain as boolean} />
+              <BoolRow label="Signo de caída del brazo" value={shoulderData.dropArmSign as boolean} />
+              <BoolRow label="Prueba del infraespinoso" value={shoulderData.infraspinatus as boolean} />
+              <BoolRow label="Test lata vacía / Jobe" value={shoulderData.emptyCanTest as boolean} />
+              <BoolRow label="Neer test" value={shoulderData.neerTest as boolean} />
+              <BoolRow label="Hawkins-Kennedy" value={shoulderData.hawkinsKennedy as boolean} />
+              <BoolRow label="Signo arco doloroso" value={shoulderData.painfulArcSign as boolean} />
+              <BoolRow label="Hombro congelado" value={shoulderData.frozenShoulder as boolean} />
+              <BoolRow label="Aprehensión / inestabilidad" value={shoulderData.apprehension as boolean} />
+              <BoolRow label="Test de Crank" value={shoulderData.crankTest as boolean} />
+              <BoolRow label="Test O'Brien" value={shoulderData.obrienTest as boolean} />
+            </View>
+
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>DIAGNÓSTICO</Text>
+              <View style={styles.diagnosisBox}>
+                <Text style={styles.diagnosisTitle}>{diagnosis.primary}</Text>
+                <Text style={styles.confidence}>
+                  Confianza: {diagnosis.confidence.toUpperCase()}
+                </Text>
+                {diagnosis.differentials.length > 0 && (
+                  <>
+                    <Text style={[styles.label, { marginBottom: 4 }]}>Diagnósticos diferenciales:</Text>
+                    {diagnosis.differentials.map((d, i) => (
+                      <Text key={i} style={styles.listItem}>• {d}</Text>
+                    ))}
+                  </>
+                )}
+              </View>
+              {diagnosis.treatment.length > 0 && (
+                <>
+                  <Text style={[styles.sectionTitle, { marginTop: 8 }]}>RECOMENDACIONES</Text>
+                  {diagnosis.treatment.map((r, i) => (
+                    <Text key={i} style={styles.listItem}>✓ {r}</Text>
+                  ))}
+                </>
+              )}
+            </View>
+          </>
+        )}
 
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Sphynal — Motor de Decisión Clínica</Text>

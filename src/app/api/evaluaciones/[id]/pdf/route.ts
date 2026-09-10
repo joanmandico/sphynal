@@ -24,15 +24,19 @@ export async function GET(req: NextRequest, { params }: Props) {
     const data = evaluation.data as {
       redFlags?: RedFlagsData
       shoulder?: ShoulderData
+      blocked?: boolean
     }
 
-    const shoulderData = (data.shoulder || data) as ShoulderData
+    const blocked = data.blocked === true
     const redFlagsData = data.redFlags as RedFlagsData | undefined
-
-    const diagnosis = shoulderProtocol.diagnose(shoulderData as Record<string, unknown>)
     const redFlagsResult = redFlagsData
       ? analyzeRedFlags(redFlagsData)
       : { hasRedFlags: false, critical: [], warnings: [], shouldRefer: [], canContinue: true }
+
+    const shoulderData = blocked ? null : ((data.shoulder || data) as ShoulderData)
+    const diagnosis = shoulderData
+      ? shoulderProtocol.diagnose(shoulderData as Record<string, unknown>)
+      : null
 
     const { renderToBuffer } = await import('@react-pdf/renderer')
     const { InformeHombro } = await import('@/lib/pdf/InformeHombro')
@@ -43,7 +47,7 @@ export async function GET(req: NextRequest, { params }: Props) {
       evaluationDate: evaluation.date,
       redFlagsData: redFlagsData ?? {} as RedFlagsData,
       redFlagsResult,
-      shoulderData: shoulderData as Record<string, unknown>,
+      shoulderData: shoulderData as Record<string, unknown> | null,
       diagnosis,
     })
 

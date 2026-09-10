@@ -176,6 +176,8 @@ export default function EvaluationForm({ protocolId, patientId, userId, episodio
   const [data, setData] = useState<ProtocolData>(buildInitialData(protocol))
   const [loading, setLoading] = useState(false)
   const [showResult, setShowResult] = useState(false)
+  const [savingBlocked, setSavingBlocked] = useState(false)
+  const [blockedEvaluationId, setBlockedEvaluationId] = useState<string | null>(null)
 
   // Filter visible steps based on current data
   const visibleSteps = protocol.steps.filter(step => isStepVisible(step, data))
@@ -207,7 +209,6 @@ export default function EvaluationForm({ protocolId, patientId, userId, episodio
   }
 
   function handleNext() {
-    // Recalculate visible steps with updated data before advancing
     const nextIndex = currentStepIndex + 1
     setCurrentStepIndex(nextIndex)
   }
@@ -236,6 +237,28 @@ export default function EvaluationForm({ protocolId, patientId, userId, episodio
       router.refresh()
     }
     setLoading(false)
+  }
+
+  async function handleSaveBlocked() {
+    setSavingBlocked(true)
+    const res = await fetch('/api/evaluaciones', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        patientId,
+        userId,
+        bodyArea: protocol.name,
+        data: { redFlags: redFlagsData, blocked: true },
+        diagnosis: null,
+        episodioId: episodioId || null,
+        history: historyData,
+      }),
+    })
+    if (res.ok) {
+      const created = await res.json()
+      setBlockedEvaluationId(created.id)
+    }
+    setSavingBlocked(false)
   }
 
   const phases: { id: TabPhase; label: string }[] = [
@@ -346,16 +369,48 @@ export default function EvaluationForm({ protocolId, patientId, userId, episodio
             </div>
           )}
           <div className="flex gap-3">
-            <Button variant="outline" onClick={() => setPhase('redflags')} className="border-outline-variant">
-              ← Revisar red flags
-            </Button>
+            {!blockedEvaluationId && (
+              <Button variant="outline" onClick={() => setPhase('redflags')} className="border-outline-variant">
+                ← Revisar red flags
+              </Button>
+            )}
             {redFlagsResult.canContinue ? (
               <Button onClick={() => setPhase('evaluation')} className="flex-1 bg-primary text-on-primary">
                 Continuar a evaluación →
               </Button>
             ) : (
-              <div className="flex-1 p-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 text-center font-bold">
-                No se puede continuar — derivación médica urgente requerida
+              <div className="flex-1 space-y-3">
+                <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 text-center font-bold">
+                  No se puede continuar — derivación médica urgente requerida
+                </div>
+                {blockedEvaluationId ? (
+                  <div className="space-y-3">
+                    <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700 text-center font-semibold">
+                      Evaluación guardada correctamente
+                    </div>
+                    <Button
+                      onClick={() => window.open(`/api/evaluaciones/${blockedEvaluationId}/pdf`, '_blank')}
+                      className="w-full bg-primary text-on-primary"
+                    >
+                      Descargar informe PDF →
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => router.push(`/dashboard/pacientes/${patientId}`)}
+                      className="w-full border-outline-variant"
+                    >
+                      Volver a la ficha del paciente
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    onClick={handleSaveBlocked}
+                    disabled={savingBlocked}
+                    className="w-full bg-primary text-on-primary"
+                  >
+                    {savingBlocked ? 'Guardando...' : 'Guardar evaluación y generar informe →'}
+                  </Button>
+                )}
               </div>
             )}
           </div>
