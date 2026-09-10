@@ -79,6 +79,10 @@ const styles = StyleSheet.create({
   negative: {
     color: '#16a34a',
   },
+  notEvaluated: {
+    color: '#94a3b8',
+    fontStyle: 'italic',
+  },
   diagnosisBox: {
     backgroundColor: '#f8fafc',
     borderWidth: 1,
@@ -161,13 +165,13 @@ interface Props {
   clinicianName?: string
 }
 
-function BoolRow({ label, value }: { label: string; value: boolean }) {
+function BoolRow({ label, value }: { label: string; value: boolean | null | undefined }) {
+  const result = value === true ? 'POSITIVO' : value === false ? 'NEGATIVO' : 'NO VALORADO'
+  const style = value === true ? styles.positive : value === false ? styles.negative : styles.notEvaluated
   return (
     <View style={styles.row}>
       <Text style={styles.label}>{label}</Text>
-      <Text style={value ? styles.positive : styles.negative}>
-        {value ? 'POSITIVO' : 'NEGATIVO'}
-      </Text>
+      <Text style={style}>{result}</Text>
     </View>
   )
 }
