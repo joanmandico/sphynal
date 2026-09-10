@@ -4,7 +4,7 @@
 type BoolField = boolean | null
 
 export interface RedFlagsData {
-  // 3D/5N
+  // 5D/3N
   disartria: BoolField
   disfagia: BoolField
   diplopia: BoolField
@@ -116,7 +116,7 @@ export function analyzeRedFlags(data: RedFlagsData): RedFlagResult {
   const warnings: string[] = []
   const shouldRefer: string[] = []
 
-  // 3D/5N
+  // 5D/3N
   if (data.disartria === true) critical.push('Disartria positiva')
   if (data.disfagia === true) critical.push('Disfagia positiva')
   if (data.diplopia === true) critical.push('Diplopia positiva')

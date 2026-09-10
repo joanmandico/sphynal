@@ -108,23 +108,29 @@ function ScoreInput({
   )
 }
 
-type Section = '3d5n' | 'vascular' | 'fracturaEESS' | 'fracturaVertebral' | 'ligamento' | 'tumor' | 'infeccion' | 'reuma' | 'neural'
+type Section = '5D3N' | 'vascular' | 'fracturas' | 'tumor' | 'infeccion' | 'reuma' | 'neural'
+type FracturaSubSection = 'eess' | 'vertebral' | 'ligamento'
 
 const sections: { id: Section; label: string }[] = [
-  { id: '3d5n', label: '3D/5N' },
+  { id: '5D3N', label: '5D/3N' },
   { id: 'vascular', label: 'Vascular' },
-  { id: 'fracturaEESS', label: 'Fractura EESS' },
-  { id: 'fracturaVertebral', label: 'Fractura Vertebral' },
-  { id: 'ligamento', label: 'Ligamento Transverso/Alar' },
+  { id: 'fracturas', label: 'Fracturas' },
   { id: 'tumor', label: 'Tumor/Cáncer' },
   { id: 'infeccion', label: 'Infección' },
   { id: 'reuma', label: 'Reuma' },
   { id: 'neural', label: 'Neural Grave' },
 ]
 
+const fracturaSubSections: { id: FracturaSubSection; label: string }[] = [
+  { id: 'eess', label: 'Fractura EESS' },
+  { id: 'vertebral', label: 'Fractura Vertebral' },
+  { id: 'ligamento', label: 'Ligamento Transverso/Alar' },
+]
+
 export default function RedFlagsForm({ onComplete, initialData }: Props) {
   const [data, setData] = useState<RedFlagsData>(initialData ?? defaultRedFlagsData)
-  const [section, setSection] = useState<Section>('3d5n')
+  const [section, setSection] = useState<Section>('5D3N')
+  const [fracturaSubSection, setFracturaSubSection] = useState<FracturaSubSection>('eess')
 
   function set(key: keyof RedFlagsData) {
     return (value: boolean | null | number) =>
@@ -133,19 +139,38 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
 
   const sectionIndex = sections.findIndex(s => s.id === section)
   const isLast = sectionIndex === sections.length - 1
+  const fracturaSubIndex = fracturaSubSections.findIndex(s => s.id === fracturaSubSection)
 
   function handleNext() {
+    // Dentro de Fracturas, avanza primero por las 3 sub-pestañas
+    if (section === 'fracturas' && fracturaSubIndex < fracturaSubSections.length - 1) {
+      setFracturaSubSection(fracturaSubSections[fracturaSubIndex + 1].id)
+      return
+    }
     if (isLast) {
       const result = analyzeRedFlags(data)
       onComplete(data, result)
     } else {
-      setSection(sections[sectionIndex + 1].id)
+      const next = sections[sectionIndex + 1]
+      setSection(next.id)
+      if (next.id === 'fracturas') {
+        setFracturaSubSection('eess')
+      }
     }
   }
 
   function handlePrev() {
+    // Dentro de Fracturas, retrocede primero por las 3 sub-pestañas
+    if (section === 'fracturas' && fracturaSubIndex > 0) {
+      setFracturaSubSection(fracturaSubSections[fracturaSubIndex - 1].id)
+      return
+    }
     if (sectionIndex > 0) {
-      setSection(sections[sectionIndex - 1].id)
+      const prev = sections[sectionIndex - 1]
+      setSection(prev.id)
+      if (prev.id === 'fracturas') {
+        setFracturaSubSection('ligamento')
+      }
     }
   }
 
@@ -168,11 +193,11 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
         ))}
       </div>
 
-      {/* 3D/5N */}
-      {section === '3d5n' && (
+      {/* 5D/3N */}
+      {section === '5D3N' && (
         <Card>
           <CardHeader>
-            <CardTitle>3D/5N — Signos de afectación del tronco del encéfalo</CardTitle>
+            <CardTitle>5D/3N — Signos de afectación del tronco del encéfalo</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <Toggle label="Disartria" value={data.disartria} onChange={set('disartria') } />
@@ -207,80 +232,98 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
         </Card>
       )}
 
-      {/* Fractura EESS */}
-      {section === 'fracturaEESS' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Fractura EESS</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Toggle label="Ya se han descartado fracturas con RX" value={data.fracturaDescartadaRx} onChange={set('fracturaDescartadaRx') } />
-            {!data.fracturaDescartadaRx && (
-              <>
-                <Toggle label="Antecedente de traumatismo" value={data.antecedenteTraumatismo} onChange={set('antecedenteTraumatismo') } />
-                <Toggle label="Edad mayor de 50 años" value={data.edadMayor50} onChange={set('edadMayor50') } />
-                <Toggle label="Diagnóstico de osteoporosis" value={data.osteoporosis} onChange={set('osteoporosis') } />
-                <Toggle label="El paciente toma corticoides" value={data.corticoides} onChange={set('corticoides') } />
-                {(data.antecedenteTraumatismo || data.osteoporosis) && (
+      {/* Fracturas — fusiona EESS, Vertebral y Ligamento en sub-pestañas */}
+      {section === 'fracturas' && (
+        <div className="space-y-4">
+          <div className="flex flex-wrap gap-2 pl-3 border-l-2 border-slate-300">
+            {fracturaSubSections.map((s, i) => (
+              <button
+                key={s.id}
+                onClick={() => setFracturaSubSection(s.id)}
+                className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+                  fracturaSubSection === s.id
+                    ? 'bg-slate-700 text-white'
+                    : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                }`}
+              >
+                {i + 1}. {s.label}
+              </button>
+            ))}
+          </div>
+
+          {fracturaSubSection === 'eess' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Fractura EESS</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Toggle label="Ya se han descartado fracturas con RX" value={data.fracturaDescartadaRx} onChange={set('fracturaDescartadaRx') } />
+                {!data.fracturaDescartadaRx && (
                   <>
-                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider pt-2">Signos adicionales</p>
-                    <Toggle label="Dolor intenso que empeora con movimiento pasivo/activo" value={data.dolorIntensoMovimiento} onChange={set('dolorIntensoMovimiento') } />
-                    <Toggle label="Hinchazón / Inflamación" value={data.hinchazoneInflamacion} onChange={set('hinchazoneInflamacion') } />
-                    <Toggle label="Limitación de movimiento del hombro" value={data.limitacionMovimientoHombro} onChange={set('limitacionMovimientoHombro') } />
-                    <Toggle label="Deformidad" value={data.deformidad} onChange={set('deformidad') } />
-                    <Toggle label="Sensibilidad a la palpación" value={data.sensibilidadPalpacion} onChange={set('sensibilidadPalpacion') } />
-                    <Toggle label="Hematoma" value={data.hematoma} onChange={set('hematoma') } />
-                    <Toggle label="Prueba de auscultación del diapasón positiva" value={data.pruebaAuscultacionDiapason} onChange={set('pruebaAuscultacionDiapason') } />
+                    <Toggle label="Antecedente de traumatismo" value={data.antecedenteTraumatismo} onChange={set('antecedenteTraumatismo') } />
+                    <Toggle label="Edad mayor de 50 años" value={data.edadMayor50} onChange={set('edadMayor50') } />
+                    <Toggle label="Diagnóstico de osteoporosis" value={data.osteoporosis} onChange={set('osteoporosis') } />
+                    <Toggle label="El paciente toma corticoides" value={data.corticoides} onChange={set('corticoides') } />
+                    {(data.antecedenteTraumatismo || data.osteoporosis) && (
+                      <>
+                        <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider pt-2">Signos adicionales</p>
+                        <Toggle label="Dolor intenso que empeora con movimiento pasivo/activo" value={data.dolorIntensoMovimiento} onChange={set('dolorIntensoMovimiento') } />
+                        <Toggle label="Hinchazón / Inflamación" value={data.hinchazoneInflamacion} onChange={set('hinchazoneInflamacion') } />
+                        <Toggle label="Limitación de movimiento del hombro" value={data.limitacionMovimientoHombro} onChange={set('limitacionMovimientoHombro') } />
+                        <Toggle label="Deformidad" value={data.deformidad} onChange={set('deformidad') } />
+                        <Toggle label="Sensibilidad a la palpación" value={data.sensibilidadPalpacion} onChange={set('sensibilidadPalpacion') } />
+                        <Toggle label="Hematoma" value={data.hematoma} onChange={set('hematoma') } />
+                        <Toggle label="Prueba de auscultación del diapasón positiva" value={data.pruebaAuscultacionDiapason} onChange={set('pruebaAuscultacionDiapason') } />
+                      </>
+                    )}
                   </>
                 )}
-              </>
-            )}
-          </CardContent>
-        </Card>
-      )}
+              </CardContent>
+            </Card>
+          )}
 
-      {/* Fractura Vertebral */}
-      {section === 'fracturaVertebral' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Fracturas Vertebrales — Reglas Canadienses</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Toggle label="Ya se han descartado fracturas con RX" value={data.fracturaVertebralDescartadaRx} onChange={set('fracturaVertebralDescartadaRx') } />
-            {!data.fracturaVertebralDescartadaRx && (
-              <>
-                <Toggle label="Antecedente de traumatismo cabeza/cuello" value={data.antecedenteTraumatismoCuello} onChange={set('antecedenteTraumatismoCuello') } />
-                <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider pt-2">Factores de alto riesgo</p>
-                <Toggle label="Edad 65 o más" value={data.edad65oMas} onChange={set('edad65oMas') } />
-                <Toggle label="Mecanismos peligrosos" value={data.mecanismosPeligrosos} onChange={set('mecanismosPeligrosos') } />
-                <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider pt-2">Factores de bajo riesgo</p>
-                <Toggle label="Colisión trasera simple" value={data.colisionTrasera} onChange={set('colisionTrasera') } />
-                <Toggle label="Puede estar sentado durante un tiempo" value={data.puedeEstarSentado} onChange={set('puedeEstarSentado') } />
-                <Toggle label="Ambulante en todo momento desde el accidente" value={data.ambulanteDesdeAccidente} onChange={set('ambulanteDesdeAccidente') } />
-                <Toggle label="Retraso en el inicio del dolor de cuello" value={data.retrasoInicioDolor} onChange={set('retrasoInicioDolor') } />
-                <Toggle label="No signos de sensibilidad en línea media cervical" value={data.noSignosSensibilidadLineaMedia} onChange={set('noSignosSensibilidadLineaMedia') } />
-                <Toggle label="Paciente NO puede rotar cabeza >45º en alguna dirección" value={data.noPuedeRotarCabeza45} onChange={set('noPuedeRotarCabeza45') } />
-              </>
-            )}
-          </CardContent>
-        </Card>
-      )}
+          {fracturaSubSection === 'vertebral' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Fracturas Vertebrales — Reglas Canadienses</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Toggle label="Ya se han descartado fracturas con RX" value={data.fracturaVertebralDescartadaRx} onChange={set('fracturaVertebralDescartadaRx') } />
+                {!data.fracturaVertebralDescartadaRx && (
+                  <>
+                    <Toggle label="Antecedente de traumatismo cabeza/cuello" value={data.antecedenteTraumatismoCuello} onChange={set('antecedenteTraumatismoCuello') } />
+                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider pt-2">Factores de alto riesgo</p>
+                    <Toggle label="Edad 65 o más" value={data.edad65oMas} onChange={set('edad65oMas') } />
+                    <Toggle label="Mecanismos peligrosos" value={data.mecanismosPeligrosos} onChange={set('mecanismosPeligrosos') } />
+                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider pt-2">Factores de bajo riesgo</p>
+                    <Toggle label="Colisión trasera simple" value={data.colisionTrasera} onChange={set('colisionTrasera') } />
+                    <Toggle label="Puede estar sentado durante un tiempo" value={data.puedeEstarSentado} onChange={set('puedeEstarSentado') } />
+                    <Toggle label="Ambulante en todo momento desde el accidente" value={data.ambulanteDesdeAccidente} onChange={set('ambulanteDesdeAccidente') } />
+                    <Toggle label="Retraso en el inicio del dolor de cuello" value={data.retrasoInicioDolor} onChange={set('retrasoInicioDolor') } />
+                    <Toggle label="No signos de sensibilidad en línea media cervical" value={data.noSignosSensibilidadLineaMedia} onChange={set('noSignosSensibilidadLineaMedia') } />
+                    <Toggle label="Paciente NO puede rotar cabeza >45º en alguna dirección" value={data.noPuedeRotarCabeza45} onChange={set('noPuedeRotarCabeza45') } />
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
-      {/* Ligamento */}
-      {section === 'ligamento' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Integridad Ligamento Transverso/Alar</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Toggle label="Antecedente de traumatismo cabeza/cuello" value={data.antecedenteTraumatismoCabezaCuello} onChange={set('antecedenteTraumatismoCabezaCuello') } />
-            <Toggle label="5D o 3N Red Flags presentes" value={data.cincoD3N} onChange={set('cincoD3N') } />
-            <Toggle label="Síndrome de Down" value={data.sindromeDown} onChange={set('sindromeDown') } />
-            <Toggle label="Artritis Reumatoide" value={data.artritisReumatoide} onChange={set('artritisReumatoide') } />
-            <Toggle label="Test de cizallamiento anterior (Lig. Transverso) positivo" value={data.testCizallamientoAnterior} onChange={set('testCizallamientoAnterior') } />
-            <Toggle label="Test de estrés del ligamento alar positivo" value={data.testEstrésLigamentoAlar} onChange={set('testEstrésLigamentoAlar') } />
-          </CardContent>
-        </Card>
+          {fracturaSubSection === 'ligamento' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Integridad Ligamento Transverso/Alar</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Toggle label="Antecedente de traumatismo cabeza/cuello" value={data.antecedenteTraumatismoCabezaCuello} onChange={set('antecedenteTraumatismoCabezaCuello') } />
+                <Toggle label="5D o 3N Red Flags presentes" value={data.cincoD3N} onChange={set('cincoD3N') } />
+                <Toggle label="Síndrome de Down" value={data.sindromeDown} onChange={set('sindromeDown') } />
+                <Toggle label="Artritis Reumatoide" value={data.artritisReumatoide} onChange={set('artritisReumatoide') } />
+                <Toggle label="Test de cizallamiento anterior (Lig. Transverso) positivo" value={data.testCizallamientoAnterior} onChange={set('testCizallamientoAnterior') } />
+                <Toggle label="Test de estrés del ligamento alar positivo" value={data.testEstrésLigamentoAlar} onChange={set('testEstrésLigamentoAlar') } />
+              </CardContent>
+            </Card>
+          )}
+        </div>
       )}
 
       {/* Tumor */}
@@ -382,13 +425,13 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
 
       {/* Navigation */}
       <div className="flex gap-3">
-        {sectionIndex > 0 && (
+        {(sectionIndex > 0 || (section === 'fracturas' && fracturaSubIndex > 0)) && (
           <Button variant="outline" onClick={handlePrev}>
             ← Anterior
           </Button>
         )}
         <Button onClick={handleNext} className="flex-1">
-          {isLast ? 'Finalizar Red Flags →' : 'Siguiente →'}
+          {isLast && !(section === 'fracturas' && fracturaSubIndex < fracturaSubSections.length - 1) ? 'Finalizar Red Flags →' : 'Siguiente →'}
         </Button>
       </div>
     </div>
