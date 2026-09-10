@@ -3,10 +3,10 @@
 // Red Flags evaluation form - Client Component
 // Must be completed before shoulder evaluation
 
-import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { analyzeRedFlags, RedFlagsData } from '@/lib/algorithms/redflags'
+import { useState, useEffect } from 'react'
 
 interface Props {
   onComplete: (data: RedFlagsData, result: ReturnType<typeof analyzeRedFlags>) => void
@@ -16,6 +16,9 @@ interface Props {
 const defaultRedFlagsData: RedFlagsData = {
   dysarthria: null, dysphagia: null, diplopia: null, dizziness: null,
   dropAttacks: null, nystagmus: null, numbness: null, nausea: null,
+  acuteVestibularSyndrome: null, headImpulseNormal: null,
+  nystagmusVerticalPuro: null, nystagmusCambiaDireccion: null, nystagmusRotatorioPuro: null,
+  skewDeviation: null, suddenHearingLoss: null, severeAtaxia: null,
   extensionRotationTest: null, coloracionRojaAzul: null,
   varicesDolorosas: null, aumentoTemperatura: null,
   materialVenoso: null, edemaUnilateral: null,
@@ -52,37 +55,45 @@ const defaultRedFlagsData: RedFlagsData = {
 }
 
 function Toggle({
-  label, description, value, onChange
+  label, description, value, onChange, locked, lockedMessage
 }: {
   label: string
   description?: string
   value: boolean | null
   onChange: (v: boolean | null) => void
+  locked?: boolean
+  lockedMessage?: string
 }) {
   return (
     <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
       <div className="pr-4">
         <span className="text-sm text-slate-700 font-semibold">{label}</span>
         {description && <p className="text-xs text-slate-500 mt-0.5">{description}</p>}
+        {locked && lockedMessage && (
+          <p className="text-xs text-amber-600 mt-1 font-semibold">⚠️ {lockedMessage}</p>
+        )}
       </div>
       <div className="flex gap-2 flex-shrink-0">
         <button
+          disabled={locked}
           onClick={() => onChange(true)}
           className={`px-3 py-1 rounded text-xs font-bold transition-colors ${
             value === true ? 'bg-red-100 text-red-700 border border-red-300' : 'bg-white border border-slate-200 text-slate-400'
-          }`}
+          } ${locked ? 'opacity-40 cursor-not-allowed' : ''}`}
         >SI</button>
         <button
+          disabled={locked}
           onClick={() => onChange(null)}
           className={`px-3 py-1 rounded text-xs font-bold transition-colors ${
             value === null ? 'bg-slate-200 text-slate-700 border border-slate-400' : 'bg-white border border-slate-200 text-slate-400'
-          }`}
+          } ${locked ? 'opacity-40 cursor-not-allowed' : ''}`}
         >NV</button>
         <button
+          disabled={locked}
           onClick={() => onChange(false)}
           className={`px-3 py-1 rounded text-xs font-bold transition-colors ${
             value === false ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-white border border-slate-200 text-slate-400'
-          }`}
+          } ${locked ? 'opacity-40 cursor-not-allowed' : ''}`}
         >NO</button>
       </div>
     </div>
@@ -112,17 +123,23 @@ function ScoreInput({
   )
 }
 
-type Section = '5D3N' | 'vascular' | 'fracturas' | 'tumor' | 'infeccion' | 'reuma' | 'neural'
+type Section = 'vertebrobasilar' | 'vascular' | 'fracturas' | 'tumor' | 'infeccion' | 'reuma' | 'neural'
+type VertebrobasilarSubSection = '5d3n' | 'hints'
 type FracturaSubSection = 'eess' | 'vertebral' | 'ligamento'
 
 const sections: { id: Section; label: string }[] = [
-  { id: '5D3N', label: 'Vertebrobasilar' },
+  { id: 'vertebrobasilar', label: 'Vertebrobasilar' },
   { id: 'vascular', label: 'Vascular' },
   { id: 'fracturas', label: 'Fracturas' },
   { id: 'tumor', label: 'Tumor/Cáncer' },
   { id: 'infeccion', label: 'Infección' },
   { id: 'reuma', label: 'Reuma' },
   { id: 'neural', label: 'Neural Grave' },
+]
+
+const vertebrobasilarSubSections: { id: VertebrobasilarSubSection; label: string }[] = [
+  { id: '5d3n', label: '5D/3N' },
+  { id: 'hints', label: 'HINTS+' },
 ]
 
 const fracturaSubSections: { id: FracturaSubSection; label: string }[] = [
@@ -133,8 +150,20 @@ const fracturaSubSections: { id: FracturaSubSection; label: string }[] = [
 
 export default function RedFlagsForm({ onComplete, initialData }: Props) {
   const [data, setData] = useState<RedFlagsData>(initialData ?? defaultRedFlagsData)
-  const [section, setSection] = useState<Section>('5D3N')
+  const [section, setSection] = useState<Section>('vertebrobasilar')
+  const [vbSubSection, setVbSubSection] = useState<VertebrobasilarSubSection>('5d3n')
   const [fracturaSubSection, setFracturaSubSection] = useState<FracturaSubSection>('eess')
+    const has5D3NPositive = [
+    data.dysarthria, data.dysphagia, data.diplopia, data.dizziness,
+    data.dropAttacks, data.nystagmus, data.numbness, data.nausea,
+  ].some(v => v === true)
+
+  useEffect(() => {
+    if (has5D3NPositive && data.extensionRotationTest !== null) {
+      setData(prev => ({ ...prev, extensionRotationTest: null }))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [has5D3NPositive])
 
   function set(key: keyof RedFlagsData) {
     return (value: boolean | null | number) =>
@@ -143,9 +172,14 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
 
   const sectionIndex = sections.findIndex(s => s.id === section)
   const isLast = sectionIndex === sections.length - 1
+  const vbSubIndex = vertebrobasilarSubSections.findIndex(s => s.id === vbSubSection)
   const fracturaSubIndex = fracturaSubSections.findIndex(s => s.id === fracturaSubSection)
 
   function handleNext() {
+    if (section === 'vertebrobasilar' && vbSubIndex < vertebrobasilarSubSections.length - 1) {
+      setVbSubSection(vertebrobasilarSubSections[vbSubIndex + 1].id)
+      return
+    }
     if (section === 'fracturas' && fracturaSubIndex < fracturaSubSections.length - 1) {
       setFracturaSubSection(fracturaSubSections[fracturaSubIndex + 1].id)
       return
@@ -156,13 +190,16 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
     } else {
       const next = sections[sectionIndex + 1]
       setSection(next.id)
-      if (next.id === 'fracturas') {
-        setFracturaSubSection('eess')
-      }
+      if (next.id === 'fracturas') setFracturaSubSection('eess')
+      if (next.id === 'vertebrobasilar') setVbSubSection('5d3n')
     }
   }
 
   function handlePrev() {
+    if (section === 'vertebrobasilar' && vbSubIndex > 0) {
+      setVbSubSection(vertebrobasilarSubSections[vbSubIndex - 1].id)
+      return
+    }
     if (section === 'fracturas' && fracturaSubIndex > 0) {
       setFracturaSubSection(fracturaSubSections[fracturaSubIndex - 1].id)
       return
@@ -170,9 +207,8 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
     if (sectionIndex > 0) {
       const prev = sections[sectionIndex - 1]
       setSection(prev.id)
-      if (prev.id === 'fracturas') {
-        setFracturaSubSection('ligamento')
-      }
+      if (prev.id === 'fracturas') setFracturaSubSection('ligamento')
+      if (prev.id === 'vertebrobasilar') setVbSubSection('hints')
     }
   }
 
@@ -195,55 +231,138 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
         ))}
       </div>
 
-      {/* 5D/3N (Codman) */}
-      {section === '5D3N' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>5D/3N — Signos de afectación del tronco del encéfalo (Codman)</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Toggle
-              label="Dysarthria"
-              description="¿Dificultad para articular palabras, habla pastosa o poco inteligible?"
-              value={data.dysarthria} onChange={set('dysarthria')}
-            />
-            <Toggle
-              label="Dysphagia"
-              description="¿Dificultad para tragar líquidos o sólidos, sensación de atragantamiento?"
-              value={data.dysphagia} onChange={set('dysphagia')}
-            />
-            <Toggle
-              label="Diplopia"
-              description="¿Ve dos imágenes del mismo objeto (visión doble)?"
-              value={data.diplopia} onChange={set('diplopia')}
-            />
-            <Toggle
-              label="Dizziness"
-              description="¿Mareo o vértigo intenso y súbito, sensación de giro o inestabilidad marcada?"
-              value={data.dizziness} onChange={set('dizziness')}
-            />
-            <Toggle
-              label="Drop attacks"
-              description="¿Caídas súbitas sin pérdida de conciencia ('se me fueron las piernas de golpe')?"
-              value={data.dropAttacks} onChange={set('dropAttacks')}
-            />
-            <Toggle
-              label="Nystagmus"
-              description="¿Movimiento involuntario y rítmico de los ojos?"
-              value={data.nystagmus} onChange={set('nystagmus')}
-            />
-            <Toggle
-              label="Numbness"
-              description="¿Entumecimiento facial, hemicorporal o en extremidades?"
-              value={data.numbness} onChange={set('numbness')}
-            />
-            <Toggle
-              label="Nausea"
-              description="¿Náuseas o vómitos asociados?"
-              value={data.nausea} onChange={set('nausea')}
-            />
-          </CardContent>
-        </Card>
+      {/* Vertebrobasilar — 5D/3N + HINTS+ */}
+      {section === 'vertebrobasilar' && (
+        <div className="space-y-4">
+          <div className="flex flex-wrap gap-2 pl-3 border-l-2 border-slate-300">
+            {vertebrobasilarSubSections.map((s, i) => (
+              <button
+                key={s.id}
+                onClick={() => setVbSubSection(s.id)}
+                className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+                  vbSubSection === s.id
+                    ? 'bg-slate-700 text-white'
+                    : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                }`}
+              >
+                {i + 1}. {s.label}
+              </button>
+            ))}
+          </div>
+
+          {vbSubSection === '5d3n' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>5D/3N — Signos de afectación del tronco del encéfalo (Codman)</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Toggle
+                  label="Dysarthria"
+                  description="¿Dificultad para articular palabras, habla pastosa o poco inteligible?"
+                  value={data.dysarthria} onChange={set('dysarthria')}
+                />
+                <Toggle
+                  label="Dysphagia"
+                  description="¿Dificultad para tragar líquidos o sólidos, sensación de atragantamiento?"
+                  value={data.dysphagia} onChange={set('dysphagia')}
+                />
+                <Toggle
+                  label="Diplopia"
+                  description="¿Ve dos imágenes del mismo objeto (visión doble)?"
+                  value={data.diplopia} onChange={set('diplopia')}
+                />
+                <Toggle
+                  label="Dizziness"
+                  description="¿Mareo o vértigo intenso y súbito, sensación de giro o inestabilidad marcada?"
+                  value={data.dizziness} onChange={set('dizziness')}
+                />
+                <Toggle
+                  label="Drop attacks"
+                  description="¿Caídas súbitas sin pérdida de conciencia ('se me fueron las piernas de golpe')?"
+                  value={data.dropAttacks} onChange={set('dropAttacks')}
+                />
+                <Toggle
+                  label="Nystagmus"
+                  description="¿Movimiento involuntario y rítmico de los ojos?"
+                  value={data.nystagmus} onChange={set('nystagmus')}
+                />
+                <Toggle
+                  label="Numbness"
+                  description="¿Entumecimiento facial, hemicorporal o en extremidades?"
+                  value={data.numbness} onChange={set('numbness')}
+                />
+                <Toggle
+                  label="Nausea"
+                  description="¿Náuseas o vómitos asociados?"
+                  value={data.nausea} onChange={set('nausea')}
+                />
+              </CardContent>
+            </Card>
+          )}
+
+          {vbSubSection === 'hints' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>HINTS+ — Vértigo periférico vs. central</CardTitle>
+                <p className="text-sm text-slate-500">
+                  Solo aplica en Síndrome Vestibular Agudo: vértigo continuo (horas-días) + náuseas + nistagmo presente + dificultad para caminar.
+                  Si el mareo es posicional y de segundos, sospecha VPPB — el HINTS+ no aplica en ese caso.
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Toggle
+                  label="Síndrome Vestibular Agudo (SVA)"
+                  description="¿Cumple los criterios de arriba (vértigo continuo + náuseas + nistagmo presente + dificultad para caminar)?"
+                  value={data.acuteVestibularSyndrome} onChange={set('acuteVestibularSyndrome')}
+                />
+
+                {data.acuteVestibularSyndrome === true ? (
+                  <>
+                    <Toggle
+                      label="Head Impulse Test — ¿normal?"
+                      description="⚠️ Contraintuitivo: si el paciente MANTIENE la fijación sin sacada correctora (test normal), sospecha CENTRAL. Si hace una sacada correctora (anormal), es periférico y tranquiliza."
+                      value={data.headImpulseNormal} onChange={set('headImpulseNormal')}
+                    />
+                    <Toggle
+                      label="Nistagmo vertical puro"
+                      description="¿Nistagmo vertical puro (upbeat o downbeat)? El oído interno nunca produce esto — es central hasta lo contrario."
+                      value={data.nystagmusVerticalPuro} onChange={set('nystagmusVerticalPuro')}
+                    />
+                    <Toggle
+                      label="Nistagmo direction-changing"
+                      description="¿Cambia de dirección según hacia dónde mira (derecha/izquierda)?"
+                      value={data.nystagmusCambiaDireccion} onChange={set('nystagmusCambiaDireccion')}
+                    />
+                    <Toggle
+                      label="Nistagmo rotatorio puro"
+                      description="¿Rotatorio/torsional puro, sin componente horizontal?"
+                      value={data.nystagmusRotatorioPuro} onChange={set('nystagmusRotatorioPuro')}
+                    />
+                    <Toggle
+                      label="Test of Skew (Cover-Uncover)"
+                      description="Al destapar el ojo tras 2-3s tapado, ¿hace un salto vertical corrector para realinearse (skew positivo)?"
+                      value={data.skewDeviation} onChange={set('skewDeviation')}
+                    />
+                    <Toggle
+                      label="Audición"
+                      description="¿Pérdida auditiva súbita asociada al vértigo? (sospecha arteria cerebelosa anteroinferior, rama de la basilar)"
+                      value={data.suddenHearingLoss} onChange={set('suddenHearingLoss')}
+                    />
+                    <Toggle
+                      label="Ataxia"
+                      description="¿No puede mantenerse sentado o de pie sin ayuda? Muy sugerente de lesión cerebelosa central."
+                      value={data.severeAtaxia} onChange={set('severeAtaxia')}
+                    />
+                  </>
+                ) : (
+                  <p className="text-sm text-slate-500 italic p-3 bg-slate-100 rounded-lg">
+                    El HINTS+ no está indicado si el paciente no cumple criterios de Síndrome Vestibular Agudo — marca &quot;SI&quot; arriba si los cumple para desplegar los tests.
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </div>
       )}
 
       {/* Vascular */}
@@ -253,7 +372,13 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
             <CardTitle>Vascular</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Toggle label="Extension Rotation Test (arteria vertebral y carótida)" value={data.extensionRotationTest} onChange={set('extensionRotationTest') } />
+            <Toggle
+              label="Extension Rotation Test (arteria vertebral y carótida)"
+              value={data.extensionRotationTest}
+              onChange={set('extensionRotationTest')}
+              locked={has5D3NPositive}
+              lockedMessage={has5D3NPositive ? 'No se puede valorar: ya hay una Red Flag positiva en 5D/3N (Codman) — sospecha vertebrobasilar ya confirmada.' : undefined}
+            />
             <Toggle label="Coloración roja/azul" value={data.coloracionRojaAzul} onChange={set('coloracionRojaAzul') } />
             <Toggle label="Varices visibles dolorosas" value={data.varicesDolorosas} onChange={set('varicesDolorosas') } />
             <Toggle label="Aumento de temperatura" value={data.aumentoTemperatura} onChange={set('aumentoTemperatura') } />
@@ -266,7 +391,7 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
         </Card>
       )}
 
-      {/* Fracturas — fusiona EESS, Vertebral y Ligamento en sub-pestañas */}
+      {/* Fracturas */}
       {section === 'fracturas' && (
         <div className="space-y-4">
           <div className="flex flex-wrap gap-2 pl-3 border-l-2 border-slate-300">
@@ -459,7 +584,7 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
 
       {/* Navigation */}
       <div className="flex gap-3">
-        {(sectionIndex > 0 || (section === 'fracturas' && fracturaSubIndex > 0)) && (
+        {(sectionIndex > 0 || (section === 'vertebrobasilar' && vbSubIndex > 0) || (section === 'fracturas' && fracturaSubIndex > 0)) && (
           <Button variant="outline" onClick={handlePrev}>
             ← Anterior
           </Button>

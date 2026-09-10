@@ -13,6 +13,15 @@ export interface RedFlagsData {
   nystagmus: BoolField
   numbness: BoolField
   nausea: BoolField
+  // Vertebrobasilar - HINTS+
+  acuteVestibularSyndrome: BoolField
+  headImpulseNormal: BoolField
+  nystagmusVerticalPuro: BoolField
+  nystagmusCambiaDireccion: BoolField
+  nystagmusRotatorioPuro: BoolField
+  skewDeviation: BoolField
+  suddenHearingLoss: BoolField
+  severeAtaxia: BoolField
   // Vascular
   extensionRotationTest: BoolField
   coloracionRojaAzul: BoolField
@@ -130,8 +139,32 @@ export function analyzeRedFlags(data: RedFlagsData): RedFlagResult {
     shouldRefer.push('Derivación urgente — posible afectación del tronco del encéfalo')
   }
 
+  // Vertebrobasilar - HINTS+ (solo aplica en síndrome vestibular agudo)
+  if (data.acuteVestibularSyndrome === true) {
+    const centralFindings: string[] = []
+    if (data.headImpulseNormal === true) centralFindings.push('Head Impulse Test normal')
+    if (data.nystagmusVerticalPuro === true) centralFindings.push('Nistagmo vertical puro')
+    if (data.nystagmusCambiaDireccion === true) centralFindings.push('Nistagmo direction-changing')
+    if (data.nystagmusRotatorioPuro === true) centralFindings.push('Nistagmo rotatorio puro')
+    if (data.skewDeviation === true) centralFindings.push('Test of Skew positivo')
+    if (data.suddenHearingLoss === true) centralFindings.push('Pérdida auditiva súbita')
+    if (data.severeAtaxia === true) centralFindings.push('Ataxia severa')
+
+    if (centralFindings.length > 0) {
+      critical.push(`HINTS+ compatible con causa central: ${centralFindings.join(', ')}`)
+      shouldRefer.push('Derivación urgente hospitalaria — sospecha ictus vertebrobasilar (HINTS central)')
+    }
+  }
+
   // Vascular
-  if (data.extensionRotationTest === true) {
+  const has5D3NPositive = [
+    data.dysarthria, data.dysphagia, data.diplopia, data.dizziness,
+    data.dropAttacks, data.nystagmus, data.numbness, data.nausea,
+  ].some(v => v === true)
+
+  if (has5D3NPositive) {
+    warnings.push('Extension Rotation Test no valorado — ya existe una Red Flag positiva en 5D/3N (Codman), sospecha vertebrobasilar ya confirmada')
+  } else if (data.extensionRotationTest === true) {
     critical.push('Extension Rotation Test positivo — posible afectación vertebrobasilar')
     shouldRefer.push('Derivación urgente — insuficiencia vertebrobasilar')
   }
