@@ -14,8 +14,8 @@ interface Props {
 }
 
 const defaultRedFlagsData: RedFlagsData = {
-  disartria: null, disfagia: null, diplopia: null, discinesia: null,
-  dropAtack: null, nistagmus: null, nubness: null, nauseas: null,
+  dysarthria: null, dysphagia: null, diplopia: null, dizziness: null,
+  dropAttacks: null, nystagmus: null, numbness: null, nausea: null,
   extensionRotationTest: null, coloracionRojaAzul: null,
   varicesDolorosas: null, aumentoTemperatura: null,
   materialVenoso: null, edemaUnilateral: null,
@@ -52,16 +52,20 @@ const defaultRedFlagsData: RedFlagsData = {
 }
 
 function Toggle({
-  label, value, onChange
+  label, description, value, onChange
 }: {
   label: string
+  description?: string
   value: boolean | null
   onChange: (v: boolean | null) => void
 }) {
   return (
     <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-      <span className="text-sm text-slate-700">{label}</span>
-      <div className="flex gap-2">
+      <div className="pr-4">
+        <span className="text-sm text-slate-700 font-semibold">{label}</span>
+        {description && <p className="text-xs text-slate-500 mt-0.5">{description}</p>}
+      </div>
+      <div className="flex gap-2 flex-shrink-0">
         <button
           onClick={() => onChange(true)}
           className={`px-3 py-1 rounded text-xs font-bold transition-colors ${
@@ -112,7 +116,7 @@ type Section = '5D3N' | 'vascular' | 'fracturas' | 'tumor' | 'infeccion' | 'reum
 type FracturaSubSection = 'eess' | 'vertebral' | 'ligamento'
 
 const sections: { id: Section; label: string }[] = [
-  { id: '5D3N', label: '5D/3N' },
+  { id: '5D3N', label: 'Vertebrobasilar' },
   { id: 'vascular', label: 'Vascular' },
   { id: 'fracturas', label: 'Fracturas' },
   { id: 'tumor', label: 'Tumor/Cáncer' },
@@ -142,7 +146,6 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
   const fracturaSubIndex = fracturaSubSections.findIndex(s => s.id === fracturaSubSection)
 
   function handleNext() {
-    // Dentro de Fracturas, avanza primero por las 3 sub-pestañas
     if (section === 'fracturas' && fracturaSubIndex < fracturaSubSections.length - 1) {
       setFracturaSubSection(fracturaSubSections[fracturaSubIndex + 1].id)
       return
@@ -160,7 +163,6 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
   }
 
   function handlePrev() {
-    // Dentro de Fracturas, retrocede primero por las 3 sub-pestañas
     if (section === 'fracturas' && fracturaSubIndex > 0) {
       setFracturaSubSection(fracturaSubSections[fracturaSubIndex - 1].id)
       return
@@ -193,21 +195,53 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
         ))}
       </div>
 
-      {/* 5D/3N */}
+      {/* 5D/3N (Codman) */}
       {section === '5D3N' && (
         <Card>
           <CardHeader>
-            <CardTitle>5D/3N — Signos de afectación del tronco del encéfalo</CardTitle>
+            <CardTitle>5D/3N — Signos de afectación del tronco del encéfalo (Codman)</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Toggle label="Disartria" value={data.disartria} onChange={set('disartria') } />
-            <Toggle label="Disfagia" value={data.disfagia} onChange={set('disfagia') } />
-            <Toggle label="Diplopia" value={data.diplopia} onChange={set('diplopia') } />
-            <Toggle label="Discinesia" value={data.discinesia} onChange={set('discinesia') } />
-            <Toggle label="Drop Attack" value={data.dropAtack} onChange={set('dropAtack') } />
-            <Toggle label="Nistagmus" value={data.nistagmus} onChange={set('nistagmus') } />
-            <Toggle label="Nubness / Entumecimiento" value={data.nubness} onChange={set('nubness') } />
-            <Toggle label="Náuseas" value={data.nauseas} onChange={set('nauseas') } />
+            <Toggle
+              label="Dysarthria"
+              description="¿Dificultad para articular palabras, habla pastosa o poco inteligible?"
+              value={data.dysarthria} onChange={set('dysarthria')}
+            />
+            <Toggle
+              label="Dysphagia"
+              description="¿Dificultad para tragar líquidos o sólidos, sensación de atragantamiento?"
+              value={data.dysphagia} onChange={set('dysphagia')}
+            />
+            <Toggle
+              label="Diplopia"
+              description="¿Ve dos imágenes del mismo objeto (visión doble)?"
+              value={data.diplopia} onChange={set('diplopia')}
+            />
+            <Toggle
+              label="Dizziness"
+              description="¿Mareo o vértigo intenso y súbito, sensación de giro o inestabilidad marcada?"
+              value={data.dizziness} onChange={set('dizziness')}
+            />
+            <Toggle
+              label="Drop attacks"
+              description="¿Caídas súbitas sin pérdida de conciencia ('se me fueron las piernas de golpe')?"
+              value={data.dropAttacks} onChange={set('dropAttacks')}
+            />
+            <Toggle
+              label="Nystagmus"
+              description="¿Movimiento involuntario y rítmico de los ojos?"
+              value={data.nystagmus} onChange={set('nystagmus')}
+            />
+            <Toggle
+              label="Numbness"
+              description="¿Entumecimiento facial, hemicorporal o en extremidades?"
+              value={data.numbness} onChange={set('numbness')}
+            />
+            <Toggle
+              label="Nausea"
+              description="¿Náuseas o vómitos asociados?"
+              value={data.nausea} onChange={set('nausea')}
+            />
           </CardContent>
         </Card>
       )}

@@ -4,15 +4,15 @@
 type BoolField = boolean | null
 
 export interface RedFlagsData {
-  // 5D/3N
-  disartria: BoolField
-  disfagia: BoolField
+  // 5D/3N (Codman)
+  dysarthria: BoolField
+  dysphagia: BoolField
   diplopia: BoolField
-  discinesia: BoolField
-  dropAtack: BoolField
-  nistagmus: BoolField
-  nubness: BoolField
-  nauseas: BoolField
+  dizziness: BoolField
+  dropAttacks: BoolField
+  nystagmus: BoolField
+  numbness: BoolField
+  nausea: BoolField
   // Vascular
   extensionRotationTest: BoolField
   coloracionRojaAzul: BoolField
@@ -116,15 +116,15 @@ export function analyzeRedFlags(data: RedFlagsData): RedFlagResult {
   const warnings: string[] = []
   const shouldRefer: string[] = []
 
-  // 5D/3N
-  if (data.disartria === true) critical.push('Disartria positiva')
-  if (data.disfagia === true) critical.push('Disfagia positiva')
+  // 5D/3N (Codman)
+  if (data.dysarthria === true) critical.push('Dysarthria positiva')
+  if (data.dysphagia === true) critical.push('Dysphagia positiva')
   if (data.diplopia === true) critical.push('Diplopia positiva')
-  if (data.discinesia === true) critical.push('Discinesia positiva')
-  if (data.dropAtack === true) critical.push('Drop attack positivo')
-  if (data.nistagmus === true) critical.push('Nistagmus positivo')
-  if (data.nubness === true) warnings.push('Nubness/entumecimiento positivo')
-  if (data.nauseas === true) warnings.push('Náuseas positivas')
+  if (data.dizziness === true) critical.push('Dizziness/mareo-vértigo positivo')
+  if (data.dropAttacks === true) critical.push('Drop attack positivo')
+  if (data.nystagmus === true) critical.push('Nystagmus positivo')
+  if (data.numbness === true) warnings.push('Numbness/entumecimiento positivo')
+  if (data.nausea === true) warnings.push('Nausea positiva')
 
   if (critical.length > 0) {
     shouldRefer.push('Derivación urgente — posible afectación del tronco del encéfalo')
