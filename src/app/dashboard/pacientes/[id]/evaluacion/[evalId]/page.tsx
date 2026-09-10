@@ -135,20 +135,26 @@ export default async function EvaluacionDetailPage({ params }: Props) {
                 { label: 'Aprehensión / inestabilidad', value: shoulderData.apprehension },
                 { label: 'Test de Crank', value: shoulderData.crankTest },
                 { label: "Test O'Brien", value: shoulderData.obrienTest },
-              ].map((test, i) => (
-                <tr key={i} className="hover:bg-surface-container-low transition-colors">
-                  <td className="px-6 py-3 text-sm text-on-surface">{test.label}</td>
-                  <td className="px-6 py-3">
-                    <span className={`text-xs font-bold px-3 py-1 rounded-full ${
-                      test.value
-                        ? 'bg-red-100 text-red-700'
-                        : 'bg-green-100 text-green-700'
-                    }`}>
-                      {test.value ? 'POSITIVO' : 'NEGATIVO'}
-                    </span>
-                  </td>
-                </tr>
-              ))}
+              ].map((test, i) => {
+                const isPositive = test.value === true
+                const isNegative = test.value === false
+                const label = isPositive ? 'POSITIVO' : isNegative ? 'NEGATIVO' : 'NO VALORADO'
+                const badgeClass = isPositive
+                  ? 'bg-red-100 text-red-700'
+                  : isNegative
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-surface-container text-on-surface-variant'
+                return (
+                  <tr key={i} className="hover:bg-surface-container-low transition-colors">
+                    <td className="px-6 py-3 text-sm text-on-surface">{test.label}</td>
+                    <td className="px-6 py-3">
+                      <span className={`text-xs font-bold px-3 py-1 rounded-full ${badgeClass}`}>
+                        {label}
+                      </span>
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>
