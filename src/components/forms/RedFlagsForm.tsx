@@ -125,6 +125,7 @@ function ScoreInput({
 
 type Section = 'vertebrobasilar' | 'vascular' | 'fracturas' | 'tumor' | 'infeccion' | 'reuma' | 'neural'
 type VertebrobasilarSubSection = '5d3n' | 'hints'
+type VascularSubSection = 'vascular' | 'tvp'
 type FracturaSubSection = 'eess' | 'vertebral' | 'ligamento'
 
 const sections: { id: Section; label: string }[] = [
@@ -142,6 +143,11 @@ const vertebrobasilarSubSections: { id: VertebrobasilarSubSection; label: string
   { id: 'hints', label: 'HINTS+' },
 ]
 
+const vascularSubSections: { id: VascularSubSection; label: string }[] = [
+  { id: 'vascular', label: 'Vascular' },
+  { id: 'tvp', label: 'Trombosis Venosa Profunda (TVP)' },
+]
+
 const fracturaSubSections: { id: FracturaSubSection; label: string }[] = [
   { id: 'eess', label: 'Fractura EESS' },
   { id: 'vertebral', label: 'Fractura Vertebral' },
@@ -152,8 +158,10 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
   const [data, setData] = useState<RedFlagsData>(initialData ?? defaultRedFlagsData)
   const [section, setSection] = useState<Section>('vertebrobasilar')
   const [vbSubSection, setVbSubSection] = useState<VertebrobasilarSubSection>('5d3n')
+  const [vascularSubSection, setVascularSubSection] = useState<VascularSubSection>('vascular')
   const [fracturaSubSection, setFracturaSubSection] = useState<FracturaSubSection>('eess')
-    const has5D3NPositive = [
+
+  const has5D3NPositive = [
     data.dysarthria, data.dysphagia, data.diplopia, data.dizziness,
     data.dropAttacks, data.nystagmus, data.numbness, data.nausea,
   ].some(v => v === true)
@@ -173,11 +181,16 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
   const sectionIndex = sections.findIndex(s => s.id === section)
   const isLast = sectionIndex === sections.length - 1
   const vbSubIndex = vertebrobasilarSubSections.findIndex(s => s.id === vbSubSection)
+  const vascularSubIndex = vascularSubSections.findIndex(s => s.id === vascularSubSection)
   const fracturaSubIndex = fracturaSubSections.findIndex(s => s.id === fracturaSubSection)
 
   function handleNext() {
     if (section === 'vertebrobasilar' && vbSubIndex < vertebrobasilarSubSections.length - 1) {
       setVbSubSection(vertebrobasilarSubSections[vbSubIndex + 1].id)
+      return
+    }
+    if (section === 'vascular' && vascularSubIndex < vascularSubSections.length - 1) {
+      setVascularSubSection(vascularSubSections[vascularSubIndex + 1].id)
       return
     }
     if (section === 'fracturas' && fracturaSubIndex < fracturaSubSections.length - 1) {
@@ -192,12 +205,17 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
       setSection(next.id)
       if (next.id === 'fracturas') setFracturaSubSection('eess')
       if (next.id === 'vertebrobasilar') setVbSubSection('5d3n')
+      if (next.id === 'vascular') setVascularSubSection('vascular')
     }
   }
 
   function handlePrev() {
     if (section === 'vertebrobasilar' && vbSubIndex > 0) {
       setVbSubSection(vertebrobasilarSubSections[vbSubIndex - 1].id)
+      return
+    }
+    if (section === 'vascular' && vascularSubIndex > 0) {
+      setVascularSubSection(vascularSubSections[vascularSubIndex - 1].id)
       return
     }
     if (section === 'fracturas' && fracturaSubIndex > 0) {
@@ -209,6 +227,7 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
       setSection(prev.id)
       if (prev.id === 'fracturas') setFracturaSubSection('ligamento')
       if (prev.id === 'vertebrobasilar') setVbSubSection('hints')
+      if (prev.id === 'vascular') setVascularSubSection('tvp')
     }
   }
 
@@ -365,30 +384,59 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
         </div>
       )}
 
-      {/* Vascular */}
+      {/* Vascular — Vascular + TVP */}
       {section === 'vascular' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Vascular</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Toggle
-              label="Extension Rotation Test (arteria vertebral y carótida)"
-              value={data.extensionRotationTest}
-              onChange={set('extensionRotationTest')}
-              locked={has5D3NPositive}
-              lockedMessage={has5D3NPositive ? 'No se puede valorar: ya hay una Red Flag positiva en 5D/3N (Codman) — sospecha vertebrobasilar ya confirmada.' : undefined}
-            />
-            <Toggle label="Coloración roja/azul" value={data.coloracionRojaAzul} onChange={set('coloracionRojaAzul') } />
-            <Toggle label="Varices visibles dolorosas" value={data.varicesDolorosas} onChange={set('varicesDolorosas') } />
-            <Toggle label="Aumento de temperatura" value={data.aumentoTemperatura} onChange={set('aumentoTemperatura') } />
-            <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider pt-2">Trombosis Venosa Profunda (TVP)</p>
-            <Toggle label="Presencia de material venoso (catéter, marcapasos...)" value={data.materialVenoso} onChange={set('materialVenoso') } />
-            <Toggle label="Edema unilateral EESS + signo fóvea positivo" value={data.edemaUnilateral} onChange={set('edemaUnilateral') } />
-            <Toggle label="Dolor localizado en la extremidad superior" value={data.dolorExtremidadSuperior} onChange={set('dolorExtremidadSuperior') } />
-            <Toggle label="Otro diagnóstico cardiovascular plausible" value={data.otroDiagnosticoCardiovascular} onChange={set('otroDiagnosticoCardiovascular') } />
-          </CardContent>
-        </Card>
+        <div className="space-y-4">
+          <div className="flex flex-wrap gap-2 pl-3 border-l-2 border-slate-300">
+            {vascularSubSections.map((s, i) => (
+              <button
+                key={s.id}
+                onClick={() => setVascularSubSection(s.id)}
+                className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+                  vascularSubSection === s.id
+                    ? 'bg-slate-700 text-white'
+                    : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                }`}
+              >
+                {i + 1}. {s.label}
+              </button>
+            ))}
+          </div>
+
+          {vascularSubSection === 'vascular' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Vascular</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Toggle
+                  label="Extension Rotation Test (arteria vertebral y carótida)"
+                  value={data.extensionRotationTest}
+                  onChange={set('extensionRotationTest')}
+                  locked={has5D3NPositive}
+                  lockedMessage={has5D3NPositive ? 'No se puede valorar: ya hay una Red Flag positiva en 5D/3N (Codman) — sospecha vertebrobasilar ya confirmada.' : undefined}
+                />
+                <Toggle label="Coloración roja/azul" value={data.coloracionRojaAzul} onChange={set('coloracionRojaAzul') } />
+                <Toggle label="Varices visibles dolorosas" value={data.varicesDolorosas} onChange={set('varicesDolorosas') } />
+                <Toggle label="Aumento de temperatura" value={data.aumentoTemperatura} onChange={set('aumentoTemperatura') } />
+              </CardContent>
+            </Card>
+          )}
+
+          {vascularSubSection === 'tvp' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Trombosis Venosa Profunda (TVP)</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Toggle label="Presencia de material venoso (catéter, marcapasos...)" value={data.materialVenoso} onChange={set('materialVenoso') } />
+                <Toggle label="Edema unilateral EESS + signo fóvea positivo" value={data.edemaUnilateral} onChange={set('edemaUnilateral') } />
+                <Toggle label="Dolor localizado en la extremidad superior" value={data.dolorExtremidadSuperior} onChange={set('dolorExtremidadSuperior') } />
+                <Toggle label="Otro diagnóstico cardiovascular plausible" value={data.otroDiagnosticoCardiovascular} onChange={set('otroDiagnosticoCardiovascular') } />
+              </CardContent>
+            </Card>
+          )}
+        </div>
       )}
 
       {/* Fracturas */}
@@ -584,13 +632,19 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
 
       {/* Navigation */}
       <div className="flex gap-3">
-        {(sectionIndex > 0 || (section === 'vertebrobasilar' && vbSubIndex > 0) || (section === 'fracturas' && fracturaSubIndex > 0)) && (
+        {(sectionIndex > 0
+          || (section === 'vertebrobasilar' && vbSubIndex > 0)
+          || (section === 'vascular' && vascularSubIndex > 0)
+          || (section === 'fracturas' && fracturaSubIndex > 0)) && (
           <Button variant="outline" onClick={handlePrev}>
             ← Anterior
           </Button>
         )}
         <Button onClick={handleNext} className="flex-1">
-          {isLast && !(section === 'fracturas' && fracturaSubIndex < fracturaSubSections.length - 1) ? 'Finalizar Red Flags →' : 'Siguiente →'}
+          {isLast
+            && !(section === 'fracturas' && fracturaSubIndex < fracturaSubSections.length - 1)
+            && !(section === 'vascular' && vascularSubIndex < vascularSubSections.length - 1)
+            ? 'Finalizar Red Flags →' : 'Siguiente →'}
         </Button>
       </div>
     </div>
