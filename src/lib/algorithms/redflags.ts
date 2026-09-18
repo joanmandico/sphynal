@@ -48,7 +48,11 @@ export interface RedFlagsData {
   fracturaVertebralDescartadaRx: BoolField
   antecedenteTraumatismoCuello: BoolField
   edad65oMas: BoolField
-  mecanismosPeligrosos: BoolField
+  mecanismoCaidaAltura: BoolField
+  mecanismoCargaAxial: BoolField
+  mecanismoAccidenteVehiculo: BoolField
+  mecanismoVehiculoRecreativo: BoolField
+  mecanismoBicicleta: BoolField
   colisionTrasera: BoolField
   puedeEstarSentado: BoolField
   ambulanteDesdeAccidente: BoolField
@@ -63,12 +67,39 @@ export interface RedFlagsData {
   testCizallamientoAnterior: BoolField
   testEstrésLigamentoAlar: BoolField
   // Tumor
-  sintomatologiaTumor: BoolField
+  tumorPerdidaPeso: BoolField
+  tumorFatigaDebilidad: BoolField
+  tumorDolorPersistente: BoolField
+  tumorCambiosPiel: BoolField
+  tumorSangradoAnormal: BoolField
+  tumorTosPersistente: BoolField
+  tumorDificultadTragar: BoolField
+  tumorBultosMasas: BoolField
+  tumorCambiosSenos: BoolField
+  tumorGanglios: BoolField
   // Infección
-  sintomatologiaInfeccion: BoolField
+  infeccionFiebre: BoolField
+  infeccionFatiga: BoolField
+  infeccionEnrojecimientoHinchazon: BoolField
+  infeccionSecrecionesAnormales: BoolField
+  infeccionTosCongestion: BoolField
+  infeccionDiarreaVomitos: BoolField
+  infeccionDolorOrinar: BoolField
+  infeccionAumentoFrecuenciaCardiaca: BoolField
   // Reuma
-  afectacionesCutaneas: BoolField
-  poliartralgia: BoolField
+  reumaAfectacionesCutaneas: BoolField
+  reumaErupcionesCutaneas: BoolField
+  reumaEnrojecimientoPiel: BoolField
+  reumaSequedadDescamacion: BoolField
+  reumaLesionesUlcerativas: BoolField
+  reumaAmpollasVesiculares: BoolField
+  reumaHinchazon: BoolField
+  reumaLesionesEscamosas: BoolField
+  reumaUlcerasOrales: BoolField
+  reumaOjosRojosSecos: BoolField
+  reumaPoliartralgia: BoolField
+  reumaEdad20a40: BoolField
+  reumaDebutSacroileitisTalalgia: BoolField
   // Neural grave
   problemasMotores: BoolField
   problemasSensitivos: BoolField
@@ -203,7 +234,15 @@ export function analyzeRedFlags(data: RedFlagsData): RedFlagResult {
 
   // Fracturas vertebrales
   if (data.fracturaVertebralDescartadaRx !== true) {
-    if (data.edad65oMas === true || data.mecanismosPeligrosos === true) {
+    const hasMecanismoPeligroso = [
+      data.mecanismoCaidaAltura,
+      data.mecanismoCargaAxial,
+      data.mecanismoAccidenteVehiculo,
+      data.mecanismoVehiculoRecreativo,
+      data.mecanismoBicicleta,
+    ].some(v => v === true)
+
+    if (data.edad65oMas === true || hasMecanismoPeligroso) {
       critical.push('Factor de alto riesgo fractura cervical — edad ≥65 o mecanismo peligroso')
       shouldRefer.push('Derivación urgente — sospecha fractura cervical')
     }
@@ -220,21 +259,64 @@ export function analyzeRedFlags(data: RedFlagsData): RedFlagResult {
   }
 
   // Tumor
-  if (data.sintomatologiaTumor === true) {
-    warnings.push('Sintomatología compatible con tumor/cáncer')
+  const tumorFindings = [
+    { value: data.tumorPerdidaPeso, label: 'Pérdida de peso inexplicada' },
+    { value: data.tumorFatigaDebilidad, label: 'Fatiga y debilidad persistentes' },
+    { value: data.tumorDolorPersistente, label: 'Dolor persistente o recurrente sin causa aparente' },
+    { value: data.tumorCambiosPiel, label: 'Cambios en la piel' },
+    { value: data.tumorSangradoAnormal, label: 'Sangrado anormal o cambios intestinales/urinarios' },
+    { value: data.tumorTosPersistente, label: 'Tos persistente o cambios en la voz' },
+    { value: data.tumorDificultadTragar, label: 'Dificultades para tragar' },
+    { value: data.tumorBultosMasas, label: 'Bultos o masas' },
+    { value: data.tumorCambiosSenos, label: 'Cambios en los senos' },
+    { value: data.tumorGanglios, label: 'Cambios en los ganglios linfáticos' },
+  ].filter(f => f.value === true)
+
+  if (tumorFindings.length > 0) {
+    warnings.push(`Sintomatología compatible con tumor/cáncer: ${tumorFindings.map(f => f.label).join(', ')}`)
     shouldRefer.push('Derivación médica — descartar proceso neoplásico')
   }
 
   // Infección
-  if (data.sintomatologiaInfeccion === true) {
-    warnings.push('Sintomatología compatible con infección')
+  const infeccionFindings = [
+    { value: data.infeccionFiebre, label: 'Fiebre' },
+    { value: data.infeccionFatiga, label: 'Fatiga' },
+    { value: data.infeccionEnrojecimientoHinchazon, label: 'Enrojecimiento e hinchazón' },
+    { value: data.infeccionSecrecionesAnormales, label: 'Secreciones anormales' },
+    { value: data.infeccionTosCongestion, label: 'Tos, estornudos y congestión nasal' },
+    { value: data.infeccionDiarreaVomitos, label: 'Diarrea o vómitos' },
+    { value: data.infeccionDolorOrinar, label: 'Dolor al orinar' },
+    { value: data.infeccionAumentoFrecuenciaCardiaca, label: 'Aumento de la frecuencia cardíaca' },
+  ].filter(f => f.value === true)
+
+  if (infeccionFindings.length > 0) {
+    warnings.push(`Sintomatología compatible con infección: ${infeccionFindings.map(f => f.label).join(', ')}`)
     shouldRefer.push('Derivación médica — descartar proceso infeccioso')
   }
 
   // Reuma
-  if (data.afectacionesCutaneas === true || data.poliartralgia === true) {
-    warnings.push('Posible afectación reumática')
-    shouldRefer.push('Derivación reumatología — descartar enfermedad reumática')
+  const reumaCutaneaFindings = [
+    { value: data.reumaErupcionesCutaneas, label: 'Erupciones cutáneas (manchas, parches, pápulas, pústulas, vesículas o placas)' },
+    { value: data.reumaEnrojecimientoPiel, label: 'Enrojecimiento de la piel (eritema) en áreas afectadas' },
+    { value: data.reumaSequedadDescamacion, label: 'Sequedad y descamación' },
+    { value: data.reumaLesionesUlcerativas, label: 'Lesiones ulcerativas' },
+    { value: data.reumaAmpollasVesiculares, label: 'Ampollas / Lesiones vesiculares' },
+    { value: data.reumaHinchazon, label: 'Hinchazón' },
+    { value: data.reumaLesionesEscamosas, label: 'Lesiones escamosas' },
+    { value: data.reumaUlcerasOrales, label: 'Úlceras orales' },
+    { value: data.reumaOjosRojosSecos, label: 'Ojos rojos o secos' },
+  ].filter(f => f.value === true)
+
+  if (reumaCutaneaFindings.length > 0) {
+    warnings.push(`Afectaciones cutáneas o membranas mucosas: ${reumaCutaneaFindings.map(f => f.label).join(', ')}`)
+    warnings.push('Sintomatología reumática')
+    shouldRefer.push('Posible patología reumática — valorar en analítica (HLA-B27, PCR, VSG)')
+  }
+
+  if (data.reumaPoliartralgia === true && data.reumaEdad20a40 === true && data.reumaDebutSacroileitisTalalgia === true) {
+    warnings.push('Poliartralgias con paciente de 20 a 40 años y debut con sacroileítis/talalgia')
+    warnings.push('Sintomatología reumática')
+    shouldRefer.push('Posible patología reumática — alta probabilidad de Espondilitis Anquilosante, valorar en analítica (HLA-B27, PCR, VSG)')
   }
 
   // Neural grave

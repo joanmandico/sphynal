@@ -174,18 +174,58 @@ export function buildRedFlagsReport(data: RedFlagsData): ReportSection[] {
   }
 
   // Tumor
-  const tumorLine = line('Sintomatología relacionada con tumor/cáncer', data.sintomatologiaTumor)
-  if (tumorLine) sections.push({ title: 'Tumor / Cáncer', lines: [tumorLine] })
+  const tumorLines = lines(
+    line('Pérdida de peso inexplicada', data.tumorPerdidaPeso),
+    line('Fatiga y debilidad persistentes', data.tumorFatigaDebilidad),
+    line('Dolor persistente o recurrente sin causa aparente', data.tumorDolorPersistente),
+    line('Cambios en la piel (crecimientos, manchas, cambios en lunares)', data.tumorCambiosPiel),
+    line('Sangrado anormal o cambios en hábitos intestinales/urinarios', data.tumorSangradoAnormal),
+    line('Tos persistente o cambios en la voz', data.tumorTosPersistente),
+    line('Dificultades para tragar', data.tumorDificultadTragar),
+    line('Bultos o masas en cualquier parte del cuerpo', data.tumorBultosMasas),
+    line('Cambios en los senos (protuberancias o cambios en la piel)', data.tumorCambiosSenos),
+    line('Cambios en los ganglios linfáticos (inflamados, dolorosos o palpables)', data.tumorGanglios),
+  )
+  if (tumorLines.length > 0) sections.push({ title: 'Tumor / Cáncer', lines: tumorLines })
 
   // Infección
-  const infLine = line('Sintomatología relacionada con infección', data.sintomatologiaInfeccion)
-  if (infLine) sections.push({ title: 'Infección', lines: [infLine] })
+  const infLines = lines(
+    line('Fiebre', data.infeccionFiebre),
+    line('Fatiga', data.infeccionFatiga),
+    line('Enrojecimiento e hinchazón', data.infeccionEnrojecimientoHinchazon),
+    line('Secreciones anormales', data.infeccionSecrecionesAnormales),
+    line('Tos, estornudos y congestión nasal', data.infeccionTosCongestion),
+    line('Diarrea o vómitos', data.infeccionDiarreaVomitos),
+    line('Dolor al orinar', data.infeccionDolorOrinar),
+    line('Aumento de la frecuencia cardíaca', data.infeccionAumentoFrecuenciaCardiaca),
+  )
+  if (infLines.length > 0) sections.push({ title: 'Infección', lines: infLines })
 
   // Reuma
   const reumaLines = lines(
-    line('Afectaciones cutáneas o membrana mucosas', data.afectacionesCutaneas),
-    line('Poliartralgia', data.poliartralgia),
+    line('Afectaciones cutáneas o membranas mucosas', data.reumaAfectacionesCutaneas),
   )
+  if (data.reumaAfectacionesCutaneas === true) {
+    reumaLines.push(...lines(
+      line('Erupciones cutáneas (manchas, parches, pápulas, pústulas, vesículas o placas)', data.reumaErupcionesCutaneas),
+      line('Enrojecimiento de la piel (eritema) en áreas afectadas', data.reumaEnrojecimientoPiel),
+      line('Sequedad y descamación', data.reumaSequedadDescamacion),
+      line('Lesiones ulcerativas', data.reumaLesionesUlcerativas),
+      line('Ampollas / Lesiones vesiculares', data.reumaAmpollasVesiculares),
+      line('Hinchazón', data.reumaHinchazon),
+      line('Lesiones escamosas', data.reumaLesionesEscamosas),
+      line('Úlceras orales', data.reumaUlcerasOrales),
+      line('Ojos rojos o secos', data.reumaOjosRojosSecos),
+    ))
+  }
+  const poliartralgiaLine = line('Poliartralgia (dolor en más de una articulación)', data.reumaPoliartralgia)
+  if (poliartralgiaLine) reumaLines.push(poliartralgiaLine)
+  if (data.reumaPoliartralgia === true) {
+    reumaLines.push(...lines(
+      line('Paciente de 20 a 40 años', data.reumaEdad20a40),
+      line('Debut con sacroileítis / talalgia', data.reumaDebutSacroileitisTalalgia),
+    ))
+  }
   if (reumaLines.length > 0) sections.push({ title: 'Reuma', lines: reumaLines })
 
   // Neural Grave

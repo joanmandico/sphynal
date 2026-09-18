@@ -40,8 +40,17 @@ const defaultRedFlagsData: RedFlagsData = {
   antecedenteTraumatismoCabezaCuello: null, cincoD3N: null,
   sindromeDown: null, artritisReumatoide: null,
   testCizallamientoAnterior: null, testEstrésLigamentoAlar: null,
-  sintomatologiaTumor: null, sintomatologiaInfeccion: null,
-  afectacionesCutaneas: null, poliartralgia: null,
+  tumorPerdidaPeso: null, tumorFatigaDebilidad: null, tumorDolorPersistente: null,
+  tumorCambiosPiel: null, tumorSangradoAnormal: null, tumorTosPersistente: null,
+  tumorDificultadTragar: null, tumorBultosMasas: null, tumorCambiosSenos: null,
+  tumorGanglios: null,
+  infeccionFiebre: null, infeccionFatiga: null, infeccionEnrojecimientoHinchazon: null,
+  infeccionSecrecionesAnormales: null, infeccionTosCongestion: null, infeccionDiarreaVomitos: null,
+  infeccionDolorOrinar: null, infeccionAumentoFrecuenciaCardiaca: null,
+  reumaAfectacionesCutaneas: null, reumaErupcionesCutaneas: null, reumaEnrojecimientoPiel: null,
+  reumaSequedadDescamacion: null, reumaLesionesUlcerativas: null, reumaAmpollasVesiculares: null,
+  reumaHinchazon: null, reumaLesionesEscamosas: null, reumaUlcerasOrales: null, reumaOjosRojosSecos: null,
+  reumaPoliartralgia: null, reumaEdad20a40: null, reumaDebutSacroileitisTalalgia: null,
   problemasMotores: null, problemasSensitivos: null, problemasCognitivos: null,
   nervioOlfatorio: null, agudezaVisual: null, cuadrantesVisuales: null,
   funcionRefleja: null, evaluacionPupila: null, evaluacionMovimientoOcular: null,
@@ -594,7 +603,16 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
             <CardTitle>Tumor / Cáncer</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Toggle label="Sintomatología relacionada con tumor/cáncer" value={data.sintomatologiaTumor} onChange={set('sintomatologiaTumor') } />
+            <Toggle label="Pérdida de peso inexplicada" value={data.tumorPerdidaPeso} onChange={set('tumorPerdidaPeso')} />
+            <Toggle label="Fatiga y debilidad persistentes" value={data.tumorFatigaDebilidad} onChange={set('tumorFatigaDebilidad')} />
+            <Toggle label="Dolor persistente o recurrente sin causa aparente" value={data.tumorDolorPersistente} onChange={set('tumorDolorPersistente')} />
+            <Toggle label="Cambios en la piel, como crecimientos, manchas, o cambios en tamaño/forma de lunares" value={data.tumorCambiosPiel} onChange={set('tumorCambiosPiel')} />
+            <Toggle label="Sangrado anormal o cambios en los hábitos intestinales o urinarios" value={data.tumorSangradoAnormal} onChange={set('tumorSangradoAnormal')} />
+            <Toggle label="Tos persistente o cambios en la voz" value={data.tumorTosPersistente} onChange={set('tumorTosPersistente')} />
+            <Toggle label="Dificultades para tragar" value={data.tumorDificultadTragar} onChange={set('tumorDificultadTragar')} />
+            <Toggle label="Bultos o masas en cualquier parte del cuerpo" value={data.tumorBultosMasas} onChange={set('tumorBultosMasas')} />
+            <Toggle label="Cambios en los senos, como protuberancias o cambios en la piel" value={data.tumorCambiosSenos} onChange={set('tumorCambiosSenos')} />
+            <Toggle label="Cambios en los ganglios linfáticos (inflamados, dolorosos o palpables)" value={data.tumorGanglios} onChange={set('tumorGanglios')} />
           </CardContent>
         </Card>
       )}
@@ -606,7 +624,14 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
             <CardTitle>Infección</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Toggle label="Sintomatología relacionada con infección" value={data.sintomatologiaInfeccion} onChange={set('sintomatologiaInfeccion') } />
+            <Toggle label="Fiebre" value={data.infeccionFiebre} onChange={set('infeccionFiebre')} />
+            <Toggle label="Fatiga" value={data.infeccionFatiga} onChange={set('infeccionFatiga')} />
+            <Toggle label="Enrojecimiento e hinchazón" value={data.infeccionEnrojecimientoHinchazon} onChange={set('infeccionEnrojecimientoHinchazon')} />
+            <Toggle label="Secreciones anormales" value={data.infeccionSecrecionesAnormales} onChange={set('infeccionSecrecionesAnormales')} />
+            <Toggle label="Tos, estornudos y congestión nasal" value={data.infeccionTosCongestion} onChange={set('infeccionTosCongestion')} />
+            <Toggle label="Diarrea o vómitos" value={data.infeccionDiarreaVomitos} onChange={set('infeccionDiarreaVomitos')} />
+            <Toggle label="Dolor al orinar" value={data.infeccionDolorOrinar} onChange={set('infeccionDolorOrinar')} />
+            <Toggle label="Aumento de la frecuencia cardíaca" value={data.infeccionAumentoFrecuenciaCardiaca} onChange={set('infeccionAumentoFrecuenciaCardiaca')} />
           </CardContent>
         </Card>
       )}
@@ -618,8 +643,33 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
             <CardTitle>Reuma</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Toggle label="Afectaciones cutáneas o membrana mucosas" value={data.afectacionesCutaneas} onChange={set('afectacionesCutaneas') } />
-            <Toggle label="Poliartralgia" value={data.poliartralgia} onChange={set('poliartralgia') } />
+            <Toggle label="Afectaciones cutáneas o membranas mucosas" value={data.reumaAfectacionesCutaneas} onChange={set('reumaAfectacionesCutaneas')} />
+            {data.reumaAfectacionesCutaneas === true && (
+              <>
+                <Toggle label="Erupciones cutáneas (manchas, parches, pápulas, pústulas, vesículas o placas en la piel)" value={data.reumaErupcionesCutaneas} onChange={set('reumaErupcionesCutaneas')} />
+                <Toggle label="Enrojecimiento de la piel (eritema) en áreas afectadas" value={data.reumaEnrojecimientoPiel} onChange={set('reumaEnrojecimientoPiel')} />
+                <Toggle label="Sequedad y descamación" value={data.reumaSequedadDescamacion} onChange={set('reumaSequedadDescamacion')} />
+                <Toggle label="Lesiones ulcerativas" value={data.reumaLesionesUlcerativas} onChange={set('reumaLesionesUlcerativas')} />
+                <Toggle label="Ampollas / Lesiones vesiculares" value={data.reumaAmpollasVesiculares} onChange={set('reumaAmpollasVesiculares')} />
+                <Toggle label="Hinchazón" value={data.reumaHinchazon} onChange={set('reumaHinchazon')} />
+                <Toggle label="Lesiones escamosas" value={data.reumaLesionesEscamosas} onChange={set('reumaLesionesEscamosas')} />
+                <Toggle label="Úlceras orales" value={data.reumaUlcerasOrales} onChange={set('reumaUlcerasOrales')} />
+                <Toggle label="Ojos rojos o secos" value={data.reumaOjosRojosSecos} onChange={set('reumaOjosRojosSecos')} />
+              </>
+            )}
+
+            <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider pt-2">Poliartralgia</p>
+            <Toggle label="Dolor en más de una articulación (poliartralgia)" value={data.reumaPoliartralgia} onChange={set('reumaPoliartralgia')} />
+            {data.reumaPoliartralgia === true && (
+              <>
+                <Toggle
+                  label="Paciente de 20 a 40 años"
+                  description="Provisional — se marca manualmente por ahora, pendiente de automatizar a partir de la fecha de nacimiento del paciente."
+                  value={data.reumaEdad20a40} onChange={set('reumaEdad20a40')}
+                />
+                <Toggle label="Debut con sacroileítis / talalgia" value={data.reumaDebutSacroileitisTalalgia} onChange={set('reumaDebutSacroileitisTalalgia')} />
+              </>
+            )}
           </CardContent>
         </Card>
       )}
