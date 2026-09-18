@@ -30,7 +30,10 @@ const defaultRedFlagsData: RedFlagsData = {
   sensibilidadPalpacion: null, hematoma: null,
   pruebaAuscultacionDiapason: null,
   fracturaVertebralDescartadaRx: null, antecedenteTraumatismoCuello: null,
-  edad65oMas: null, mecanismosPeligrosos: null, colisionTrasera: null,
+  edad65oMas: null,
+  mecanismoCaidaAltura: null, mecanismoCargaAxial: null, mecanismoAccidenteVehiculo: null,
+  mecanismoVehiculoRecreativo: null, mecanismoBicicleta: null,
+  colisionTrasera: null,
   puedeEstarSentado: null, ambulanteDesdeAccidente: null,
   retrasoInicioDolor: null, noSignosSensibilidadLineaMedia: null,
   noPuedeRotarCabeza45: null,
@@ -161,10 +164,13 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
   const [vascularSubSection, setVascularSubSection] = useState<VascularSubSection>('vascular')
   const [fracturaSubSection, setFracturaSubSection] = useState<FracturaSubSection>('eess')
 
-  const has5D3NPositive = [
+  const fiveD3NFields = [
     data.dysarthria, data.dysphagia, data.diplopia, data.dizziness,
     data.dropAttacks, data.nystagmus, data.numbness, data.nausea,
-  ].some(v => v === true)
+  ]
+  const has5D3NPositive = fiveD3NFields.some(v => v === true)
+  const fiveD3NAllAnswered = fiveD3NFields.every(v => v !== null)
+  const derivedCincoD3N: boolean | null = has5D3NPositive ? true : (fiveD3NAllAnswered ? false : null)
 
   useEffect(() => {
     if (has5D3NPositive && data.extensionRotationTest !== null) {
@@ -172,6 +178,19 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [has5D3NPositive])
+
+  useEffect(() => {
+    if (data.cincoD3N !== derivedCincoD3N) {
+      setData(prev => ({ ...prev, cincoD3N: derivedCincoD3N }))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [derivedCincoD3N])
+    useEffect(() => {
+    if (data.antecedenteTraumatismoCabezaCuello !== data.antecedenteTraumatismoCuello) {
+      setData(prev => ({ ...prev, antecedenteTraumatismoCabezaCuello: data.antecedenteTraumatismoCuello }))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data.antecedenteTraumatismoCuello])
 
   function set(key: keyof RedFlagsData) {
     return (value: boolean | null | number) =>
@@ -480,7 +499,11 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
                         <Toggle label="Deformidad" value={data.deformidad} onChange={set('deformidad') } />
                         <Toggle label="Sensibilidad a la palpación" value={data.sensibilidadPalpacion} onChange={set('sensibilidadPalpacion') } />
                         <Toggle label="Hematoma" value={data.hematoma} onChange={set('hematoma') } />
-                        <Toggle label="Prueba de auscultación del diapasón positiva" value={data.pruebaAuscultacionDiapason} onChange={set('pruebaAuscultacionDiapason') } />
+                        <Toggle
+                          label="Prueba de auscultación del diapasón positiva"
+                          description="Diapasón 128Hz + estetoscopio. Estetoscopio proximal a la zona sospechosa, activar el diapasón, colocarlo distal a la lesión, escuchar 6-8s y comparar con el lado sano. Positiva = sonido disminuido o ausente respecto al lado sano → sospecha de fractura → derivar."
+                          value={data.pruebaAuscultacionDiapason} onChange={set('pruebaAuscultacionDiapason')}
+                        />
                       </>
                     )}
                   </>
@@ -501,7 +524,12 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
                     <Toggle label="Antecedente de traumatismo cabeza/cuello" value={data.antecedenteTraumatismoCuello} onChange={set('antecedenteTraumatismoCuello') } />
                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider pt-2">Factores de alto riesgo</p>
                     <Toggle label="Edad 65 o más" value={data.edad65oMas} onChange={set('edad65oMas') } />
-                    <Toggle label="Mecanismos peligrosos" value={data.mecanismosPeligrosos} onChange={set('mecanismosPeligrosos') } />
+                    <p className="text-xs text-slate-600 font-semibold pt-1">Mecanismos peligrosos</p>
+                    <Toggle label="Caída desde > 3m/5 escalones" value={data.mecanismoCaidaAltura} onChange={set('mecanismoCaidaAltura') } />
+                    <Toggle label="Carga axial en la cabeza (saltos al agua)" value={data.mecanismoCargaAxial} onChange={set('mecanismoCargaAxial') } />
+                    <Toggle label="Accidente en vehículos motorizados (>100 km/h), vuelco" value={data.mecanismoAccidenteVehiculo} onChange={set('mecanismoAccidenteVehiculo') } />
+                    <Toggle label="Caída de vehículo recreativo motorizado" value={data.mecanismoVehiculoRecreativo} onChange={set('mecanismoVehiculoRecreativo') } />
+                    <Toggle label="Golpe en bicicleta o colisión" value={data.mecanismoBicicleta} onChange={set('mecanismoBicicleta') } />
                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider pt-2">Factores de bajo riesgo</p>
                     <Toggle label="Colisión trasera simple" value={data.colisionTrasera} onChange={set('colisionTrasera') } />
                     <Toggle label="Puede estar sentado durante un tiempo" value={data.puedeEstarSentado} onChange={set('puedeEstarSentado') } />
@@ -521,8 +549,34 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
                 <CardTitle>Integridad Ligamento Transverso/Alar</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Toggle label="Antecedente de traumatismo cabeza/cuello" value={data.antecedenteTraumatismoCabezaCuello} onChange={set('antecedenteTraumatismoCabezaCuello') } />
-                <Toggle label="5D o 3N Red Flags presentes" value={data.cincoD3N} onChange={set('cincoD3N') } />
+                <Toggle
+                  label="Antecedente de traumatismo cabeza/cuello"
+                  description="Se calcula automáticamente a partir de la respuesta en el apartado Fractura Vertebral — no se puede editar aquí."
+                  value={data.antecedenteTraumatismoCabezaCuello}
+                  onChange={set('antecedenteTraumatismoCabezaCuello')}
+                  locked={true}
+                  lockedMessage={
+                    data.antecedenteTraumatismoCuello === null
+                      ? 'Aún no se ha valorado en Fractura Vertebral.'
+                      : data.antecedenteTraumatismoCuello
+                      ? 'Marcado como SI en Fractura Vertebral.'
+                      : 'Marcado como NO en Fractura Vertebral.'
+                  }
+                />
+                <Toggle
+                  label="5D o 3N Red Flags presentes"
+                  description="Se calcula automáticamente a partir de las respuestas del apartado 5D/3N (Vertebrobasilar) — no se puede editar aquí."
+                  value={data.cincoD3N}
+                  onChange={set('cincoD3N')}
+                  locked={true}
+                  lockedMessage={
+                    has5D3NPositive
+                      ? 'Al menos una Red Flag de 5D/3N es positiva.'
+                      : fiveD3NAllAnswered
+                      ? 'Las 8 Red Flags de 5D/3N se han marcado como negativas.'
+                      : 'Aún faltan campos de 5D/3N por valorar.'
+                  }
+                />
                 <Toggle label="Síndrome de Down" value={data.sindromeDown} onChange={set('sindromeDown') } />
                 <Toggle label="Artritis Reumatoide" value={data.artritisReumatoide} onChange={set('artritisReumatoide') } />
                 <Toggle label="Test de cizallamiento anterior (Lig. Transverso) positivo" value={data.testCizallamientoAnterior} onChange={set('testCizallamientoAnterior') } />

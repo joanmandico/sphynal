@@ -143,7 +143,11 @@ export function buildRedFlagsReport(data: RedFlagsData): ReportSection[] {
     const vertLines = lines(
       line('Antecedente de traumatismo cabeza/cuello', data.antecedenteTraumatismoCuello),
       line('Edad 65 o más', data.edad65oMas),
-      line('Mecanismos peligrosos', data.mecanismosPeligrosos),
+      line('Mecanismo peligroso: Caída desde > 3m/5 escalones', data.mecanismoCaidaAltura),
+      line('Mecanismo peligroso: Carga axial en la cabeza (saltos al agua)', data.mecanismoCargaAxial),
+      line('Mecanismo peligroso: Accidente en vehículos motorizados (>100 km/h), vuelco', data.mecanismoAccidenteVehiculo),
+      line('Mecanismo peligroso: Caída de vehículo recreativo motorizado', data.mecanismoVehiculoRecreativo),
+      line('Mecanismo peligroso: Golpe en bicicleta o colisión', data.mecanismoBicicleta),
       line('Colisión trasera simple', data.colisionTrasera),
       line('Puede estar sentado durante un tiempo', data.puedeEstarSentado),
       line('Ambulante en todo momento desde el accidente', data.ambulanteDesdeAccidente),
