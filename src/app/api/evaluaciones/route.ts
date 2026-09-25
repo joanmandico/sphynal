@@ -30,6 +30,7 @@ export async function POST(req: NextRequest) {
               previousDiagnosisWhat: history.previousDiagnosisWhat || null,
               previousDiagnosisBy: history.previousDiagnosisBy || null,
               consultReason: history.consultReason || '',
+              consultLocation: history.consultLocation || null,
               painCharacterType: history.painCharacterType || null,
               radiatesPain: history.radiatesPain ?? null,
               radiatesTo: history.radiatesTo || null,

@@ -5,6 +5,7 @@ import {
   View,
   StyleSheet,
 } from '@react-pdf/renderer'
+import { ClinicalHistory } from '@prisma/client'
 import { RedFlagsData, RedFlagResult } from '@/lib/algorithms/redflags'
 import { DiagnosisResult } from '@/lib/protocols/types'
 import { buildRedFlagsReport } from './redFlagsReport'
@@ -13,7 +14,10 @@ const styles = StyleSheet.create({
   page: {
     fontFamily: 'Helvetica',
     fontSize: 10,
-    padding: 40,
+    paddingTop: 40,
+    paddingBottom: 70,
+    paddingLeft: 40,
+    paddingRight: 40,
     color: '#1e293b',
   },
   header: {
@@ -56,6 +60,16 @@ const styles = StyleSheet.create({
     color: '#64748b',
     fontStyle: 'italic',
     marginBottom: 4,
+  },
+  blockLabel: {
+    fontSize: 10,
+    color: '#475569',
+    marginBottom: 2,
+  },
+  paragraphText: {
+    fontSize: 9,
+    color: '#0f172a',
+    marginTop: 2,
   },
   row: {
     flexDirection: 'row',
@@ -158,6 +172,7 @@ interface Props {
     sport?: string | null
   }
   evaluationDate: Date
+  clinicalHistory: ClinicalHistory | null
   redFlagsData: RedFlagsData
   redFlagsResult: RedFlagResult
   shoulderData: Record<string, unknown> | null
@@ -176,9 +191,60 @@ function BoolRow({ label, value }: { label: string; value: boolean | null | unde
   )
 }
 
+function YesNoRow({ label, value }: { label: string; value: boolean | null | undefined }) {
+  const result = value === true ? 'Sí' : value === false ? 'No' : 'No indicado'
+  const style = value === null || value === undefined ? styles.notEvaluated : styles.value
+  return (
+    <View style={styles.row}>
+      <Text style={styles.label}>{label}</Text>
+      <Text style={style}>{result}</Text>
+    </View>
+  )
+}
+
+function ValueRow({ label, value }: { label: string; value?: string | null }) {
+  return (
+    <View style={styles.row}>
+      <Text style={styles.label}>{label}</Text>
+      <Text style={styles.value}>{value || '—'}</Text>
+    </View>
+  )
+}
+
+function TextBlock({ label, value }: { label: string; value?: string | null }) {
+  return (
+    <View style={{ marginBottom: 6 }}>
+      <Text style={styles.blockLabel}>{label}</Text>
+      <Text style={styles.paragraphText}>{value || '—'}</Text>
+    </View>
+  )
+}
+
+function painCharacterLabel(v: string | null | undefined) {
+  if (v === 'PUNTUAL') return 'A punta de dedo'
+  if (v === 'GENERAL') return 'General'
+  return '—'
+}
+
+function painTimingLabel(v: string | null | undefined) {
+  if (v === 'DIA') return 'Durante el día'
+  if (v === 'NOCHE') return 'Durante la noche'
+  if (v === 'AMBOS') return 'Ambos'
+  return '—'
+}
+
+function evolutionLabel(v: string | null | undefined) {
+  if (v === 'MEJORANDO') return 'Mejorando'
+  if (v === 'EMPEORANDO') return 'Empeorando'
+  if (v === 'IGUAL') return 'Se mantiene igual'
+  if (v === 'ALTIBAJOS') return 'Con altibajos'
+  return '—'
+}
+
 export function InformeHombro({
   patient,
   evaluationDate,
+  clinicalHistory,
   redFlagsData,
   redFlagsResult,
   shoulderData,
@@ -226,6 +292,94 @@ export function InformeHombro({
             </Text>
           </View>
         </View>
+
+        {clinicalHistory && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>HISTORIA CLÍNICA</Text>
+
+            <View style={styles.subSectionBlock}>
+              <Text style={styles.subSectionTitle}>Datos generales</Text>
+              <ValueRow label="Actividad laboral (referida en consulta)" value={clinicalHistory.laborActivity} />
+              <ValueRow label="Práctica deportiva habitual" value={clinicalHistory.sportsActivity} />
+            </View>
+
+            <View style={styles.subSectionBlock}>
+              <Text style={styles.subSectionTitle}>Diagnóstico previo</Text>
+              <YesNoRow label="¿Diagnóstico médico previo?" value={clinicalHistory.hasPreviousDiagnosis} />
+              {clinicalHistory.hasPreviousDiagnosis && (
+                <>
+                  <ValueRow label="¿De qué fue diagnosticado?" value={clinicalHistory.previousDiagnosisWhat} />
+                  <ValueRow label="¿Por qué profesional?" value={clinicalHistory.previousDiagnosisBy} />
+                </>
+              )}
+            </View>
+
+            <View style={styles.subSectionBlock}>
+              <Text style={styles.subSectionTitle}>Motivo de consulta</Text>
+              <ValueRow label="Localización" value={clinicalHistory.consultLocation} />
+              <TextBlock label="Descripción" value={clinicalHistory.consultReason} />
+            </View>
+
+            <View style={styles.subSectionBlock}>
+              <Text style={styles.subSectionTitle}>Características del dolor</Text>
+              <ValueRow label="Tipo de dolor" value={painCharacterLabel(clinicalHistory.painCharacterType)} />
+              <YesNoRow label="¿Irradia a otra zona?" value={clinicalHistory.radiatesPain} />
+              {clinicalHistory.radiatesPain && (
+                <ValueRow label="¿Hacia dónde irradia?" value={clinicalHistory.radiatesTo} />
+              )}
+              <YesNoRow label="¿Signos neurológicos?" value={clinicalHistory.neurologicalSigns} />
+              {clinicalHistory.neurologicalSigns && (
+                <ValueRow label="Especificar" value={clinicalHistory.neurologicalSignsDetail} />
+              )}
+              <YesNoRow label="¿Chasquidos o ruidos articulares?" value={clinicalHistory.jointClicking} />
+              <YesNoRow label="¿Sensación de bloqueo?" value={clinicalHistory.lockingSensation} />
+              <YesNoRow label="¿Aprehensión?" value={clinicalHistory.apprehension} />
+            </View>
+
+            <View style={styles.subSectionBlock}>
+              <Text style={styles.subSectionTitle}>Comportamiento temporal</Text>
+              <ValueRow label="Momento del día" value={painTimingLabel(clinicalHistory.painTiming)} />
+              <ValueRow
+                label="Intensidad (EVA)"
+                value={clinicalHistory.painEVA != null ? `${clinicalHistory.painEVA}/10` : undefined}
+              />
+            </View>
+
+            <View style={styles.subSectionBlock}>
+              <Text style={styles.subSectionTitle}>Factores agravantes y aliviantes</Text>
+              <TextBlock label="Empeoran" value={clinicalHistory.aggravatingFactors} />
+              <TextBlock label="Alivian" value={clinicalHistory.relievingFactors} />
+            </View>
+
+            <View style={styles.subSectionBlock}>
+              <Text style={styles.subSectionTitle}>Inicio</Text>
+              <ValueRow label="¿Cuándo comenzó?" value={clinicalHistory.onsetDescription} />
+              <ValueRow label="¿Con qué coincidió?" value={clinicalHistory.onsetMechanism} />
+            </View>
+
+            <View style={styles.subSectionBlock}>
+              <Text style={styles.subSectionTitle}>Evolución</Text>
+              <ValueRow label="Evolución de los síntomas" value={evolutionLabel(clinicalHistory.evolution)} />
+              {clinicalHistory.evolution === 'ALTIBAJOS' && (
+                <ValueRow label="¿Con qué coinciden los altibajos?" value={clinicalHistory.evolutionDetail} />
+              )}
+            </View>
+
+            <View style={styles.subSectionBlock}>
+              <Text style={styles.subSectionTitle}>Antecedentes</Text>
+              <TextBlock label="Tratamientos previos" value={clinicalHistory.previousTreatments} />
+              <TextBlock label="Antecedentes médicos relevantes" value={clinicalHistory.relevantMedicalHistory} />
+              <YesNoRow label="¿Toma medicación habitual?" value={clinicalHistory.hasMedication} />
+              {clinicalHistory.hasMedication && (
+                <ValueRow label="¿Cuál?" value={clinicalHistory.medicationDetail} />
+              )}
+              <YesNoRow label="¿Alergias?" value={clinicalHistory.hasAllergies} />
+              {clinicalHistory.hasAllergies && (
+                <ValueRow label="¿A qué?" value={clinicalHistory.allergyDetail} />
+              )}
+            </View>
+          </View>
+        )}
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>RED FLAGS — RESUMEN</Text>

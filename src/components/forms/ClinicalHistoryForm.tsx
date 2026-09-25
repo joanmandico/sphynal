@@ -120,11 +120,19 @@ export default function ClinicalHistoryForm({ onComplete, initialData }: Props) 
 
   return (
     <div className="space-y-4">
+      {/* Datos generales */}
       <Card>
         <CardHeader><CardTitle className="text-base">Datos generales</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <TextField label="Actividad laboral" value={data.laborActivity} onChange={(v) => set('laborActivity', v)} />
           <TextField label="Práctica deportiva habitual" value={data.sportsActivity} onChange={(v) => set('sportsActivity', v)} />
+        </CardContent>
+      </Card>
+
+      {/* 1. Diagnóstico previo */}
+      <Card>
+        <CardHeader><CardTitle className="text-base">Diagnóstico previo</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
           <YesNoField label="¿Diagnóstico médico previo?" value={data.hasPreviousDiagnosis} onChange={(v) => set('hasPreviousDiagnosis', v)} />
           {data.hasPreviousDiagnosis && (
             <>
@@ -135,9 +143,16 @@ export default function ClinicalHistoryForm({ onComplete, initialData }: Props) 
         </CardContent>
       </Card>
 
+      {/* 2. Motivo de consulta */}
       <Card>
         <CardHeader><CardTitle className="text-base">Motivo de consulta</CardTitle></CardHeader>
         <CardContent className="space-y-3">
+          <TextField
+            label="Localización"
+            value={data.consultLocation}
+            onChange={(v) => set('consultLocation', v)}
+            placeholder="Ej: hombro derecho, zona lumbar..."
+          />
           <TextAreaField
             label="Descripción del motivo de consulta"
             value={data.consultReason}
@@ -147,6 +162,7 @@ export default function ClinicalHistoryForm({ onComplete, initialData }: Props) 
         </CardContent>
       </Card>
 
+      {/* 3. Características del dolor */}
       <Card>
         <CardHeader><CardTitle className="text-base">Características del dolor</CardTitle></CardHeader>
         <CardContent className="space-y-3">
@@ -170,6 +186,13 @@ export default function ClinicalHistoryForm({ onComplete, initialData }: Props) 
           <YesNoField label="¿Chasquidos o ruidos articulares?" value={data.jointClicking} onChange={(v) => set('jointClicking', v)} />
           <YesNoField label="¿Sensación de bloqueo?" value={data.lockingSensation} onChange={(v) => set('lockingSensation', v)} />
           <YesNoField label="¿Aprehensión (sensación de que la articulación se va a salir)?" value={data.apprehension} onChange={(v) => set('apprehension', v)} />
+        </CardContent>
+      </Card>
+
+      {/* 4. Comportamiento temporal */}
+      <Card>
+        <CardHeader><CardTitle className="text-base">Comportamiento temporal</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
           <SelectField
             label="Comportamiento temporal del dolor"
             value={data.painTiming ?? ''}
@@ -197,10 +220,31 @@ export default function ClinicalHistoryForm({ onComplete, initialData }: Props) 
               </span>
             </div>
           </div>
-          <TextField label="Factores que empeoran los síntomas" value={data.aggravatingFactors} onChange={(v) => set('aggravatingFactors', v)} />
-          <TextField label="Factores que alivian los síntomas" value={data.relievingFactors} onChange={(v) => set('relievingFactors', v)} />
+        </CardContent>
+      </Card>
+
+      {/* 5. Factores agravantes y aliviantes */}
+      <Card>
+        <CardHeader><CardTitle className="text-base">Factores agravantes y aliviantes</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          <TextAreaField label="Factores que empeoran los síntomas" value={data.aggravatingFactors} onChange={(v) => set('aggravatingFactors', v)} />
+          <TextAreaField label="Factores que alivian los síntomas" value={data.relievingFactors} onChange={(v) => set('relievingFactors', v)} />
+        </CardContent>
+      </Card>
+
+      {/* 6. Inicio */}
+      <Card>
+        <CardHeader><CardTitle className="text-base">Inicio</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
           <TextField label="¿Cuándo comenzó el problema?" value={data.onsetDescription} onChange={(v) => set('onsetDescription', v)} />
           <TextField label="¿Con qué coincidió el inicio? (traumatismo, sobreesfuerzo, estrés...)" value={data.onsetMechanism} onChange={(v) => set('onsetMechanism', v)} />
+        </CardContent>
+      </Card>
+
+      {/* 7. Evolución */}
+      <Card>
+        <CardHeader><CardTitle className="text-base">Evolución</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
           <SelectField
             label="Evolución de los síntomas"
             value={data.evolution ?? ''}
@@ -218,6 +262,7 @@ export default function ClinicalHistoryForm({ onComplete, initialData }: Props) 
         </CardContent>
       </Card>
 
+      {/* 8. Antecedentes */}
       <Card>
         <CardHeader><CardTitle className="text-base">Antecedentes</CardTitle></CardHeader>
         <CardContent className="space-y-3">

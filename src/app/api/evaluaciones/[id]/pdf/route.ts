@@ -14,7 +14,7 @@ export async function GET(req: NextRequest, { params }: Props) {
 
     const evaluation = await prisma.evaluation.findUnique({
       where: { id },
-      include: { patient: true },
+      include: { patient: true, clinicalHistory: true },
     })
 
     if (!evaluation) {
@@ -45,6 +45,7 @@ export async function GET(req: NextRequest, { params }: Props) {
     const element = React.default.createElement(InformeHombro, {
       patient: evaluation.patient,
       evaluationDate: evaluation.date,
+      clinicalHistory: evaluation.clinicalHistory,
       redFlagsData: redFlagsData ?? {} as RedFlagsData,
       redFlagsResult,
       shoulderData: shoulderData as Record<string, unknown> | null,

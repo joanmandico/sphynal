@@ -12,6 +12,7 @@ export interface ClinicalHistoryData {
   previousDiagnosisBy: string
 
   consultReason: string
+  consultLocation: string
 
   painCharacterType: PainCharacterType | null
   radiatesPain: boolean | null
@@ -45,6 +46,7 @@ export const initialClinicalHistoryData: ClinicalHistoryData = {
   previousDiagnosisWhat: '',
   previousDiagnosisBy: '',
   consultReason: '',
+  consultLocation: '',
   painCharacterType: null,
   radiatesPain: null,
   radiatesTo: '',

@@ -128,8 +128,9 @@ model ClinicalHistory {
   previousDiagnosisWhat String?
   previousDiagnosisBy   String?
 
-  // Motivo de consulta
-  consultReason String
+    // Motivo de consulta
+  consultReason   String
+  consultLocation String?
 
   // Características del dolor
   painCharacterType       PainCharacterType?
