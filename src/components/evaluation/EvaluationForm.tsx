@@ -13,6 +13,7 @@ import { RedFlagsData, RedFlagResult } from '@/lib/algorithms/redflags'
 import FloatingNoteButton from './FloatingNoteButton'
 import ClinicalHistoryForm from '@/components/forms/ClinicalHistoryForm'
 import { ClinicalHistoryData } from '@/types/clinical-history'
+import { getYouTubeEmbedUrl } from '@/lib/youtube'
 
 type Phase = 'history' | 'redflags' | 'redflags_warning' | 'evaluation'
 type TabPhase = 'history' | 'redflags' | 'evaluation'
@@ -24,43 +25,97 @@ interface Props {
   episodioId?: string
 }
 
-function BooleanField({ label, sublabel, value, onChange }: {
-  label: string
-  sublabel?: string
+function BoolToggleButtons({ value, onChange }: {
   value: boolean | null
   onChange: (v: boolean | null) => void
 }) {
   return (
-    <div className="flex items-center justify-between p-3 bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors">
+    <div className="flex gap-2 flex-shrink-0">
+      <button
+        onClick={() => onChange(true)}
+        className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${
+          value === true
+            ? 'bg-red-100 text-red-700 border border-red-300'
+            : 'bg-surface-container-lowest border border-outline-variant/20 text-on-surface-variant'
+        }`}
+      >POS</button>
+      <button
+        onClick={() => onChange(null)}
+        className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${
+          value === null
+            ? 'bg-surface-container-highest text-on-surface border border-outline-variant'
+            : 'bg-surface-container-lowest border border-outline-variant/20 text-on-surface-variant'
+        }`}
+      >NV</button>
+      <button
+        onClick={() => onChange(false)}
+        className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${
+          value === false
+            ? 'bg-green-100 text-green-700 border border-green-300'
+            : 'bg-surface-container-lowest border border-outline-variant/20 text-on-surface-variant'
+        }`}
+      >NEG</button>
+    </div>
+  )
+}
+
+function BooleanField({ label, sublabel, value, onChange, videoUrl, instructions }: {
+  label: string
+  sublabel?: string
+  value: boolean | null
+  onChange: (v: boolean | null) => void
+  videoUrl?: string
+  instructions?: string
+}) {
+  const hasExplanation = Boolean(videoUrl || instructions)
+
+  if (!hasExplanation) {
+    return (
+      <div className="flex items-center justify-between p-3 bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors">
+        <div>
+          <span className="text-sm text-on-surface">{label}</span>
+          {sublabel && <p className="text-xs text-on-surface-variant mt-0.5">{sublabel}</p>}
+        </div>
+        <BoolToggleButtons value={value} onChange={onChange} />
+      </div>
+    )
+  }
+
+  return (
+    <div className="p-3 bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors space-y-3">
       <div>
         <span className="text-sm text-on-surface">{label}</span>
         {sublabel && <p className="text-xs text-on-surface-variant mt-0.5">{sublabel}</p>}
       </div>
-      <div className="flex gap-2 ml-4 flex-shrink-0">
-        <button
-          onClick={() => onChange(true)}
-          className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${
-            value === true
-              ? 'bg-red-100 text-red-700 border border-red-300'
-              : 'bg-surface-container-lowest border border-outline-variant/20 text-on-surface-variant'
-          }`}
-        >POS</button>
-        <button
-          onClick={() => onChange(null)}
-          className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${
-            value === null
-              ? 'bg-surface-container-highest text-on-surface border border-outline-variant'
-              : 'bg-surface-container-lowest border border-outline-variant/20 text-on-surface-variant'
-          }`}
-        >NV</button>
-        <button
-          onClick={() => onChange(false)}
-          className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${
-            value === false
-              ? 'bg-green-100 text-green-700 border border-green-300'
-              : 'bg-surface-container-lowest border border-outline-variant/20 text-on-surface-variant'
-          }`}
-        >NEG</button>
+
+      <div className="flex flex-col sm:flex-row gap-3">
+        {videoUrl && (
+          getYouTubeEmbedUrl(videoUrl) ? (
+            <div className="w-full sm:w-64 aspect-video flex-shrink-0 rounded-lg overflow-hidden bg-black">
+              <iframe
+                src={getYouTubeEmbedUrl(videoUrl) ?? undefined}
+                title={label}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            </div>
+          ) : (
+            <video
+              src={videoUrl}
+              controls
+              preload="metadata"
+              className="w-full sm:w-64 rounded-lg bg-black flex-shrink-0"
+            />
+          )
+        )}
+        {instructions && (
+          <p className="text-xs text-on-surface-variant leading-relaxed">{instructions}</p>
+        )}
+      </div>
+
+      <div className="flex justify-end">
+        <BoolToggleButtons value={value} onChange={onChange} />
       </div>
     </div>
   )
@@ -113,6 +168,8 @@ function SectionRenderer({ section, data, onChange }: {
                 sublabel={field.sublabel}
                 value={data[field.id] as boolean | null ?? null}
                 onChange={(v) => onChange(field.id, v)}
+                videoUrl={field.videoUrl}
+                instructions={field.instructions}
               />
             )
           }

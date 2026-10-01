@@ -500,7 +500,14 @@ export const shoulderProtocol: Protocol = {
           id: 'subacromial',
           title: 'Muscular / Tendinoso / Subacromial — Manguito rotadores',
           fields: [
-            { id: 'neerTest', label: 'Neer Test', sublabel: 'Fijamos escápula desde posterior. Flex máxima pasiva del brazo. (+) dolor en AC', type: 'boolean' },
+            {
+              id: 'neerTest',
+              label: 'Neer Test',
+              sublabel: 'Fijamos escápula desde posterior. Flex máxima pasiva del brazo. (+) dolor en AC',
+              type: 'boolean',
+              videoUrl: 'https://www.youtube.com/watch?v=bXA8cblZUok',
+              instructions: 'Fija la escápula del paciente desde posterior con una mano. Con la otra, realiza flexión pasiva máxima del brazo. Positivo si reproduce dolor en la región subacromial.',
+            },
             { id: 'hawkinsKennedy', label: 'Hawkins-Kennedy Test', sublabel: 'Brazo 90º flex + codo. Pasar brazo proximal por debajo y presión hombro contra. RI pasiva. (+) dolor en AC', type: 'boolean' },
             { id: 'painfulArcSign', label: 'Painful Arc Syndrome', sublabel: 'ABD palmas al frente hasta final del recorrido. Dolor 45-60º = glenohumeral / 170-180º = AC', type: 'boolean' },
           ],

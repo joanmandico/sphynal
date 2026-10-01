@@ -16,6 +16,8 @@ export interface ProtocolField {
   max?: number
   options?: string[]
   defaultValue?: boolean | number | string
+  videoUrl?: string
+  instructions?: string
   showIf?: {
     field: string
     value: boolean | number | string
