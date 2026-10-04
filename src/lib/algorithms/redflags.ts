@@ -97,7 +97,7 @@ export interface RedFlagsData {
   reumaLesionesEscamosas: BoolField
   reumaUlcerasOrales: BoolField
   reumaOjosRojosSecos: BoolField
-  reumaPoliartralgia: BoolField
+  reumaPoliantalgia: BoolField
   reumaEdad20a40: BoolField
   reumaDebutSacroileitisTalalgia: BoolField
   // Neural grave
@@ -313,8 +313,8 @@ export function analyzeRedFlags(data: RedFlagsData): RedFlagResult {
     shouldRefer.push('Posible patología reumática — valorar en analítica (HLA-B27, PCR, VSG)')
   }
 
-  if (data.reumaPoliartralgia === true && data.reumaEdad20a40 === true && data.reumaDebutSacroileitisTalalgia === true) {
-    warnings.push('Poliartralgias con paciente de 20 a 40 años y debut con sacroileítis/talalgia')
+  if (data.reumaPoliantalgia === true && data.reumaEdad20a40 === true && data.reumaDebutSacroileitisTalalgia === true) {
+    warnings.push('Poliantalgias con paciente de 20 a 40 años y debut con sacroileítis/talalgia')
     warnings.push('Sintomatología reumática')
     shouldRefer.push('Posible patología reumática — alta probabilidad de Espondilitis Anquilosante, valorar en analítica (HLA-B27, PCR, VSG)')
   }
