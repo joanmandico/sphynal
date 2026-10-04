@@ -218,9 +218,9 @@ export function buildRedFlagsReport(data: RedFlagsData): ReportSection[] {
       line('Ojos rojos o secos', data.reumaOjosRojosSecos),
     ))
   }
-  const poliartralgiaLine = line('Poliartralgia (dolor en más de una articulación)', data.reumaPoliartralgia)
+  const poliartralgiaLine = line('Poliartralgia (dolor en más de una articulación)', data.reumaPoliantalgia)
   if (poliartralgiaLine) reumaLines.push(poliartralgiaLine)
-  if (data.reumaPoliartralgia === true) {
+  if (data.reumaPoliantalgia === true) {
     reumaLines.push(...lines(
       line('Paciente de 20 a 40 años', data.reumaEdad20a40),
       line('Debut con sacroileítis / talalgia', data.reumaDebutSacroileitisTalalgia),

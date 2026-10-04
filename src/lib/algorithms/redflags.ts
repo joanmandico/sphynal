@@ -170,22 +170,76 @@ export function analyzeRedFlags(data: RedFlagsData): RedFlagResult {
     shouldRefer.push('Derivación urgente — posible afectación del tronco del encéfalo')
   }
 
-  // Vertebrobasilar - HINTS+ (solo aplica en síndrome vestibular agudo)
-  if (data.acuteVestibularSyndrome === true) {
-    const centralFindings: string[] = []
-    if (data.headImpulseNormal === true) centralFindings.push('Head Impulse Test normal')
-    if (data.nystagmusVerticalPuro === true) centralFindings.push('Nistagmo vertical puro')
-    if (data.nystagmusCambiaDireccion === true) centralFindings.push('Nistagmo direction-changing')
-    if (data.nystagmusRotatorioPuro === true) centralFindings.push('Nistagmo rotatorio puro')
-    if (data.skewDeviation === true) centralFindings.push('Test of Skew positivo')
-    if (data.suddenHearingLoss === true) centralFindings.push('Pérdida auditiva súbita')
-    if (data.severeAtaxia === true) centralFindings.push('Ataxia severa')
+  // HINTS+
+// Solo debe interpretarse cuando la presentación clínica es compatible
+// con Síndrome Vestibular Agudo (SVA).
+if (data.acuteVestibularSyndrome === true) {
+  const hintsCentralFindings: string[] = []
+  const complementaryCentralFindings: string[] = []
 
-    if (centralFindings.length > 0) {
-      critical.push(`HINTS+ compatible con causa central: ${centralFindings.join(', ')}`)
-      shouldRefer.push('Derivación urgente hospitalaria — sospecha ictus vertebrobasilar (HINTS central)')
-    }
+  // HINTS
+  if (data.headImpulseNormal === true) {
+    hintsCentralFindings.push(
+      'Head Impulse Test sin sacada correctora'
+    )
   }
+
+  if (data.nystagmusVerticalPuro === true) {
+    hintsCentralFindings.push(
+      'nistagmo vertical puro'
+    )
+  }
+
+  if (data.nystagmusCambiaDireccion === true) {
+    hintsCentralFindings.push(
+      'nistagmo que cambia de dirección con la mirada'
+    )
+  }
+
+  if (data.nystagmusRotatorioPuro === true) {
+    hintsCentralFindings.push(
+      'nistagmo torsional puro'
+    )
+  }
+
+  if (data.skewDeviation === true) {
+    hintsCentralFindings.push(
+      'Test of Skew positivo'
+    )
+  }
+
+  // "+" de HINTS+: audición
+  if (data.suddenHearingLoss === true) {
+    hintsCentralFindings.push(
+      'pérdida auditiva aguda nueva'
+    )
+  }
+
+  // Valoración complementaria
+  if (data.severeAtaxia === true) {
+    complementaryCentralFindings.push(
+      'ataxia grave / incapacidad para mantener sedestación o bipedestación sin ayuda'
+    )
+  }
+
+  if (
+    hintsCentralFindings.length > 0 ||
+    complementaryCentralFindings.length > 0
+  ) {
+    const findings = [
+      ...hintsCentralFindings,
+      ...complementaryCentralFindings,
+    ]
+
+    critical.push(
+      `Hallazgos de alarma para posible causa central en paciente con SVA: ${findings.join(', ')}`
+    )
+
+    shouldRefer.push(
+      'Derivación médica urgente — hallazgos compatibles con posible causa central. HINTS+ no confirma por sí solo el diagnóstico de ictus.'
+    )
+  }
+}
 
   // Vascular
   const has5D3NPositive = [

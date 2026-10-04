@@ -50,7 +50,7 @@ const defaultRedFlagsData: RedFlagsData = {
   reumaAfectacionesCutaneas: null, reumaErupcionesCutaneas: null, reumaEnrojecimientoPiel: null,
   reumaSequedadDescamacion: null, reumaLesionesUlcerativas: null, reumaAmpollasVesiculares: null,
   reumaHinchazon: null, reumaLesionesEscamosas: null, reumaUlcerasOrales: null, reumaOjosRojosSecos: null,
-  reumaPoliartralgia: null, reumaEdad20a40: null, reumaDebutSacroileitisTalalgia: null,
+  reumaPoliantalgia: null, reumaEdad20a40: null, reumaDebutSacroileitisTalalgia: null,
   problemasMotores: null, problemasSensitivos: null, problemasCognitivos: null,
   nervioOlfatorio: null, agudezaVisual: null, cuadrantesVisuales: null,
   funcionRefleja: null, evaluacionPupila: null, evaluacionMovimientoOcular: null,
@@ -348,69 +348,279 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
           )}
 
           {vbSubSection === 'hints' && (
-            <Card>
-              <CardHeader>
-                <CardTitle>HINTS+ — Vértigo periférico vs. central</CardTitle>
-                <p className="text-sm text-slate-500">
-                  Solo aplica en Síndrome Vestibular Agudo: vértigo continuo (horas-días) + náuseas + nistagmo presente + dificultad para caminar.
-                  Si el mareo es posicional y de segundos, sospecha VPPB — el HINTS+ no aplica en ese caso.
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Toggle
-                  label="Síndrome Vestibular Agudo (SVA)"
-                  description="¿Cumple los criterios de arriba (vértigo continuo + náuseas + nistagmo presente + dificultad para caminar)?"
-                  value={data.acuteVestibularSyndrome} onChange={set('acuteVestibularSyndrome')}
-                />
+  <Card>
+    <CardHeader>
+      <CardTitle>HINTS+ — Evaluación de posible causa central</CardTitle>
 
-                {data.acuteVestibularSyndrome === true ? (
-                  <>
-                    <Toggle
-                      label="Head Impulse Test — ¿normal?"
-                      description="⚠️ Contraintuitivo: si el paciente MANTIENE la fijación sin sacada correctora (test normal), sospecha CENTRAL. Si hace una sacada correctora (anormal), es periférico y tranquiliza."
-                      value={data.headImpulseNormal} onChange={set('headImpulseNormal')}
-                    />
-                    <Toggle
-                      label="Nistagmo vertical puro"
-                      description="¿Nistagmo vertical puro (upbeat o downbeat)? El oído interno nunca produce esto — es central hasta lo contrario."
-                      value={data.nystagmusVerticalPuro} onChange={set('nystagmusVerticalPuro')}
-                    />
-                    <Toggle
-                      label="Nistagmo direction-changing"
-                      description="¿Cambia de dirección según hacia dónde mira (derecha/izquierda)?"
-                      value={data.nystagmusCambiaDireccion} onChange={set('nystagmusCambiaDireccion')}
-                    />
-                    <Toggle
-                      label="Nistagmo rotatorio puro"
-                      description="¿Rotatorio/torsional puro, sin componente horizontal?"
-                      value={data.nystagmusRotatorioPuro} onChange={set('nystagmusRotatorioPuro')}
-                    />
-                    <Toggle
-                      label="Test of Skew (Cover-Uncover)"
-                      description="Al destapar el ojo tras 2-3s tapado, ¿hace un salto vertical corrector para realinearse (skew positivo)?"
-                      value={data.skewDeviation} onChange={set('skewDeviation')}
-                    />
-                    <Toggle
-                      label="Audición"
-                      description="¿Pérdida auditiva súbita asociada al vértigo? (sospecha arteria cerebelosa anteroinferior, rama de la basilar)"
-                      value={data.suddenHearingLoss} onChange={set('suddenHearingLoss')}
-                    />
-                    <Toggle
-                      label="Ataxia"
-                      description="¿No puede mantenerse sentado o de pie sin ayuda? Muy sugerente de lesión cerebelosa central."
-                      value={data.severeAtaxia} onChange={set('severeAtaxia')}
-                    />
-                  </>
-                ) : (
-                  <p className="text-sm text-slate-500 italic p-3 bg-slate-100 rounded-lg">
-                    El HINTS+ no está indicado si el paciente no cumple criterios de Síndrome Vestibular Agudo — marca &quot;SI&quot; arriba si los cumple para desplegar los tests.
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          )}
+      <div className="space-y-2 text-sm text-slate-500">
+        <p>
+          HINTS+ está indicado únicamente ante un cuadro compatible con
+          Síndrome Vestibular Agudo (SVA), especialmente cuando existe
+          nistagmo espontáneo.
+        </p>
+
+        <p>
+          No debe utilizarse para interpretar cualquier mareo o vértigo.
+          Un cuadro episódico y posicional de segundos de duración requiere
+          una valoración diferente, por ejemplo ante sospecha de VPPB.
+        </p>
+
+        <p className="font-semibold text-amber-700">
+          ⚠️ La interpretación de HINTS requiere entrenamiento específico.
+          Los hallazgos deben integrarse con la historia clínica y la
+          exploración neurológica.
+        </p>
+      </div>
+    </CardHeader>
+
+    <CardContent className="space-y-5">
+      {/* PASO 1 — INDICACIÓN */}
+      <div className="space-y-3">
+        <div>
+          <p className="text-sm font-bold text-slate-800">
+            1. ¿Está indicado realizar HINTS+?
+          </p>
+
+          <p className="text-xs text-slate-500 mt-1">
+            Valora si la presentación clínica es compatible con Síndrome
+            Vestibular Agudo: inicio agudo de vértigo/mareo persistente,
+            náuseas o vómitos, intolerancia al movimiento cefálico,
+            inestabilidad y habitualmente nistagmo espontáneo.
+          </p>
+        </div>
+
+        <Toggle
+          label="Presentación compatible con Síndrome Vestibular Agudo (SVA)"
+          description="Marca SÍ únicamente si el cuadro clínico es compatible con SVA y procede realizar HINTS."
+          value={data.acuteVestibularSyndrome}
+          onChange={set('acuteVestibularSyndrome')}
+        />
+      </div>
+
+      {data.acuteVestibularSyndrome === true ? (
+        <>
+          {/* HINTS */}
+          <div className="border-t border-slate-200 pt-5 space-y-3">
+            <div>
+              <p className="text-sm font-bold text-slate-800">
+                2. Head Impulse Test
+              </p>
+
+              <p className="text-xs text-slate-500 mt-1">
+                Evalúa el reflejo vestíbulo-ocular. En el contexto adecuado,
+                la ausencia de una sacada correctora puede constituir un
+                hallazgo de alarma para causa central.
+              </p>
+            </div>
+
+            <Toggle
+              label="¿Mantiene la fijación SIN sacada correctora?"
+              description="SÍ = Head Impulse normal, hallazgo de alarma central dentro del algoritmo HINTS. NO = aparece una sacada correctora, hallazgo compatible con hipofunción vestibular periférica en el contexto clínico adecuado."
+              value={data.headImpulseNormal}
+              onChange={set('headImpulseNormal')}
+            />
+          </div>
+
+          <div className="border-t border-slate-200 pt-5 space-y-3">
+            <div>
+              <p className="text-sm font-bold text-slate-800">
+                3. Nistagmo
+              </p>
+
+    <p className="text-xs text-slate-500 mt-1">
+      Explora el patrón del nistagmo manteniendo la cabeza del paciente
+      estable. El objetivo es determinar su dirección y comprobar si cambia
+      con la dirección de la mirada.
+    </p>
+  </div>
+
+  {/* Procedimiento */}
+  <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg space-y-2">
+    <p className="text-xs font-semibold text-slate-700">
+      Cómo realizar la exploración
+    </p>
+
+    <ol className="text-xs text-slate-600 space-y-1 list-decimal pl-4">
+      <li>
+        Mantén la cabeza del paciente estable y observa inicialmente los
+        ojos mirando al frente.
+      </li>
+
+      <li>
+        Pídele que mire hacia la derecha sin mover la cabeza y observa
+        la dirección del componente rápido del nistagmo.
+      </li>
+
+      <li>
+        Vuelve a la posición central.
+      </li>
+
+      <li>
+        Pídele que mire hacia la izquierda y vuelve a observar la dirección
+        del componente rápido.
+      </li>
+
+      <li>
+        Evita llevar los ojos a posiciones extremas de la mirada para no
+        confundirlo con nistagmo fisiológico de mirada extrema.
+      </li>
+    </ol>
+  </div>
+
+  {/* Orientación */}
+  <div className="grid gap-3 md:grid-cols-2">
+    <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+      <p className="text-xs font-semibold text-slate-700">
+        Patrón compatible con origen periférico
+      </p>
+
+      <p className="text-xs text-slate-600 mt-1">
+        Habitualmente horizontal con posible componente torsional y
+        unidireccional: el componente rápido mantiene la misma dirección
+        independientemente de hacia dónde mire el paciente.
+      </p>
+    </div>
+
+    <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+      <p className="text-xs font-semibold text-slate-700">
+        Hallazgos de alarma central
+      </p>
+
+      <p className="text-xs text-slate-600 mt-1">
+        Nistagmo que cambia de dirección con la mirada, vertical puro
+        o torsional puro son patrones que aumentan la sospecha de una
+        causa central en el contexto clínico apropiado.
+      </p>
+    </div>
+  </div>
+
+  {/* Registro de resultados */}
+  <div className="pt-2 space-y-3">
+    <p className="text-xs font-semibold text-slate-700">
+      Registra los hallazgos observados:
+    </p>
+
+    <Toggle
+      label="Nistagmo vertical puro"
+      description="SÍ si el nistagmo observado es predominantemente vertical (upbeat o downbeat), sin un componente horizontal predominante."
+      value={data.nystagmusVerticalPuro}
+      onChange={set('nystagmusVerticalPuro')}
+    />
+
+    <Toggle
+      label="Nistagmo que cambia de dirección con la mirada"
+      description="SÍ si, por ejemplo, bate hacia la derecha al mirar a la derecha y hacia la izquierda al mirar a la izquierda."
+      value={data.nystagmusCambiaDireccion}
+      onChange={set('nystagmusCambiaDireccion')}
+    />
+
+    <Toggle
+      label="Nistagmo torsional puro"
+      description="SÍ si el movimiento observado es fundamentalmente rotatorio alrededor del eje visual, sin un componente horizontal predominante."
+      value={data.nystagmusRotatorioPuro}
+      onChange={set('nystagmusRotatorioPuro')}
+    />
+  </div>
+</div>
+
+          <div className="border-t border-slate-200 pt-5 space-y-3">
+            <div>
+              <p className="text-sm font-bold text-slate-800">
+                4. Test of Skew
+              </p>
+
+              <p className="text-xs text-slate-500 mt-1">
+                Realiza cover-uncover y observa si aparece una corrección
+                vertical de la posición ocular.
+              </p>
+            </div>
+
+            <Toggle
+              label="¿Existe desviación vertical correctora (Skew positivo)?"
+              description="SÍ = se observa una corrección vertical al destapar el ojo. Constituye un hallazgo de alarma para causa central."
+              value={data.skewDeviation}
+              onChange={set('skewDeviation')}
+            />
+          </div>
+
+          {/* PLUS */}
+          <div className="border-t border-slate-200 pt-5 space-y-3">
+            <div>
+              <p className="text-sm font-bold text-slate-800">
+                5. Audición — componente “+” de HINTS+
+              </p>
+
+              <p className="text-xs text-slate-500 mt-1">
+                Valora la presencia de una pérdida auditiva aguda nueva
+                asociada al episodio vestibular.
+              </p>
+            </div>
+
+            <Toggle
+              label="¿Existe pérdida auditiva aguda nueva?"
+              description="Una pérdida auditiva unilateral aguda nueva en este contexto aumenta la sospecha de una causa vascular central, incluida afectación del territorio AICA."
+              value={data.suddenHearingLoss}
+              onChange={set('suddenHearingLoss')}
+            />
+          </div>
+
+          {/* VALORACIÓN COMPLEMENTARIA */}
+          <div className="border-t border-slate-200 pt-5 space-y-3">
+            <div>
+              <p className="text-sm font-bold text-slate-800">
+                6. Ataxia / estabilidad postural
+              </p>
+
+              <p className="text-xs text-slate-500 mt-1">
+                Valoración complementaria al HINTS+. La incapacidad marcada
+                para mantener la sedestación o bipedestación sin ayuda es
+                un hallazgo de alarma para patología central.
+              </p>
+            </div>
+
+            <Toggle
+              label="¿Presenta ataxia grave?"
+              description="SÍ = incapacidad para mantenerse sentado o de pie sin ayuda. Este hallazgo aumenta la sospecha de afectación central."
+              value={data.severeAtaxia}
+              onChange={set('severeAtaxia')}
+            />
+          </div>
+
+          {/* RECORDATORIO */}
+          <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+            <p className="text-sm font-semibold text-amber-900">
+              Interpretación clínica
+            </p>
+
+            <p className="text-xs text-amber-800 mt-1">
+              Un Head Impulse sin sacada correctora, nistagmo central,
+              Skew positivo o pérdida auditiva aguda nueva constituyen
+              hallazgos de alarma dentro de HINTS+. La ataxia grave es
+              un hallazgo complementario de alarma. Estos resultados
+              requieren valoración médica urgente y no deben utilizarse
+              aisladamente para confirmar o excluir un ictus.
+            </p>
+          </div>
+        </>
+      ) : (
+        <div className="p-4 bg-slate-100 rounded-lg">
+          <p className="text-sm text-slate-600">
+            HINTS+ no debe realizarse ni interpretarse fuera de la
+            presentación clínica apropiada.
+          </p>
+
+          <p className="text-xs text-slate-500 mt-1">
+            Si el paciente presenta episodios breves desencadenados por
+            cambios posicionales, considera una valoración específica de
+            vértigo posicional en lugar de HINTS+.
+          </p>
         </div>
       )}
+    </CardContent>
+  </Card>
+)}
+</div>
+)}
 
       {/* Vascular — Vascular + TVP */}
       {section === 'vascular' && (
@@ -659,8 +869,8 @@ export default function RedFlagsForm({ onComplete, initialData }: Props) {
             )}
 
             <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider pt-2">Poliartralgia</p>
-            <Toggle label="Dolor en más de una articulación (poliartralgia)" value={data.reumaPoliartralgia} onChange={set('reumaPoliartralgia')} />
-            {data.reumaPoliartralgia === true && (
+            <Toggle label="Dolor en más de una articulación (poliartralgia)" value={data.reumaPoliantalgia} onChange={set('reumaPoliantalgia')} />
+            {data.reumaPoliantalgia === true && (
               <>
                 <Toggle
                   label="Paciente de 20 a 40 años"
